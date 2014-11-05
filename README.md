@@ -1,7 +1,7 @@
 firecracker
 ========
 
-a fast way to start hacking with vr in your browser
+a fast way to start hacking with WebVR in the browser
 
 
 Installation Guide (from a firecracker/ folder):
@@ -33,6 +33,18 @@ Chromium download link
 Firefox download link
 
     http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/
+
+Todo
+--------
++ <s>initial commit</s>
++ <s>build vr viewer</s>
++ <s>decouple scene/renderer from camera</s>
++ add gravity (accelerated animations)
++ add collision detection (flag for ghost)
++ add automatic viewer orientation/positioning based on objects in scene
++ abstract viewers to be d-n objects
++ add click + drag mouse interactions to move viewer manually
++ add lighting
 
 
 
