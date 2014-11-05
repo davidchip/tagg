@@ -2,7 +2,7 @@
 Polymer('viewer-base', {
 
     ready: () ->
-        window.camera = @
+        window.viewer = @
         @setup_camera()
 
     setup_camera: () ->

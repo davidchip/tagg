@@ -12,8 +12,8 @@ Polymer('firecracker-scene', {
         render = () =>
             requestAnimationFrame(render)
 
-            if window.camera?
-                window.camera.render_frame()
+            if window.viewer?
+                window.viewer.render_frame()
 
             for instance in window.instances
                 instance.animate(instance)

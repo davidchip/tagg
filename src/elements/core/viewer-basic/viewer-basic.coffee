@@ -6,6 +6,6 @@ Polymer('viewer-basic', {
         @camera.position.z = 5;
 
     render_frame: () ->
-        @renderer.render( window.scene, @camera )
+        window.renderer.render( window.scene, @camera )
 
 })
