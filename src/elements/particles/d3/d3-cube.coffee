@@ -10,7 +10,5 @@ Polymer('d3-cube', {
 
     animate_instance: (instance) ->
         instance.rotation.x += .045
-        instance.position.z -= .015
-        instance.position.y += .005
 
 })

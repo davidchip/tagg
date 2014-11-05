@@ -1,7 +1,7 @@
 firecracker
 ========
 
-a fast way to start hacking with webVR
+a fast way to start hacking with vr in your browser
 
 
 Installation Guide (from a firecracker/ folder):

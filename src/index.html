@@ -14,20 +14,25 @@
   <script src="bower_components/platform/platform.js"></script>
   <script src="bower_components/three.js/three.min.js"></script>
 
-    
-  <!-- create a viewer (viewer-basic or viewer-vr) -->
-  <link rel="import" href="elements/viewers/viewer-vr/viewer-vr.html">
-  <viewer-vr>
-  </viewer-vr>
+  <!-- create a scene to contain viewer and particles -->
+  <link rel="import" href="elements/core/firecracker-scene/firecracker-scene.html">
+  <firecracker-scene>
 
-  <!-- render particles -->
-  <link rel="import" href="elements/particles/d2/d2-plane.html">
-  <d2-plane>
-  </d2-plane>
+    <!-- create a viewer (viewer-basic or viewer-vr) -->
+    <link rel="import" href="elements/core/viewer-vr/viewer-vr.html">
+    <viewer-vr>
+    </viewer-vr>
 
-  <link rel="import" href="elements/particles/d3/d3-cube.html">
-  <d3-cube>
-  </d3-cube>
+    <!-- render particles -->
+    <link rel="import" href="elements/particles/d2/d2-plane.html">
+    <d2-plane x="0" y="4" z="-8">
+    </d2-plane>
+
+    <link rel="import" href="elements/particles/d3/d3-cube.html">
+    <d3-cube g="0" z="-4">
+    </d3-cube>
+
+  </firecracker-scene>
 
 </body
 </html>

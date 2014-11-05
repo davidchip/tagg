@@ -10,6 +10,5 @@ Polymer('d2-plane', {
 
     animate_instance: (instance) ->
         instance.rotation.x += .03
-        instance.position.z -= .015
 
 })

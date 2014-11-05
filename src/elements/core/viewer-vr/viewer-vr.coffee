@@ -1,7 +1,7 @@
 
 Polymer('viewer-vr', {
 
-    setup_cameras: () ->
+    setup_camera: () ->
         @camera_left = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 )
         @camera_left.position.z = 5;
 
@@ -26,17 +26,17 @@ Polymer('viewer-vr', {
             @camera_right.quaternion[axis] = vrState.orientation[axis]
 
         ## only render the relevant parts of the frame
-        @renderer.enableScissorTest ( true );
+        window.renderer.enableScissorTest ( true );
 
         ## render left eye
-        @renderer.setScissor( 0, 0, window.innerWidth / 2, window.innerHeight );
-        @renderer.setViewport( 0, 0, window.innerWidth / 2, window.innerHeight );
-        @renderer.render( window.scene, @camera_left )
+        window.renderer.setScissor( 0, 0, window.innerWidth / 2, window.innerHeight );
+        window.renderer.setViewport( 0, 0, window.innerWidth / 2, window.innerHeight );
+        window.renderer.render( window.scene, @camera_left )
 
         ## render right eye
-        @renderer.setScissor( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
-        @renderer.setViewport( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
-        @renderer.render( window.scene, @camera_right )
+        window.renderer.setScissor( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
+        window.renderer.setViewport( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
+        window.renderer.render( window.scene, @camera_right )
 
 
     # VISION UTILITIES
@@ -69,10 +69,10 @@ Polymer('viewer-vr', {
 
             document.body.addEventListener("click", () =>
             
-                if @renderer.domElement.webkitRequestFullscreen
-                    @renderer.domElement.webkitRequestFullscreen({ vrDisplay:window.vr_display });
-                else if @renderer.domElement.mozRequestFullScreen
-                    @renderer.domElement.mozRequestFullScreen({ vrDisplay:window.vr_display });
+                if window.renderer.domElement.webkitRequestFullscreen
+                    window.renderer.domElement.webkitRequestFullscreen({ vrDisplay:window.vr_display });
+                else if window.renderer.domElement.mozRequestFullScreen
+                    window.renderer.domElement.mozRequestFullScreen({ vrDisplay:window.vr_display });
             
             , false)
 
@@ -104,13 +104,13 @@ Polymer('viewer-vr', {
 
     _resize_renderer: () ->
         if window.vr_mode is true
-            # camera.aspect = window.renderTargetWidth / window.renderTargetHeight;
-            # camera.updateProjectionMatrix();
-            @renderer.setSize( window.renderTargetWidth, window.renderTargetHeight );
+            targetWidth = window.renderTargetWidth
+            targetHeight = window.renderTargetHeight
         else
-            # camera.aspect = window.innerWidth / window.innerHeight;
-            # camera.updateProjectionMatrix();
-            @renderer.setSize( window.innerWidth, window.innerHeight );
+            target_width = window.innerWidth
+            target_height = window.innerHeight
+
+        window.renderer.setSize(target_width, target_height)
 
     _resize_fov: (amount) ->
         fovScale = 1.0
