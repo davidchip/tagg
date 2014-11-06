@@ -1,20 +1,36 @@
 
 Polymer('d-n', {
+
+    presets: {
+
+    }
+
     ready: () ->
+        ## set position
+        for axis in ['x', 'y', 'z']
+            @[axis] = if @[axis]? then @[axis] else 0
+
+        ## attach any presets to the obj that aren't passed in
+        for key, value of @presets
+            if not @[key]?
+                @[key] = @presets[key]
+
+        ## setup instance
         @instance = @setup_instance()
+        @instance.position.set(@x, @y, @z)
         @instance.animate = @animate_instance
+        for key, value of @presets
+            @instance[key] = if @[key]? then @[key] else @presets[key]
 
         try
             window.scene.add(@instance)
+        catch error
+            console.log 'make sure you return a three js object from setup_instance'
+
+        try
             window.instances.push(@instance)
         catch error
             console.log "ensure you've set up a viewer of some sort (ie. <viewer-basic>)"
-
-        @instance.position.g = -2
-
-        @instance.position.x = if @x then @x else 0
-        @instance.position.y = if @y then @y else 0
-        @instance.position.z = if @z then @z else 0
 
     remove: () ->
         """Remove the object from the scene/DOM completely

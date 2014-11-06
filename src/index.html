@@ -8,9 +8,10 @@
 
   <link href="libs/reset.css" rel="stylesheet" type="text/css" />
 
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/platform/platform.js"></script>
-  <script src="bower_components/three.js/three.min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript" ></script>
+  <script src="bower_components/platform/platform.js" type="text/javascript" ></script>
+  
+  <script src="bower_components/three.js/three.min.js" type="text/javascript" ></script>
 </head>
 
 
@@ -20,19 +21,22 @@
   <link rel="import" href="elements/core/firecracker-scene/firecracker-scene.html">
   <firecracker-scene>
 
-    <!-- create a viewer (viewer-basic or viewer-vr) -->
+    <!-- create a room to orient our viewer -->
+    <link rel="import" href="elements/particles/room-basic/room-basic.html">
+    <room-basic></room-basic>
+
+    <!-- create a viewer (viewer-cyclops or viewer-vr) -->
     <link rel="import" href="elements/core/viewer-vr/viewer-vr.html">
     <viewer-vr>
     </viewer-vr>
 
     <!-- render particles -->
-    <link rel="import" href="elements/particles/d2/d2-plane.html">
-    <d2-plane x="0" y="4" z="-8">
-    </d2-plane>
+    <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
+    <d3-wirecube color="white" y="5" rpmz="20" rpmx="10">
+    </d3-wirecube>
 
-    <link rel="import" href="elements/particles/d3/d3-cube.html">
-    <d3-cube g="0" z="-4">
-    </d3-cube>
+    <d3-wirecube w="2" h="2" d="4" y="5" color="black" rpmy="">
+    </d3-wirecube>
 
   </firecracker-scene>
 

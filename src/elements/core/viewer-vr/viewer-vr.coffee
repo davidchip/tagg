@@ -3,27 +3,33 @@ Polymer('viewer-vr', {
 
     setup_camera: () ->
         @camera_left = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_left.position.z = 5;
+        @camera_left.position.set(0, 2, 12)
+        @camera_left.rotation.z = Math.PI
 
         @camera_right = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_right.position.z = 5;
+        @camera_right.position.set(0, 2, 12)
+        @camera_right.rotation.z = Math.PI
 
         @setup_vr_devices()
 
     render_frame: () ->
-        if not window.sensor_device?
-            return
 
-        vrState = window.sensor_device.getState();
-        VR_POSITION_SCALE = 5
+        if window.sensor_device?
+            vrState = window.sensor_device.getState();
+            if vrState.timeStamp isnt 0
+                VR_POSITION_SCALE = -30
 
-        for axis in ['x', 'y', 'z']
-            @camera_left.position[axis] = vrState.position[axis] * VR_POSITION_SCALE
-            @camera_right.position[axis] = vrState.position[axis] * VR_POSITION_SCALE
+                for axis in ['x', 'z']
+                    position = vrState.position[axis] * VR_POSITION_SCALE
+                    
+                    @camera_left.position[axis] = position
+                    @camera_right.position[axis] = position
 
-        for axis in ['x', 'y', 'z', 'w']
-            @camera_left.quaternion[axis] = vrState.orientation[axis]
-            @camera_right.quaternion[axis] = vrState.orientation[axis]
+                for axis in ['w', 'x', 'y', 'z']
+                    orientation = vrState.orientation[axis]
+
+                    @camera_left.quaternion[axis] = orientation
+                    @camera_right.quaternion[axis] = orientation
 
         ## only render the relevant parts of the frame
         window.renderer.enableScissorTest ( true );
@@ -56,25 +62,24 @@ Polymer('viewer-vr', {
 
         ## sets the eye offsets of the cameras, attaches full screen listener
         $.when(window.vr_display_retrieved).then (device) =>
-            eyeOffsetLeft = window.vr_display.getEyeTranslation("left")
-            @camera_left.position.add(eyeOffsetLeft);
-            @camera_left.position.z = 5;
+            if window.vr_display?
 
-            eyeOffsetRight = window.vr_display.getEyeTranslation("right")
-            @camera_right.position.add(eyeOffsetRight);
-            @camera_right.position.z = 5;
+                eyeOffsetLeft = window.vr_display.getEyeTranslation("left")
+                eyeOffsetRight = window.vr_display.getEyeTranslation("right")
+                # @camera_left.position.add(eyeOffsetLeft);
+                # @camera_right.position.add(eyeOffsetRight);
 
-            @_handle_fullscreen()
-            @_resize_fov(0.0);
+                @_handle_fullscreen()
+                @_resize_fov(0.0);
 
-            document.body.addEventListener("click", () =>
-            
-                if window.renderer.domElement.webkitRequestFullscreen
-                    window.renderer.domElement.webkitRequestFullscreen({ vrDisplay:window.vr_display });
-                else if window.renderer.domElement.mozRequestFullScreen
-                    window.renderer.domElement.mozRequestFullScreen({ vrDisplay:window.vr_display });
-            
-            , false)
+                document.body.addEventListener("click", () =>
+                
+                    if window.renderer.domElement.webkitRequestFullscreen
+                        window.renderer.domElement.webkitRequestFullscreen({ vrDisplay:window.vr_display });
+                    else if window.renderer.domElement.mozRequestFullScreen
+                        window.renderer.domElement.mozRequestFullScreen({ vrDisplay:window.vr_display });
+                
+                , false)
 
     _attach_vr_devices: (devices) ->
         """Given a list of HMD devices, attaches the first instances of

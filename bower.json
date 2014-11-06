@@ -2,7 +2,7 @@
   "name": "firecracker",
   "dependencies": {
     "jquery": "~2.1.1",
-    "three.js": "*",
-    "polymer": "Polymer/polymer"
+    "polymer": "Polymer/polymer",
+    "three.js": "*"
   }
 }
