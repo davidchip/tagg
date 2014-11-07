@@ -1,5 +1,9 @@
 
-Polymer('viewer-base', {
+Polymer('viewer-core', {
+
+    x: 0
+    y: 6
+    z: 12
 
     ready: () ->
         window.viewer = @

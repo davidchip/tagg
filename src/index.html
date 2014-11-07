@@ -15,30 +15,64 @@
 </head>
 
 
-<body style="background:#000000;">
+<body style="background:#fff;">
+
 
   <!-- create a scene to contain viewer and particles -->
-  <link rel="import" href="elements/core/firecracker-scene/firecracker-scene.html">
-  <firecracker-scene>
-
-    <!-- create a room to orient our viewer -->
-    <link rel="import" href="elements/particles/room-basic/room-basic.html">
-    <room-basic></room-basic>
-
+  <link rel="import" href="elements/worlds/world-desert/world-desert.html">
+  <world-desert>
     <!-- create a viewer (viewer-cyclops or viewer-vr) -->
-    <link rel="import" href="elements/core/viewer-vr/viewer-vr.html">
-    <viewer-vr>
+    <link rel="import" href="elements/viewers/viewer-vr/viewer-vr.html">
+    <viewer-vr x="0" y="7" z="20">
     </viewer-vr>
 
     <!-- render particles -->
+    <link rel="import" href="elements/particles/room-basic/room-basic.html">
+    <room-basic w="40" z="-15"></room-basic>
+
     <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
-    <d3-wirecube color="white" y="5" rpmz="20" rpmx="10">
+    <d3-wirecube color="black" x="12" y="5" z="-6" rpmx="40">
     </d3-wirecube>
 
-    <d3-wirecube w="2" h="2" d="4" y="5" color="black" rpmy="">
-    </d3-wirecube>
+    <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
+    <d3-icosahedron color="white" r="5" color="white" rpmy="12" rpmz="8">
+    </d3-icosahedron>
 
-  </firecracker-scene>
+    <d3-icosahedron color="black" r="2.5" color="black" rpmx="22" rpmz="18">
+    </d3-icosahedron>
+  </world-desert>
+
+
+  <!-- Shaders -->
+  <script type="x-shader/x-vertex" id="vertexShader">
+    varying vec3 vWorldPosition;
+
+    void main() {
+
+      vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+      vWorldPosition = worldPosition.xyz;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+    }
+  </script>
+
+  <script type="x-shader/x-fragment" id="fragmentShader">
+    uniform vec3 topColor;
+    uniform vec3 bottomColor;
+    uniform float offset;
+    uniform float exponent;
+
+    varying vec3 vWorldPosition;
+
+    void main() {
+
+      float h = normalize( vWorldPosition + offset ).y;
+      gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
+
+    }
+  </script>
+
 
 </body>
 </html>

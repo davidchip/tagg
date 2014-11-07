@@ -1,15 +1,14 @@
 
-Polymer('d3-wirecube', {
+Polymer('d3-icosahedron', {
 
     presets:
         color: 'white'
 
-        w: 4
-        h: 4
-        d: 8
+        r: 75
+        detail: 2
     
     setup_instance: () ->
-        geometry = new THREE.BoxGeometry(@w, @h, @d)
+        geometry = new THREE.IcosahedronGeometry(@r, @detail)
         material = new THREE.MeshBasicMaterial({color:@color,wireframe:true})
         instance = new THREE.Mesh( geometry, material )
         return instance

@@ -40,6 +40,8 @@ Todo
 + <s>build vr viewer</s>
 + <s>decouple scene/renderer from camera</s>
 + <s>add basic room mechanics</s>
++ <s>fix renderer mechanics (abstracted to world)</s>
++ have viewer-base extend d-n (gain ability to <s>postition</s>, remove/different viewers)
 + add gravity (accelerated animations)
 + add collision detection (flag for ghost)
 + add automatic viewer orientation/positioning based on objects in scene

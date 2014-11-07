@@ -2,13 +2,11 @@
 Polymer('viewer-vr', {
 
     setup_camera: () ->
-        @camera_left = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_left.position.set(0, 2, 12)
-        @camera_left.rotation.z = Math.PI
+        @camera_left = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 1000 )
+        @camera_left.position.set(@x, @y, @z)
 
-        @camera_right = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_right.position.set(0, 2, 12)
-        @camera_right.rotation.z = Math.PI
+        @camera_right = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 1000 )
+        @camera_right.position.set(@x, @y, @z)
 
         @setup_vr_devices()
 
@@ -17,11 +15,15 @@ Polymer('viewer-vr', {
         if window.sensor_device?
             vrState = window.sensor_device.getState();
             if vrState.timeStamp isnt 0
-                VR_POSITION_SCALE = -30
+                scale = 20
 
-                for axis in ['x', 'z']
-                    position = vrState.position[axis] * VR_POSITION_SCALE
-                    
+                for axis in ['x', 'y', 'z']
+                    position = vrState.position[axis] * scale
+                    if axis in ['z', 'y']
+                        position += @[axis]
+                    else
+                        position -= @[axis]
+
                     @camera_left.position[axis] = position
                     @camera_right.position[axis] = position
 

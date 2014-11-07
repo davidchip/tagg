@@ -1,24 +1,21 @@
 
-Polymer('firecracker-scene', {
+Polymer('world-core', {
 
     ready: () ->
         window.instances = []
         
         ## setup renderer
-        renderer = new THREE.WebGLRenderer()
+        renderer = new THREE.WebGLRenderer({alpha:true})
+        renderer.setClearColor( 0xffffff, 1)
         renderer.setSize( window.innerWidth, window.innerHeight )
         document.body.appendChild( renderer.domElement )
         window.renderer = renderer
 
         ## setup scene
         scene = new THREE.Scene()
-        gravity = if @g? then @g else -9.98
         window.scene = scene
 
-        ## add light source
-        window.light = new THREE.PointLight();
-        window.light.position.set(0,5,0);
-        scene.add(window.light);
+        @setup()
 
         ## render function
         render = () ->

@@ -1,11 +1,14 @@
 
-Polymer('d-n', {
+Polymer('particle-core', {
 
-    presets: {
-
-    }
+    _presets:
+        rpmx: 0
+        rpmy: 0
+        rpmz: 0
 
     ready: () ->
+        @presets = $.extend({}, @_presets, @presets)
+
         ## set position
         for axis in ['x', 'y', 'z']
             @[axis] = if @[axis]? then @[axis] else 0
@@ -18,7 +21,10 @@ Polymer('d-n', {
         ## setup instance
         @instance = @setup_instance()
         @instance.position.set(@x, @y, @z)
-        @instance.animate = @animate_instance
+        @instance.animate = (instance) =>
+            @_animate_instance(instance)
+            @animate_instance(instance)
+
         for key, value of @presets
             @instance[key] = if @[key]? then @[key] else @presets[key]
 
@@ -49,6 +55,11 @@ Polymer('d-n', {
     setup_instance: () ->
         ## returns a THREE.js constructed instance of this element
         return {}
+
+    _animate_instance: (instance) ->
+        instance.rotation.x += (Math.PI / 60) * (@rpmx / 60)
+        instance.rotation.y += (Math.PI / 60) * (@rpmy / 60)
+        instance.rotation.z += (Math.PI / 60) * (@rpmz / 60)
 
     animate_instance: (instance) ->
         ## animates a given instance of this element
