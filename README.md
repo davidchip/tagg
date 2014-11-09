@@ -1,16 +1,16 @@
 firecracker
 ========
 
-a fast way to start hacking with WebVR in the browser
+a fast way to start hacking together WebVR environments
 
 
-Installation Guide (from a firecracker/ folder):
+Installation Guide (_from firecracker/ folder_):
 --------
     
-    ## install brew
+    ## make sure brew is installed
     ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
-    ## install npm
+    ## same with install npm
     brew install npm
 
     ## install Grunt dependencies
@@ -41,14 +41,13 @@ Todo
 + <s>decouple scene/renderer from camera</s>
 + <s>add basic room mechanics</s>
 + <s>fix renderer mechanics (abstracted to world)</s>
-+ have viewer-base extend d-n (gain ability to <s>postition</s>, remove/different viewers)
-+ add controls
++ <s>have viewer-base extend d-n (gain ability to postition, remove/different viewers)</s>
++ <s>add basic controls</s>
++ <s>add lighting</s>
++ build linking interface between worlds
++ add collision detection (raycaster)
 + add gravity (accelerated animations)
-+ add collision detection (flag for ghost)
-+ add automatic viewer orientation/positioning based on objects in scene
-+ abstract viewers to be d-n objects
 + add click + drag mouse interactions to move viewer manually
-+ add lighting
 
 
 

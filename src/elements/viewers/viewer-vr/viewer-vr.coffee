@@ -3,25 +3,21 @@ Polymer('viewer-vr', {
 
     setup_camera: () ->
         @camera_left = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_left.position.set(@x, @y, @z)
-
         @camera_right = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_right.position.set(@x, @y, @z)
 
         @setup_vr_devices()
+
+        return new THREE.Object3D()
 
     render_frame: () ->
         if window.sensor_device?
             vrState = window.sensor_device.getState();
             if vrState.timeStamp isnt 0
-                scale = 20
+                scale = 20  ## better define this
 
                 for axis in ['x', 'y', 'z']
                     position = vrState.position[axis] * scale
-                    if axis in ['z', 'y']
-                        position += @[axis]
-                    else
-                        position -= @[axis]
+                    position += @shape.position[axis]
 
                     @camera_left.position[axis] = position
                     @camera_right.position[axis] = position
@@ -31,6 +27,10 @@ Polymer('viewer-vr', {
 
                     @camera_left.quaternion[axis] = orientation
                     @camera_right.quaternion[axis] = orientation
+            else
+                for axis in ['x', 'y', 'z']
+                    @camera_left.position[axis] = @shape.position[axis]
+                    @camera_right.position[axis] = @shape.position[axis]
 
         ## only render the relevant parts of the frame
         window.renderer.enableScissorTest ( true );

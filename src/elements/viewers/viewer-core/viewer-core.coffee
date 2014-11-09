@@ -1,6 +1,12 @@
 
 Polymer('viewer-core', {
 
+    controls:
+        37: 'right'
+        38: 'up'
+        39: 'left'
+        40: 'down'
+
     x: 0
     y: 6
     z: 12
@@ -8,21 +14,28 @@ Polymer('viewer-core', {
     set_shape: () ->
         window.viewer = @
 
-        ## todo, add controls
-        # $(document).keydown (e) ->
-        #     keycode = e.keyCode
-        #     if keycode is 37
-        #         alert 'left'
-        #     else if keycode is 38
-        #         alert 'up'
-        #     else if keycode is 39
-        #         alert 'right'
-        #     else if keycode is 40
-        #         alert 'down'
+        $(document).keydown (e) =>
+            window.movement = @controls[e.keyCode]
+
+        $(document).keyup (e) =>
+            if @controls[e.keyCode]?
+                window.movement = ''
         
         @shape = @setup_camera()
 
     render_frame: () ->
         console.log 'define a render_frame function'
+
+    animate_shape: () ->
+        movement = window.movement
+        movement_per_frame = .25
+        if movement is 'right'
+            @shape.position.x += -movement_per_frame
+        else if movement is 'left'
+            @shape.position.x += movement_per_frame
+        else if movement is 'down'
+            @shape.position.z += movement_per_frame
+        else if movement is 'up'
+            @shape.position.z += -movement_per_frame
 
 })
