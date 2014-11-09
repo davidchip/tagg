@@ -8,10 +8,11 @@ Polymer('d3-wirecube', {
         h: 4
         d: 8
     
-    setup_instance: () ->
+    set_shape: () ->
         geometry = new THREE.BoxGeometry(@w, @h, @d)
         material = new THREE.MeshBasicMaterial({color:@color,wireframe:true})
         instance = new THREE.Mesh( geometry, material )
-        return instance
+        
+        @shape = instance
 
 })

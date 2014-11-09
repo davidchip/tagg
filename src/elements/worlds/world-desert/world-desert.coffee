@@ -2,19 +2,19 @@
 Polymer('world-desert', {
     
     setup: () ->
-        ## add hemisphere
+        ## add hemisphere lighting
         hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
         hemiLight.color.setHSL( 0.6, 1, 0.6 )
         hemiLight.groundColor.setHSL( 0.095, 1, 0.75 )
         hemiLight.position.set( 0, 500, 0 )
-        window.scene.add( hemiLight )
+        window.world.add( hemiLight )
 
         ## add sun
         dirLight = new THREE.DirectionalLight( 0xffffff, 1 )
         dirLight.color.setHSL( 0.1, 1, 0.95 )
         dirLight.position.set( -1, 1.75, 1 )
         dirLight.position.multiplyScalar( 50 )
-        window.scene.add( dirLight )
+        window.world.add( dirLight )
         dirLight.castShadow = true
         dirLight.shadowMapWidth = 2048
         dirLight.shadowMapHeight = 2048
@@ -35,7 +35,7 @@ Polymer('world-desert', {
         ground = new THREE.Mesh( groundGeo, groundMat )
         ground.rotation.x = -Math.PI/2
         ground.position.y = -33
-        scene.add( ground )
+        window.world.add( ground )
         ground.receiveShadow = true
 
         ## skydome
@@ -49,14 +49,14 @@ Polymer('world-desert', {
         }
         uniforms.topColor.value.copy( hemiLight.color )
 
-        window.scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
-        window.scene.fog.color.setHSL( 0.6, 0, 1 );
-        window.scene.fog.color.copy( uniforms.bottomColor.value )
+        window.world.fog = new THREE.Fog( 0xffffff, 1, 5000 );
+        window.world.fog.color.setHSL( 0.6, 0, 1 );
+        window.world.fog.color.copy( uniforms.bottomColor.value )
 
         skyGeo = new THREE.SphereGeometry( 1000, 32, 15 )
         skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } )
 
         sky = new THREE.Mesh( skyGeo, skyMat )
-        window.scene.add( sky )
+        window.world.add( sky )
 
 })

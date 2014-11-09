@@ -5,7 +5,7 @@ Polymer('room-basic', {
         h: 10
         w: 20
     
-    setup_instance: () ->
+    set_shape: () ->
         room = new THREE.Object3D()
 
         ## material everything's coated in
@@ -33,6 +33,6 @@ Polymer('room-basic', {
         walls[2].position.x = -@w / 2
         walls[3].position.z = -@h / 2
 
-        return room
+        @shape = room
 
 })

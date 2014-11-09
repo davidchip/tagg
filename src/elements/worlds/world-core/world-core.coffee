@@ -2,7 +2,7 @@
 Polymer('world-core', {
 
     ready: () ->
-        window.instances = []
+        window.particles = []
         
         ## setup renderer
         renderer = new THREE.WebGLRenderer({alpha:true})
@@ -12,8 +12,7 @@ Polymer('world-core', {
         window.renderer = renderer
 
         ## setup scene
-        scene = new THREE.Scene()
-        window.scene = scene
+        window.world = new THREE.Scene()
 
         @setup()
 
@@ -24,8 +23,8 @@ Polymer('world-core', {
             if window.viewer?
                 window.viewer.render_frame()
 
-            for instance in window.instances
-                instance.animate(instance)
+            for particle in window.particles
+                particle.animate()
 
         render()
         

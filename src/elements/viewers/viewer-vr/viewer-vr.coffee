@@ -11,7 +11,6 @@ Polymer('viewer-vr', {
         @setup_vr_devices()
 
     render_frame: () ->
-
         if window.sensor_device?
             vrState = window.sensor_device.getState();
             if vrState.timeStamp isnt 0
@@ -39,12 +38,12 @@ Polymer('viewer-vr', {
         ## render left eye
         window.renderer.setScissor( 0, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.setViewport( 0, 0, window.innerWidth / 2, window.innerHeight );
-        window.renderer.render( window.scene, @camera_left )
+        window.renderer.render( window.world, @camera_left )
 
         ## render right eye
         window.renderer.setScissor( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.setViewport( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
-        window.renderer.render( window.scene, @camera_right )
+        window.renderer.render( window.world, @camera_right )
 
 
     # VISION UTILITIES

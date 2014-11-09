@@ -17,29 +17,33 @@
 
 <body style="background:#fff;">
 
-
-  <!-- create a scene to contain viewer and particles -->
   <link rel="import" href="elements/worlds/world-desert/world-desert.html">
+  <link rel="import" href="elements/viewers/viewer-cyclops/viewer-cyclops.html">
+  <link rel="import" href="elements/viewers/viewer-vr/viewer-vr.html">
+  <link rel="import" href="elements/particles/room-basic/room-basic.html">
+  <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
+  <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
+  
   <world-desert>
-    <!-- create a viewer (viewer-cyclops or viewer-vr) -->
-    <link rel="import" href="elements/viewers/viewer-vr/viewer-vr.html">
-    <viewer-vr x="0" y="7" z="20">
+    
+    <viewer-vr x="0" y="7" z="30">
     </viewer-vr>
-
-    <!-- render particles -->
-    <link rel="import" href="elements/particles/room-basic/room-basic.html">
-    <room-basic w="40" z="-15"></room-basic>
-
-    <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
-    <d3-wirecube color="black" x="12" y="5" z="-6" rpmx="40">
+    
+    <room-basic w="40" z="-15">
+    </room-basic>
+    
+    <d3-wirecube color="green" x="12" y="5" z="-6" rpmx="40" rpmy="10">
     </d3-wirecube>
 
-    <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
+    <d3-wirecube color="white" x="-12" y="5" z="-6" rpmx="40">
+    </d3-wirecube>
+
     <d3-icosahedron color="white" r="5" color="white" rpmy="12" rpmz="8">
     </d3-icosahedron>
 
     <d3-icosahedron color="black" r="2.5" color="black" rpmx="22" rpmz="18">
     </d3-icosahedron>
+
   </world-desert>
 
 
