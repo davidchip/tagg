@@ -20,5 +20,10 @@ module.exports = ->
       files: 'src/**/*.less',
       tasks: ['newer:less:compile', 'notify:less']
     }
+
+    js: {
+      files: 'src/**/*.js'
+      tasks: ['newer:copy:js', 'notify:js']
+    }
     
   }

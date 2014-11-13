@@ -22,6 +22,24 @@ module.exports = ->
       }]
     }
 
+    images: {
+      files: [{
+        expand: true
+        cwd: 'src/'
+        src: ['**/*.png', '**/*.jpg']
+        dest: 'target/'
+      }]
+    }
+
+    js: {
+      files: [{
+        expand: true
+        cwd: 'src/'
+        src: ['**/*.js']
+        dest: 'target/'
+      }]
+    }
+
   }
 
 

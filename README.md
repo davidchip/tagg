@@ -1,6 +1,7 @@
 firecracker
 ========
 
+
 a fast way to start hacking together WebVR environments
 
 
@@ -34,7 +35,7 @@ Firefox download link
 
     http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/
 
-Todo
+Framework Todo
 --------
 + <s>initial commit</s>
 + <s>build vr viewer</s>
@@ -44,10 +45,27 @@ Todo
 + <s>have viewer-base extend d-n (gain ability to postition, remove/different viewers)</s>
 + <s>add basic controls</s>
 + <s>add lighting</s>
-+ build linking interface between worlds
 + add collision detection (raycaster)
 + add gravity (accelerated animations)
 + add click + drag mouse interactions to move viewer manually
+
+Elements to build
+--------
++ build JSON/LESS type styling language to describe objects
++ build Positional language for stacking/laying out elements
++ build doors interface between worlds (think anchor tags 2.0)
++ build demo world
+    - star particle sytem for sky
+    - sand particle system for ground
+    - moon for illumination
++ build 3d printer interface to print out elements
++ build planar sensing of surrounding environment
+
+Elements todo
+--------
++ built out viewer-vr reticle
++ world-nightsky needs its API built out
+
 
 
 

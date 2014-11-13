@@ -17,6 +17,8 @@
 
 <body style="background:#fff;">
 
+  <!-- World Imports -->
+  <link rel="import" href="elements/worlds/world-nightsky/world-nightsky.html">
   <link rel="import" href="elements/worlds/world-desert/world-desert.html">
   <link rel="import" href="elements/viewers/viewer-cyclops/viewer-cyclops.html">
   <link rel="import" href="elements/viewers/viewer-vr/viewer-vr.html">
@@ -24,14 +26,11 @@
   <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
   <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
   
-  
-  <world-desert>
+  <!-- World -->
+  <world-nightsky>
     
-    <viewer-cyclops x="0" y="7" z="30">
-    </viewer-cyclops>
-    
-    <room-basic w="40" z="-15">
-    </room-basic>
+    <viewer-vr x="0" y="7" z="30">
+    </viewer-vr>
     
     <d3-wirecube color="green" x="12" y="5" z="-6" rpmx="40" rpmy="10">
     </d3-wirecube>
@@ -45,8 +44,7 @@
     <d3-icosahedron color="black" r="2.5" color="black" rpmx="22" rpmz="18">
     </d3-icosahedron>
 
-  </world-desert>
-
+  </world-nightsky>
 
   <!-- Shaders -->
   <script type="x-shader/x-vertex" id="vertexShader">
@@ -78,7 +76,8 @@
     }
   </script>
 
-
 </body>
+
+
 </html>
 

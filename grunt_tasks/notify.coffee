@@ -26,5 +26,12 @@ module.exports = ->
         message: 'less compiled successfully'
       }
     }
+
+    js: {
+      options: {
+        title: 'plain JS updated'
+        message: 'don\'t forget to take a break'
+      }
+    }
     
   }

@@ -2,8 +2,8 @@
 Polymer('viewer-vr', {
 
     setup_camera: () ->
-        @camera_left = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 1000 )
-        @camera_right = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 1000 )
+        @camera_left = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )
+        @camera_right = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )
 
         @setup_vr_devices()
 
@@ -67,8 +67,8 @@ Polymer('viewer-vr', {
 
                 eyeOffsetLeft = window.vr_display.getEyeTranslation("left")
                 eyeOffsetRight = window.vr_display.getEyeTranslation("right")
-                # @camera_left.position.add(eyeOffsetLeft);
-                # @camera_right.position.add(eyeOffsetRight);
+                @camera_left.position.add(eyeOffsetLeft);
+                @camera_right.position.add(eyeOffsetRight);
 
                 @_handle_fullscreen()
                 @_resize_fov(0.0);
@@ -155,8 +155,8 @@ Polymer('viewer-vr', {
             fovLeft = window.vr_display.getRecommendedEyeFieldOfView("left")
             fovRight = window.vr_display.getRecommendedEyeFieldOfView("right")
 
-        @camera_left.projectionMatrix = @_calc_projection(fovLeft, 0.1, 1000);
-        @camera_right.projectionMatrix = @_calc_projection(fovRight, 0.1, 1000);
+        @camera_left.projectionMatrix = @_calc_projection(fovLeft, 0.1, 2000000);
+        @camera_right.projectionMatrix = @_calc_projection(fovRight, 0.1, 2000000);
 
     _calc_projection: (fov, zNear, zFar) ->
         outMat = new THREE.Matrix4();

@@ -14,8 +14,10 @@ module.exports = ->
         ## copy our external libraries
         "copy:libs"
 
-        ## copy our html, compile our coffeescript/less
+        ## copy our html, any js, compile our coffeescript/less
         "copy:html"
+        "copy:js"
+        "copy:images"
         "coffee:compile"
         "less:compile"
 
