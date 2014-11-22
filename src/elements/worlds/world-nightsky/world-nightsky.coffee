@@ -43,4 +43,13 @@ Polymer('world-nightsky', {
 
         sky.uniforms.sunPosition.value.copy(sunSphere.position);
 
+        ## add ground
+        groundGeo = new THREE.CircleGeometry( 100, 100,)
+        groundMat = new THREE.MeshNormalMaterial( { transparent: true, opacity: .1 } )
+        ground = new THREE.Mesh( groundGeo, groundMat )
+        ground.rotation.x = -Math.PI/2
+        # ground.position.y = -33
+        # window.world.add( ground )
+        # ground.receiveShadow = true
+
 })

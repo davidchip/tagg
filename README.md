@@ -45,14 +45,18 @@ Framework Todo
 + <s>have viewer-base extend d-n (gain ability to postition, remove/different viewers)</s>
 + <s>add basic controls</s>
 + <s>add lighting</s>
-+ add collision detection (raycaster)
++ <s>add positioning based on DOM tree hierarchy (stacking, centering of elements)</s>
+    - build Positional language for stacking/laying out elements
++ build JSON/LESS type styling language to describe objects
++ build demonstration layer (github.io / heroku). once object is pushed, it's tested, and 
+  and gets its own URL
++ build git-repo sharing of objects (crack install <object>)
++ add collision detection (raycasting?)
 + add gravity (accelerated animations)
 + add click + drag mouse interactions to move viewer manually
 
 Elements to build
 --------
-+ build JSON/LESS type styling language to describe objects
-+ build Positional language for stacking/laying out elements
 + build doors interface between worlds (think anchor tags 2.0)
 + build demo world
     - star particle sytem for sky

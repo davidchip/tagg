@@ -1,12 +1,7 @@
 
 Polymer('d3-wirecube', {
 
-    presets:
-        color: 'white'
-
-        w: 4
-        h: 4
-        d: 8
+    color: 'white'
     
     set_shape: () ->
         geometry = new THREE.BoxGeometry(@w, @h, @d)
