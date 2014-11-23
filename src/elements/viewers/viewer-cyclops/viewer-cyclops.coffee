@@ -8,5 +8,6 @@ Polymer('viewer-cyclops', {
 
     render_frame: () ->
         window.renderer.render( window.world, @camera )
+        window.css_renderer.render( window.world, @camera )
 
 })

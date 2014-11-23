@@ -12,6 +12,7 @@
   <script src="bower_components/platform/platform.js" type="text/javascript" ></script>
   
   <script src="bower_components/three.js/three.min.js" type="text/javascript" ></script>
+  <script src="libs/three-css3d.min.js" type="text/javascript" ></script>
 </head>
 
 
@@ -23,18 +24,22 @@
   <link rel="import" href="elements/viewers/viewer-cyclops/viewer-cyclops.html">
   <link rel="import" href="elements/viewers/viewer-vr/viewer-vr.html">
   <link rel="import" href="elements/particles/room-basic/room-basic.html">
+  <link rel="import" href="elements/particles/html-plane/html-plane.html">
   <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
   <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
   
   <!-- World -->
   <world-nightsky>
     
-    <viewer-vr x="0" y="7" z="30">
-    </viewer-vr>
+    <viewer-cyclops x="0" y="7" z="30">
+    </viewer-cyclops>
 
     <d3-wirecube w="30" h="7" d="5">
       <d3-icosahedron h="5" x="-10" z="-2" rpmy="12" rpmz="8">
       </d3-icosahedron>
+
+      <html-plane y="30">
+      </html-plane>
 
       <d3-wirecube x="8" w="3" h="1" d="3">
         <d3-wirecube w="2" h="1" d="2">

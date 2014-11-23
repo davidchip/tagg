@@ -48,27 +48,42 @@ Framework Todo
 + <s>add positioning based on DOM tree hierarchy (stacking, centering of elements)</s>
     - build Positional language for stacking/laying out elements
 + build JSON/LESS type styling language to describe objects
-+ build demonstration layer (github.io / heroku). once object is pushed, it's tested, and 
-  and gets its own URL
+
+  and gets its own URL.
++ nail down html-plane
+    - planes should work as other particles
+    - they should have an iframe like interface to begin with
+    - eventually, merge the ideas of <a>, <iframe> and the <video> together
+    - parts of sites should be portable, meant to fit into other sites
 + build git-repo sharing of objects (crack install <object>)
+    - build demo layer (should be like github.io / heroku) of objects that can be installed
 + add collision detection (raycasting?)
 + add gravity (accelerated animations)
 + add click + drag mouse interactions to move viewer manually
 
 Elements to build
 --------
-+ build doors interface between worlds (think anchor tags 2.0)
++ build doors interface between worlds (think anchor tags 2.0, iframes, videos)
 + build demo world
     - star particle sytem for sky
     - sand particle system for ground
     - moon for illumination
 + build 3d printer interface to print out elements
-+ build planar sensing of surrounding environment
++ build planar sensing of surrounding environment using some sort of depth sensor
 
 Elements todo
 --------
 + built out viewer-vr reticle
 + world-nightsky needs its API built out
+
+Ideas
+--------
++ What we're really building here is a browser/dev environment that can combine the programmability of web frameworks, with the graphics performance of OpenGL.
++ Built to work with VR.
++ Built to be light weight, and interact with multiple sensors.
+
+
+
 
 
 
