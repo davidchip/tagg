@@ -15,10 +15,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "poststart": "npm install",
-    "poststart": "bower install",
-    "poststart": "grunt deploy"
+    "start": "node index.js"
   },
   "peerDependencies": {
     "bower": "*",
