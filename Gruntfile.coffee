@@ -22,7 +22,7 @@ module.exports = ->
         "less:compile"
 
         ## start our server
-        "connect:server"
+        # "connect:server"
 
         ## keep a listener running for updates to .coffee/*.less files,
         ## and new images
