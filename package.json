@@ -17,9 +17,7 @@
     "grunt-contrib-watch": "latest",
     "grunt-newer": "^0.7.0",
     "grunt-notify": "^0.3.1",
-    "grunt-processhtml": "~0.3.3"
-  },
-  "peerDependencies": {
+    "grunt-processhtml": "~0.3.3",
     "bower": "*",
     "grunt-cli": "*"
   },
