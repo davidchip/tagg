@@ -2,7 +2,7 @@ firecracker
 ========
 
 
-a fast way to start hacking together WebVR environments
+a fast way to start making WebVR environments
 
 
 Installation Guide (_from firecracker/ folder_):
