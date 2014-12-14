@@ -79,7 +79,7 @@ Elements todo
 
 Ideas
 --------
-+ We're building an OS for VR/AR. And it's built on top of the web.
++ We're building an OS for VR/AR. And it's built on top of the web
 + Converge the tools of creation (sublime text) with the tools of consumption (browser).
 + Converge the idea of anchor tags, with that of iframes. Leading to the idea of a narrative while on the web.
 + Build a mutable web. Change the experiences you use.
