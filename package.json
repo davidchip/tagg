@@ -17,10 +17,6 @@
   "scripts": {
     "start": "node index.js"
   },
-  "peerDependencies": {
-    "bower": "*",
-    "grunt-cli": "*"
-  },
   "dependencies": {
     "express": "~4.9.x"
   },
