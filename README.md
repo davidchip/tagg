@@ -35,7 +35,7 @@ Firefox download link
 
     http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/
 
-Framework Todo
+Framework To-do
 --------
 + <s>initial commit</s>
 + <s>build vr viewer</s>
