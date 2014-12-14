@@ -15,8 +15,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "poststart": "grunt deploy"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "~4.9.x"
