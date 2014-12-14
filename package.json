@@ -4,8 +4,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "postinstall": "bower install",
-    "poststart": "grunt deploy"
+    "preinstall": "bower install",
+    "postinstall": "grunt deploy"
   },
   "dependencies": {
     "express": "~4.9.x",
