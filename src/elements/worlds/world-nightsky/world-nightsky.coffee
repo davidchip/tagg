@@ -50,6 +50,6 @@ Polymer('world-nightsky', {
         ground.rotation.x = -Math.PI/2
         # ground.position.y = -33
         # window.world.add( ground )
-        # ground.receiveShadow = true
+        ground.receiveShadow = true
 
 })

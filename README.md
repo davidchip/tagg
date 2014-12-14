@@ -55,6 +55,7 @@ Framework Todo
     - they should have an iframe like interface to begin with
     - eventually, merge the ideas of <a>, <iframe> and the <video> together
     - parts of sites should be portable, meant to fit into other sites
++ define what a meter / foot looks like in this world.
 + build git-repo sharing of objects (crack install <object>)
     - build demo layer (should be like github.io / heroku) of objects that can be installed
 + add collision detection (raycasting?)
@@ -73,11 +74,17 @@ Elements to build
 
 Elements todo
 --------
-+ built out viewer-vr reticle
++ build out viewer-vr reticle
 + world-nightsky needs its API built out
 
 Ideas
 --------
++ We're building an OS for VR/AR. And it's built on top of the web.
++ Converge the tools of creation (sublime text) with the tools of consumption (browser).
++ Converge the idea of anchor tags, with that of iframes. Leading to the idea of a narrative while on the web.
++ Build a mutable web. Change the experiences you use.
++ Package it as an app, as well as a lightweight operating system, as well as a JS package, as well as a browser.
++ Replace the desktop as well as laptop with surfaces that we look outwards onto. Phones aren't competion, they have the same supply chains as the device itself.
 + What we're really building here is a browser/dev environment that can combine the programmability of web frameworks, with the graphics performance of OpenGL.
 + Built to work with VR.
 + Built to be light weight, and interact with multiple sensors.

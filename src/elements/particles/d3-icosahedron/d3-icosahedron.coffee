@@ -1,7 +1,7 @@
 
 Polymer('d3-icosahedron', {
 
-    color: 'white'
+    color: 'black'
 
     h: 10
     detail: 2

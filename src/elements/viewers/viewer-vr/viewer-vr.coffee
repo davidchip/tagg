@@ -39,13 +39,13 @@ Polymer('viewer-vr', {
         window.renderer.setScissor( 0, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.setViewport( 0, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.render( window.world, @camera_left )
-        window.css_renderer.render( window.world, @camera_left )
+        # window.css_renderer.render( window.world, @camera_left )
 
         ## render right eye
         window.renderer.setScissor( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.setViewport( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.render( window.world, @camera_right )
-        window.css_renderer.render( window.world, @camera_right )
+        # window.css_renderer.render( window.world, @camera_right )
 
 
     # VISION UTILITIES

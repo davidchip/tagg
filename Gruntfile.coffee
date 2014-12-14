@@ -28,3 +28,18 @@ module.exports = ->
         ## and new images
         "watch"
     ])
+
+    @registerTask("deploy", [
+        ## remove our target/ directory
+        "clean:everything"
+
+        ## copy our external libraries
+        "copy:libs"
+
+        ## copy our html, any js, compile our coffeescript/less
+        "copy:html"
+        "copy:js"
+        "copy:images"
+        "coffee:compile"
+        "less:compile"
+    ])
