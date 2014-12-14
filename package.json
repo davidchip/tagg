@@ -13,9 +13,9 @@
     "grunt-notify": "^0.3.1",
     "grunt-processhtml": "~0.3.3"
   },
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "poststart": "npm install",
     "poststart": "bower install",
     "poststart": "grunt deploy"
