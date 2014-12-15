@@ -8,7 +8,8 @@ module.exports = ->
     server: {
       options: {
         base: 'target/'
-        hostname: '127.0.0.1'
+        port: 9000
+        hostname: '0.0.0.0'
       }
     }
 

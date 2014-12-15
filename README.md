@@ -85,8 +85,8 @@ Ideas
 + Converge the idea of anchor tags, with that of iframes. Leading to the idea of a narrative while on the web.
 + Build a mutable web. Change the experiences you use.
 + Package it as an app, as well as a lightweight operating system, as well as a JS package, as well as a browser.
-+ Replace the desktop as well as laptop with surfaces that we look outwards onto. Phones aren't competion, they have the same supply chains as the device itself.
-+ What we're really building here is a browser/dev environment that can combine the programmability of web frameworks, with the graphics performance of OpenGL.
++ Replace the desktop as well as laptop with surfaces that we look outwards onto. Phones aren't competition, they have the same supply chains as the device itself.
++ Technically, we're building a browser/dev environment that can combine the accessibility and of web frameworks with the graphics performance of OpenGL that can be rendered to any surface.
 + Built to work with VR.
 + Built to be light weight, and interact with multiple sensors.
 

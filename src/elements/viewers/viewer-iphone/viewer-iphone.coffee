@@ -6,10 +6,10 @@ Polymer('viewer-iphone', {
         @camera_right = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )
 
         # @setup_vr_devices()
-        window.x = .5
-        window.y = .5
-        window.z = .5
-        window.w = .5
+        window.x = 0
+        window.y = 0
+        window.z = 0
+        window.w = 0
 
         return new THREE.Object3D()
 
