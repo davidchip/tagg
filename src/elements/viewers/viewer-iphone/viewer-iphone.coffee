@@ -1,3 +1,17 @@
+# if window.DeviceMotionEvent?
+#     window.webapi = {}
+
+#     window.ondevicemotion = (e) =>
+#         #Rotation
+#         console.log e
+#         if window.viewer? and window.viewer.shape?
+#             window.viewer.shape.rotation += e.rotationRate.beta / 800
+#             window.viewer.shape.rotation -= e.rotationRate.alpha / 800
+#             window.viewer.shape.rotation += e.rotationRate.gamma / 800
+        
+        # Acceleration + Gravity
+        # camera.rotation.z += e.accelerationIncludingGravity.z / 1000
+
 
 Polymer('viewer-iphone', {
 
@@ -5,36 +19,32 @@ Polymer('viewer-iphone', {
         @camera_left = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )
         @camera_right = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )
 
+        # @_resize_fov(1.5)
+
         # @setup_vr_devices()
-        window.x = 0
-        window.y = 0
-        window.z = 0
-        window.w = 0
+        # window.x = 0
+        # window.y = 0
+        # window.z = 0
+        # window.w = 0
+        window.webapi = {}
+        window.webapi.x = 0
+        window.webapi.y = 0
+        window.webapi.z = 0
 
         return new THREE.Object3D()
 
     render_frame: () ->
-        # if window.sensor_device?
-        #     vrState = window.sensor_device.getState();
-        #     if vrState.timeStamp isnt 0
-        #         scale = 20  ## better define this
+        if window.x? or window.y? or window.z? ## native app
+            for axis in ['x', 'y', 'z']
+                if window[axis]?
+                    @camera_left.rotation[axis] = window[axis]
+                    @camera_right.rotation[axis] = window[axis]
 
-        #         for axis in ['x', 'y', 'z']
-        #             position = vrState.position[axis] * scale
-        #             position += @shape.position[axis]
-
-        #             @camera_left.position[axis] = position
-        #             @camera_right.position[axis] = position
-
-
-        for axis in ['x', 'y', 'z', 'w']
-                    # orientation = vrState.orientation[axis]
-            @camera_left.quaternion[axis] = window[axis]
-            @camera_right.quaternion[axis] = window[axis]
-            # else
-            #     for axis in ['x', 'y', 'z']
-            #         @camera_left.position[axis] = @shape.position[axis]
-            #         @camera_right.position[axis] = @shape.position[axis]
+        else ## try web api
+            # for axis in ['z']
+            #     if window.webapi[axis]?
+            #         @camera_left.rotation[axis] += .01
+            #         @camera_right.rotation[axis] += .01
 
         ## only render the relevant parts of the frame
         window.renderer.enableScissorTest ( true );
@@ -43,13 +53,11 @@ Polymer('viewer-iphone', {
         window.renderer.setScissor( 0, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.setViewport( 0, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.render( window.world, @camera_left )
-        # window.css_renderer.render( window.world, @camera_left )
 
         ## render right eye
         window.renderer.setScissor( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.setViewport( window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight );
         window.renderer.render( window.world, @camera_right )
-        # window.css_renderer.render( window.world, @camera_right )
 
 
     # VISION UTILITIES
@@ -125,42 +133,40 @@ Polymer('viewer-iphone', {
         window.renderer.setSize(target_width, target_height)
 
     _resize_fov: (amount) ->
-        fovScale = 1.0
+        fovScale = amount
+        fovLeft = {}
+        fovRight = {}
+        
+        fovLeft.upDegrees *= fovScale;
+        fovLeft.downDegrees *= fovScale;
+        fovLeft.leftDegrees *= fovScale;
+        fovLeft.rightDegrees *= fovScale;
 
-        if amount != 0 && 'setFieldOfView' in window.vr_display.hmdDevice
-            fovScale += amount
-            fovScale = if fovScale < 0.1 then 0.1 else fovScale
+        fovRight.upDegrees *= fovScale;
+        fovRight.downDegrees *= fovScale;
+        fovRight.leftDegrees *= fovScale;
+        fovRight.rightDegrees *= fovScale;
 
-            fovLeft = window.vr_display.getRecommendedEyeFieldOfView("left");
-            fovRight = window.vr_display.getRecommendedEyeFieldOfView("right");
+        console.log fovLeft
 
-            fovLeft.upDegrees *= fovScale;
-            fovLeft.downDegrees *= fovScale;
-            fovLeft.leftDegrees *= fovScale;
-            fovLeft.rightDegrees *= fovScale;
+        #     window.vr_display.setFieldOfView(fovLeft, fovRight);
 
-            fovRight.upDegrees *= fovScale;
-            fovRight.downDegrees *= fovScale;
-            fovRight.leftDegrees *= fovScale;
-            fovRight.rightDegrees *= fovScale;
+        # if 'getRecommendedEyeRenderRect' in window.vr_display
+        #     leftEyeViewport = window.vr_display.getRecommendedEyeRenderRect("left");
+        #     rightEyeViewport = window.vr_display.getRecommendedEyeRenderRect("right");
+        #     window.renderTargetWidth = leftEyeViewport.width + rightEyeViewport.width;
+        #     window.renderTargetHeight = Math.max(leftEyeViewport.height, rightEyeViewport.height);
 
-            window.vr_display.setFieldOfView(fovLeft, fovRight);
+        # @_resize_renderer();
 
-        if 'getRecommendedEyeRenderRect' in window.vr_display
-            leftEyeViewport = window.vr_display.getRecommendedEyeRenderRect("left");
-            rightEyeViewport = window.vr_display.getRecommendedEyeRenderRect("right");
-            window.renderTargetWidth = leftEyeViewport.width + rightEyeViewport.width;
-            window.renderTargetHeight = Math.max(leftEyeViewport.height, rightEyeViewport.height);
+        # if 'getCurrentEyeFieldOfView' in window.vr_display
+        #     fovLeft = window.vr_display.getCurrentEyeFieldOfView("left")
+        #     fovRight = window.vr_display.getCurrentEyeFieldOfView("right")
+        # else
+        #     fovLeft = window.vr_display.getRecommendedEyeFieldOfView("left")
+        #     fovRight = window.vr_display.getRecommendedEyeFieldOfView("right")
 
-        @_resize_renderer();
-
-        if 'getCurrentEyeFieldOfView' in window.vr_display
-            fovLeft = window.vr_display.getCurrentEyeFieldOfView("left")
-            fovRight = window.vr_display.getCurrentEyeFieldOfView("right")
-        else
-            fovLeft = window.vr_display.getRecommendedEyeFieldOfView("left")
-            fovRight = window.vr_display.getRecommendedEyeFieldOfView("right")
-
+        console.log @_calc_projection(fovLeft, 0.1, 2000000);
         @camera_left.projectionMatrix = @_calc_projection(fovLeft, 0.1, 2000000);
         @camera_right.projectionMatrix = @_calc_projection(fovRight, 0.1, 2000000);
 

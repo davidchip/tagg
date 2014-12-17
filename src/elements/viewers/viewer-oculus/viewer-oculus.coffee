@@ -1,5 +1,4 @@
-
-Polymer('viewer-vr', {
+Polymer('viewer-oculus', {
 
     setup_camera: () ->
         @camera_left = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )

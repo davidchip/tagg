@@ -4,6 +4,8 @@ firecracker
 
 a fast way to start making WebVR environments
 
+_created by david and alex chippendale_
+
 
 Installation Guide (_from firecracker/ folder_):
 --------
@@ -24,9 +26,10 @@ Installation Guide (_from firecracker/ folder_):
     grunt serve
 
 
-Launch 127.0.0.1:8000 from a WebVR Chromium or Firefox build
+Access
 --------
 
+Local Access: connect to 0.0.0.0:9000 from a WebVR browser (with an attached oculus)
 
 Chromium download link
 
@@ -35,6 +38,28 @@ Chromium download link
 Firefox download link
 
     http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/
+
+Mobile: from your phone, connect to port 9000 of your computer's IP address (192.168.1.145:9000 for example)
+
+
+Todo
+--------
++ create viewer-vr that handles multiple vr approaches (iPhone App, Android App, Oculus, Mobile Browser)
+    - head tracking middleware provides updates to window.rotation, and window.position (native, ondevicemotion, WebVR)
+    - cameras are repositioned each frame to match window.rotation, window.position
+    - projection is calculated and applied as a transformation across the whole frame
+    - degrades to viewer-cyclops with no head tracking
+    - can reset at any point through signal either provided by:
+        - sensing 2 taps through mic and/or head tracking
+        - receiving a signal from a family member of 'controls'
++ create controls-keyboard, controls-hands (leap, nimble), controls-voice (audio), controls-mouse etc
+    - middleware that updates window.rotation and window.position in response to movements, gestures, sound, key-presses etc.
++ make html-plane viable
+    - it should be able to render HTML/CSS content in the midst of a WebGL scene
+    - it should be interactable (select text, click)
+
+Ramblings
+--------
 
 Framework Todo
 --------
@@ -49,12 +74,11 @@ Framework Todo
 + <s>add positioning based on DOM tree hierarchy (stacking, centering of elements)</s>
     - build Positional language for stacking/laying out elements
 + build JSON/LESS type styling language to describe objects
-
   and gets its own URL.
 + nail down html-plane
     - planes should work as other particles
     - they should have an iframe like interface to begin with
-    - eventually, merge the ideas of <a>, <iframe> and the <video> together
+    - eventually, merge the ideas of and anchor, iframe, and video tag together
     - parts of sites should be portable, meant to fit into other sites
 + define what a meter / foot looks like in this world.
 + build git-repo sharing of objects (crack install <object>)
@@ -75,7 +99,7 @@ Elements to build
 
 Elements todo
 --------
-+ build out viewer-vr reticle
++ build out viewer-oculus reticle
 + world-nightsky needs its API built out
 
 Ideas
@@ -89,6 +113,7 @@ Ideas
 + Technically, we're building a browser/dev environment that can combine the accessibility and of web frameworks with the graphics performance of OpenGL that can be rendered to any surface.
 + Built to work with VR.
 + Built to be light weight, and interact with multiple sensors.
++ Build external object recognition of particular objects.
 
 
 
