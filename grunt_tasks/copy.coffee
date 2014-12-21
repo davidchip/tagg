@@ -26,7 +26,7 @@ module.exports = ->
       files: [{
         expand: true
         cwd: 'src/'
-        src: ['**/*.png', '**/*.jpg']
+        src: ['**/*.png', '**/*.jpg', '**/*.mp4', '**/*.mov']
         dest: 'target/'
       }]
     }

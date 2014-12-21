@@ -122,6 +122,8 @@ Polymer('viewer-oculus', {
     _resize_fov: (amount) ->
         fovScale = 1.0
 
+        console.log window.vr_display.getRecommendedEyeFieldOfView("left");
+
         if amount != 0 && 'setFieldOfView' in window.vr_display.hmdDevice
             fovScale += amount
             fovScale = if fovScale < 0.1 then 0.1 else fovScale
