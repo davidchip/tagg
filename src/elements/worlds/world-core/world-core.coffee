@@ -3,10 +3,9 @@ Polymer('world-core', {
 
     ready: () ->
         window.particles = []
-        
+
         ## setup renderer
         renderer = new THREE.WebGLRenderer({alpha:true})
-        renderer.setClearColor( 0xffffff, 0.0)
         renderer.setSize(window.innerWidth, window.innerHeight)
         renderer.shadowMapEnabled = true
         renderer.shadowMapType = THREE.PCFSoftShadowMap

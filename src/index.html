@@ -21,6 +21,7 @@
   <!-- World/Particle Imports -->
   <link rel="import" href="elements/worlds/world-nightsky/world-nightsky.html">
   <link rel="import" href="elements/worlds/world-desert/world-desert.html">
+  <link rel="import" href="elements/worlds/world-clouds/world-clouds.html">
   <link rel="import" href="elements/viewers/viewer-cyclops/viewer-cyclops.html">
   <link rel="import" href="elements/viewers/viewer-oculus/viewer-oculus.html">
   <link rel="import" href="elements/viewers/viewer-iphone/viewer-iphone.html">
@@ -31,9 +32,9 @@
   <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
   
   <!-- World -->
-  <world-nightsky>
+  <world-clouds>
     
-    <viewer-iphone x="0" y="0" z="0">
+    <viewer-iphone x="0" y="5" z="0">
     </viewer-iphone>
 
     <!-- <panorama-video></panorama-video> -->
@@ -53,7 +54,7 @@
 
     </d3-wirecube> -->
 
-  </world-nightsky>
+  </world-clouds>
 
   <!-- Shaders -->
   <script type="x-shader/x-vertex" id="vertexShader">
