@@ -5,6 +5,10 @@ Polymer('particle-core', {
     rpmy: 0
     rpmz: 0
     
+    movex: 0
+    movey: 0
+    movez: 0
+
     x: 0
     y: 0
     z: 0
@@ -69,6 +73,10 @@ Polymer('particle-core', {
     _animate_shape: () ->
         """API that all objects should get access to
         """
+        @shape.position.x += @movex
+        @shape.position.y += @movey
+        @shape.position.z += @movez
+
         @shape.rotation.x += (Math.PI / 60) * (@rpmx / 60)
         @shape.rotation.y += (Math.PI / 60) * (@rpmy / 60)
         @shape.rotation.z += (Math.PI / 60) * (@rpmz / 60)
