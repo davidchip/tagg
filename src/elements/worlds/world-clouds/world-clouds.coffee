@@ -84,6 +84,8 @@ Polymer('world-clouds', {
         mesh.position.z = - 8000;
         window.world.add( mesh );
 
+
+
         ## set background to blue
         container = document.createElement( 'div' );
         $(container).height(window.innerHeight)
@@ -96,8 +98,8 @@ Polymer('world-clouds', {
         context = canvas.getContext( '2d' );
         
         gradient = context.createLinearGradient( 0, 0, 0, canvas.height );
-        gradient.addColorStop(0, "#1e4877");
-        gradient.addColorStop(0.5, "#4584b4");
+        gradient.addColorStop(0, "#000000");
+        gradient.addColorStop(0.5, "#000000");
         
         context.fillStyle = gradient;
         context.fillRect(0, 0, canvas.width, canvas.height);
@@ -130,4 +132,62 @@ Polymer('world-clouds', {
 
         # window.world.add( lensFlare );
 
+
+        ## add sun
+        # plane = new THREE.Mesh( new THREE.PlaneGeometry( 64, 64 ) );
+        # texture = THREE.ImageUtils.loadTexture('elements/worlds/world-clouds/cloud10.png', null);
+
+
+        # @addLight( 0.55, 0.9, 0.5, 5000, 0, -1000 );
+        @addLight( 0.08, 0.8, 0.5, 0, 50, -1000 );
+        # @addLight( 0.995, 0.5, 0.9, 5000, 5000, -1000 );
+
+    addLight: ( h, s, l, x, y, z ) ->
+        textureFlare0 = THREE.ImageUtils.loadTexture( "elements/worlds/world-clouds/lensflare0.png" );
+        textureFlare2 = THREE.ImageUtils.loadTexture( "elements/worlds/world-clouds/lensflare2.png" );
+        textureFlare3 = THREE.ImageUtils.loadTexture( "elements/worlds/world-clouds/lensflare3.png" );
+
+        light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
+        light.color.setHSL( h, s, l );
+        light.position.set( x, y, z );
+        window.world.add( light );
+
+        flareColor = new THREE.Color( 0xffffff );
+        flareColor.setHSL( h, s, l + 0.5 );
+
+        lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+
+        # lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+        # lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+        # lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+
+        lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+        lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+        lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+        lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+
+        # lensFlare.customUpdateCallback = @lensFlareUpdateCallback
+        lensFlare.position.copy( light.position )
+
+        window.world.add( lensFlare );
+
+    lensFlareUpdateCallback: ( object ) ->
+        console.log object
+
+        length = object.lensFlares.length; 
+        f = length
+        fl = length
+        vecX = -object.positionScreen.x * 2;
+        vecY = -object.positionScreen.y * 2;
+
+        for i in [0..length]
+           flare = object.lensFlares[ f ];
+
+           flare.x = object.positionScreen.x + vecX * flare.distance;
+           flare.y = object.positionScreen.y + vecY * flare.distance;
+
+           flare.rotation = 0;
+
+        object.lensFlares[ 2 ].y += 0.025;
+        object.lensFlares[ 3 ].rotation = object.positionScreen.x * 0.5 + THREE.Math.degToRad( 45 );
 })
