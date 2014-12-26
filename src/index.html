@@ -18,31 +18,35 @@
 
 <body style="background:#fff;">
 
-  <!-- World/Particle Imports -->
+
+  <!-- Imports -->
+  <link rel="import" href="elements/worlds/world-core/world-core.html">
   <link rel="import" href="elements/worlds/world-sunset/world-sunset.html">
   <link rel="import" href="elements/worlds/world-desert/world-desert.html">
+  
   <link rel="import" href="elements/viewers/viewer-cyclops/viewer-cyclops.html">
   <link rel="import" href="elements/viewers/viewer-oculus/viewer-oculus.html">
   <link rel="import" href="elements/viewers/viewer-iphone/viewer-iphone.html">
+  
   <link rel="import" href="elements/particles/sky-clouds/sky-clouds.html">
   <link rel="import" href="elements/particles/room-basic/room-basic.html">
   <link rel="import" href="elements/particles/html-plane/html-plane.html">
   <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
   <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
   
+
   <!-- World -->
   <world-sunset>
 
+    <viewer-cyclops movez="-.25" z="-2">
+    </viewer-cyclops>
+
     <sky-clouds>
     </sky-clouds>
-    
-    <viewer-iphone x="0" y="-2" z="0" movez="-.25">
-    </viewer-iphone>
 
   </world-sunset>
 
+
 </body>
-
-
 </html>
 

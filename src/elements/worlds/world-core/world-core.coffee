@@ -39,5 +39,8 @@ Polymer('world-core', {
                 particle.animate()
 
         render()
+
+    setup: () ->
+        return
         
 })

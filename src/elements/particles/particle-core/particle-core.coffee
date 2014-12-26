@@ -46,6 +46,9 @@ Polymer('particle-core', {
             if @x is 0 and parent.x?
                 @x = parent.x
 
+            if parent.z?
+                @z = parent.z
+
             ## todo: position elements to the right of its siblings
 
             @shape.position.set(@x, @y, @z)
