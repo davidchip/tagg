@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>firecracker - by david and alex chippendale</title>
+  <title>firecracker</title>
 
   <link href="libs/reset.css" rel="stylesheet" type="text/css" />
 
@@ -19,75 +19,27 @@
 <body style="background:#fff;">
 
   <!-- World/Particle Imports -->
-  <link rel="import" href="elements/worlds/world-nightsky/world-nightsky.html">
+  <link rel="import" href="elements/worlds/world-sunset/world-sunset.html">
   <link rel="import" href="elements/worlds/world-desert/world-desert.html">
-  <link rel="import" href="elements/worlds/world-clouds/world-clouds.html">
   <link rel="import" href="elements/viewers/viewer-cyclops/viewer-cyclops.html">
   <link rel="import" href="elements/viewers/viewer-oculus/viewer-oculus.html">
   <link rel="import" href="elements/viewers/viewer-iphone/viewer-iphone.html">
-  <link rel="import" href="elements/particles/panorama-video/panorama-video.html">
+  <link rel="import" href="elements/particles/sky-clouds/sky-clouds.html">
   <link rel="import" href="elements/particles/room-basic/room-basic.html">
   <link rel="import" href="elements/particles/html-plane/html-plane.html">
   <link rel="import" href="elements/particles/d3-wirecube/d3-wirecube.html">
   <link rel="import" href="elements/particles/d3-icosahedron/d3-icosahedron.html">
   
   <!-- World -->
-  <world-nightsky>
+  <world-sunset>
+
+    <sky-clouds>
+    </sky-clouds>
     
     <viewer-iphone x="0" y="-2" z="0" movez="-.25">
     </viewer-iphone>
 
-    <!-- <panorama-video></panorama-video> -->
-
-<!--     <html-plane w="80" h="20" y="0" x="40" y="0" z="10">
-      hello world
-    </html-plane> -->
-
-    <d3-wirecube w="30" h="7" d="5">
-    </d3-wirecube>
-
-    <!-- <d3-wirecube w="30" h="7" d="5"> -->
-
-<!--       <d3-wirecube x="8" w="3" h="1" d="3">
-        <d3-wirecube w="2" h="1" d="2">
-          <d3-wirecube w="1" h="1" d="1">
-          </d3-wirecube>
-        </d3-wirecube>
-      </d3-wirecube> -->
-
-    <!-- </d3-wirecube> -->
-
-  </world-nightsky>
-
-  <!-- Shaders -->
-  <script type="x-shader/x-vertex" id="vertexShader">
-    varying vec3 vWorldPosition;
-
-    void main() {
-
-      vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-      vWorldPosition = worldPosition.xyz;
-
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
-    }
-  </script>
-
-  <script type="x-shader/x-fragment" id="fragmentShader">
-    uniform vec3 topColor;
-    uniform vec3 bottomColor;
-    uniform float offset;
-    uniform float exponent;
-
-    varying vec3 vWorldPosition;
-
-    void main() {
-
-      float h = normalize( vWorldPosition + offset ).y;
-      gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
-
-    }
-  </script>
+  </world-sunset>
 
 </body>
 

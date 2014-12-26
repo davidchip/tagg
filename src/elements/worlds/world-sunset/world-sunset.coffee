@@ -1,5 +1,5 @@
 
-Polymer('world-nightsky', {
+Polymer('world-sunset', {
     
     setup: () ->
         sky = new THREE.Sky();
@@ -13,17 +13,17 @@ Polymer('world-nightsky', {
         window.world.add( sunSphere );
 
         effectController  = {
-            turbidity: 15,
-            reileigh: 2,
+            turbidity: 50,
+            reileigh: 1,
             mieCoefficient: 0.005,
             mieDirectionalG: 0.8,
-            luminance: 1,
+            luminance: .5,
             inclination: 0.49, ## // elevation / inclination
             azimuth: 0.25, ## // Facing front,                 
             sun: false
         }
 
-        distance = 400000;
+        distance = 40000;
 
         uniforms = sky.uniforms;
         uniforms.turbidity.value = effectController.turbidity;
@@ -42,14 +42,5 @@ Polymer('world-nightsky', {
         sunSphere.visible = effectController.sun;
 
         sky.uniforms.sunPosition.value.copy(sunSphere.position);
-
-        ## add ground
-        groundGeo = new THREE.CircleGeometry( 100, 100,)
-        groundMat = new THREE.MeshNormalMaterial( { transparent: true, opacity: .1 } )
-        ground = new THREE.Mesh( groundGeo, groundMat )
-        ground.rotation.x = -Math.PI/2
-        # ground.position.y = -33
-        # window.world.add( ground )
-        ground.receiveShadow = true
 
 })

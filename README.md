@@ -2,7 +2,7 @@ firecracker
 ========
 
 
-a fast way to start making WebVR environments
+a fast way to start making VR environments
 
 _created by david and alex chippendale_
 
@@ -57,6 +57,7 @@ Todo
 + make html-plane viable
     - it should be able to render HTML/CSS content in the midst of a WebGL scene
     - it should be interactable (select text, click)
++ need way to switch between worlds
 
 Ramblings
 --------
