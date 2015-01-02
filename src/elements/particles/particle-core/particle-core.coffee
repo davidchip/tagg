@@ -24,7 +24,7 @@ Polymer('particle-core', {
 
         @position_element()
         window.particles.push(@)
-        window.world.add(@shape)    
+        window.world.add(@shape)
 
     position_element: () ->
         """Unless manually hardcoded, stack element on top of the middle of 
@@ -69,7 +69,7 @@ Polymer('particle-core', {
 
         $(@).remove()
 
-    animate: () ->
+    update: () ->
         @_animate_shape()
         @animate_shape()
 

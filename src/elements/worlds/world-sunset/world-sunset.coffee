@@ -1,9 +1,21 @@
 
 Polymer('world-sunset', {
+
+    html: """
+    """
     
-    setup: () ->
+    create: () ->
+        particles = []
+
         sky = new THREE.Sky();
         window.world.add( sky.mesh );
+        particles.push(sky)
+
+        el = @.innerHTML
+        $(el).append($.parseHTML(@template))
+
+        moon = Firecracker.load3dModel('moon.stl')
+        moon.position(x, y, z)
 
         ## Add Sun Helper
         sunSphere = new THREE.Mesh( new THREE.SphereGeometry( 20000, 30, 30 ),
@@ -42,5 +54,7 @@ Polymer('world-sunset', {
         sunSphere.visible = effectController.sun;
 
         sky.uniforms.sunPosition.value.copy(sunSphere.position);
+
+        return particles
 
 })

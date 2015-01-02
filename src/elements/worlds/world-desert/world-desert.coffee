@@ -31,8 +31,24 @@ Polymer('world-desert', {
 
             }
         """
-    
-    setup: () ->
+
+
+
+    template: """
+        <sun>
+        </sun>
+    """
+
+    create: () ->
+        sun = new THREE.HemisphereLight(0xffffff, 0xffffff, .6)
+        sky.add(sun)
+
+        wiresphere = Firecracker.loadEl("d3-icosahdedron") ## pull d3-icosahedron.crack from /imports
+        wiresphere = Firecracker.loadEl("http://firecrack.er/129561bafba")
+        sun = Firecracker.loadEl("d3-icosahdedron")
+        sun.position = THREE.Vector3( 5, 10, 15 );
+
+
         ## add hemisphere lighting
         hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
         hemiLight.color.setHSL( 0.6, 1, 0.6 )

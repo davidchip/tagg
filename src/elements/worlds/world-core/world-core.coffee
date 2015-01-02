@@ -1,6 +1,8 @@
 
 Polymer('world-core', {
 
+    css_renderer: false
+
     ready: () ->
         window.particles = []
 
@@ -14,33 +16,34 @@ Polymer('world-core', {
         window.renderer.domElement.style.position = 'absolute'
         window.renderer.domElement.style.top = 0
         window.renderer.domElement.style.zIndex = 1
-
-        css_renderer = new THREE.CSS3DRenderer()
-        css_renderer.setSize(window.innerWidth, window.innerHeight)
-        document.body.appendChild(css_renderer.domElement)
-        window.rendererCSS = css_renderer
-        window.rendererCSS.domElement.style.position = 'absolute'
-        window.rendererCSS.domElement.style.top = 0
-
-        ## setup scene
         window.world = new THREE.Scene()
-        window.worldCSS = new THREE.Scene()
+
+        if @css_renderer is true
+            css_renderer = new THREE.CSS3DRenderer()
+            css_renderer.setSize(window.innerWidth, window.innerHeight)
+            document.body.appendChild(css_renderer.domElement)
+            window.rendererCSS = css_renderer
+            window.rendererCSS.domElement.style.position = 'absolute'
+            window.rendererCSS.domElement.style.top = 0
+            window.worldCSS = new THREE.Scene()
 
         @setup()
 
         ## render function
-        render = () ->
-            requestAnimationFrame(render)
+        animate = () ->
+            requestAnimationFrame(animate)
 
+            ## camera to update
             if window.viewer?
                 window.viewer.render_frame()
 
+            ## particles to update
             for particle in window.particles
-                particle.animate()
+                particle.update()
 
-        render()
+        animate()
 
-    setup: () ->
+    create: () ->
         return
         
 })
