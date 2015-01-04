@@ -1,7 +1,5 @@
 
-Firecracker.register_world('world-core', {
-
-    attributes: {}
+Firecracker.register_element('world-core', {
 
     css_renderer: false
 

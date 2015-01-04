@@ -1,5 +1,5 @@
 
-Polymer('viewer-core', {
+Firecracker.register_particle('observer-basic', {
 
     controls:
         37: 'right'
@@ -11,7 +11,7 @@ Polymer('viewer-core', {
     y: 6
     z: 12
         
-    set_shape: () ->
+    create: () ->
         window.viewer = @
 
         $(document).keydown (e) =>
@@ -23,8 +23,14 @@ Polymer('viewer-core', {
         
         @shape = @setup_camera()
 
+    setup_camera: () ->
+        @camera = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 0.1, 2000000 )
+
+        return @camera
+
     render_frame: () ->
-        console.log 'define a render_frame function'
+        window.renderer.render( window.world, @camera )
+        window.rendererCSS.render( window.worldCSS, @camera )
 
     animate_shape: () ->
         movement = window.movement

@@ -1,7 +1,7 @@
 
-Firecracker._register('particle-core', {
+Firecracker.register_element('particle-core', {
 
-    _attributes:
+    _properties:
         rpmx: 0
         rpmy: 0
         rpmz: 0
@@ -10,26 +10,31 @@ Firecracker._register('particle-core', {
         movey: 0
         movez: 0
 
-        x: 0
-        y: 0
-        z: 0
+        x_pos: 0
+        y_pos: 0
+        z_pos: 0
 
-        w: 5
-        h: 5
-        d: 5
+        width: 5
+        height: 5
+        depth: 5
 
-    attributes: {}
+    properties: {}
+    test: 'this'
 
-    _flags: {}
-    flags: {}
+    # _flags: {}
+    # flags: {}
 
     ready: () ->
-        alert 'this'
+        $.extend(@properties, @_properties)
+        # console.log @properties
+        # $.extend(@flags, @_flags)
+
         @create()
         if not @shape?
             return console.log 'make sure you define a proper set_shape function'
 
-        @position_element()
+        # @position_element()
+        @shape.position.set(@properties.x_pos, @properties.y_pos, @properties.z_pos)
         window.particles.push(@)
         window.world.add(@shape)
 
@@ -44,21 +49,23 @@ Firecracker._register('particle-core', {
             return
 
         $.when(parent.positioned).then(() =>
+            parent = @.parentElement
+            console.dir @.parentElement
             ## position element on top of its parent
-            parent_top = parent.y + parseInt(parent.h) / 2
+            parent_top = parent.properties.y_pos + parseInt(parent.properties.height) / 2
             if isNaN(parent_top) is false
-                @y = parent_top + @h / 2
+                @properties.y_pos = parent_top + @properties.height / 2
 
             ## position element in the center of its parent
-            if @x is 0 and parent.x?
-                @x = parent.x
+            if @properties.x_pos is 0 and parent.properties.x_pos?
+                @properties.x_pos = parent.properties.x_pos
 
             if parent.z?
-                @z = parent.z
+                @properties.z_pos = parent.properties.z_pos
 
             ## todo: position elements to the right of its siblings
 
-            @shape.position.set(@x, @y, @z)
+            @shape.position.set(@properties.x_pos, @properties.y_pos, @properties.z_pos)
             @positioned.resolve()
         )
 
