@@ -1,7 +1,7 @@
 
 Firecracker.register_element('particle-core', {
 
-    _properties:
+    properties:
         rpmx: 0
         rpmy: 0
         rpmz: 0
@@ -18,23 +18,18 @@ Firecracker.register_element('particle-core', {
         height: 5
         depth: 5
 
-    properties: {}
-    test: 'this'
-
-    # _flags: {}
-    # flags: {}
-
     ready: () ->
         $.extend(@properties, @_properties)
-        # console.log @properties
-        # $.extend(@flags, @_flags)
+        for key, value of @properties
+            if not @[key]?
+                @[key] = value
 
         @create()
         if not @shape?
             return console.log 'make sure you define a proper set_shape function'
 
-        # @position_element()
-        @shape.position.set(@properties.x_pos, @properties.y_pos, @properties.z_pos)
+        @position_element()
+        # @shape.position.set(@x_pos, @y_pos, @z_pos)
         window.particles.push(@)
         window.world.add(@shape)
 
@@ -49,23 +44,22 @@ Firecracker.register_element('particle-core', {
             return
 
         $.when(parent.positioned).then(() =>
-            parent = @.parentElement
-            console.dir @.parentElement
             ## position element on top of its parent
-            parent_top = parent.properties.y_pos + parseInt(parent.properties.height) / 2
+            parent_top = parent.y_pos + parseInt(parent.height) / 2
             if isNaN(parent_top) is false
-                @properties.y_pos = parent_top + @properties.height / 2
+                @y_pos = parent_top + @height / 2
 
             ## position element in the center of its parent
-            if @properties.x_pos is 0 and parent.properties.x_pos?
-                @properties.x_pos = parent.properties.x_pos
+            if @x_pos is 0 and parent.x_pos?
+                @x_pos = parent.x_pos
 
             if parent.z?
-                @properties.z_pos = parent.properties.z_pos
+                @z_pos = parent.z_pos
 
             ## todo: position elements to the right of its siblings
 
-            @shape.position.set(@properties.x_pos, @properties.y_pos, @properties.z_pos)
+            console.log @properties
+            @shape.position.set(@x_pos, @y_pos, @z_pos)
             @positioned.resolve()
         )
 

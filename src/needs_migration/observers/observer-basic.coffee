@@ -9,7 +9,7 @@ Firecracker.register_particle('observer-basic', {
 
     x: 0
     y: 6
-    z: 12
+    z: 50
         
     create: () ->
         window.viewer = @

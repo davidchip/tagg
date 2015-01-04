@@ -3,7 +3,7 @@
 #              ###    Firecracker    ###                 #
 #                                                        #
 #         A Virtual Reality library for the Web          #                                      
-#          Required libraries: threeJS, jQuery           #
+#      Required libraries: threeJS, jQuery, Polymer      #
 #                                                        #           
 ##########################################################
 
@@ -13,30 +13,29 @@ class Firecracker
 Firecracker = {}
 
 
-Firecracker.register_element = (tag, declaration) =>
+Firecracker.register_element = (tag, declaration) ->
     Polymer("#{tag}", declaration)
     el = document.createElement('div')
 
+    properties = if declaration._properties then declaration._properties else declaration.properties
     property_keys = []
-    for key, value of declaration.properties
+    for key, value of properties
         property_keys.push(key)
 
     properties = if property_keys.length > 0 then "attributes='#{property_keys.toString()}'" else ''
     _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
 
     el.innerHTML = """
-        <link rel="import" href="/bower_components/polymer/polymer.html">
-
-        <polymer-element name="#{tag}" #{_extends} #{properties}>
+        <polymer-element name='#{tag}' #{_extends} #{properties}>
             <template>
             </template>
         </polymer-element>
     """
 
-    # document.body.appendChild(el)
+    document.body.appendChild(el)
 
 
-Firecracker.register_particle = (tag, declaration) =>
+Firecracker.register_particle = (tag, declaration) ->
     if not declaration.extends?
         declaration.extends = 'particle-core'
 

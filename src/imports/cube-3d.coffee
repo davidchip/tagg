@@ -1,22 +1,21 @@
 Firecracker.register_particle('cube-3d', {
 
-    properties:
+    _properties:
         color: 'black'
         wireframe: false
 
-    # flags:
-        # wireframe: true
-
     create: () ->
-        geometry = new THREE.BoxGeometry(@properties.width, @properties.height, @properties.depth)
-        material = new THREE.MeshBasicMaterial({
-            color: @properties.color,
-            wireframe: @attributes.wireframe })
+        geometry = new THREE.BoxGeometry(@width, @height, @depth)
+        material = new THREE.MeshBasicMaterial({color:@color, wireframe:@wireframe})
         instance = new THREE.Mesh( geometry, material )
         
         @shape = instance
 
 })
+
+
+
+
 
 
 

@@ -6,11 +6,6 @@ Firecracker.register_particle('observer-eyes', {
         38: 'up'
         39: 'left'
         40: 'down'
-
-    properties:
-        x_pos: 0
-        y_pos: 6
-        z_pos: 12
         
     create: () ->
         window.viewer = @
