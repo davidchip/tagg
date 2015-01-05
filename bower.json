@@ -3,6 +3,7 @@
   "dependencies": {
     "jquery": "~2.1.1",
     "polymer": "Polymer/polymer",
-    "three.js": "*"
+    "three.js": "*",
+    "underscore": "~1.7.0"
   }
 }

@@ -17,10 +17,10 @@ Firecracker.register_element = (tag, declaration) ->
     Polymer("#{tag}", declaration)
     el = document.createElement('div')
 
-    properties = if declaration._properties then declaration._properties else declaration.properties
     property_keys = []
-    for key, value of properties
-        property_keys.push(key)
+    for key, value of _.omit(declaration, ['extends'])
+        if not $.isFunction(value)
+            property_keys.push(key)
 
     properties = if property_keys.length > 0 then "attributes='#{property_keys.toString()}'" else ''
     _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''

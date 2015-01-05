@@ -37,11 +37,9 @@ Firecracker.register_element('world-core', {
             if window.viewer?
                 window.viewer.render_frame()
 
-            # # particles to update
-            # for particle in window.particles
-            #     particle.update()
-
-            # console.log window.particles
+            # particles to update
+            for particle in window.particles
+                particle.update()
 
         animate()
 

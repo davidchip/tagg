@@ -1,41 +1,36 @@
 
 Firecracker.register_element('particle-core', {
 
-    properties:
-        rpmx: 0
-        rpmy: 0
-        rpmz: 0
-        
-        movex: 0
-        movey: 0
-        movez: 0
+    rpmx: 0
+    rpmy: 0
+    rpmz: 0
 
-        x_pos: 0
-        y_pos: 0
-        z_pos: 0
+    x_pos: 0
+    y_pos: 0
+    z_pos: 0
 
-        width: 5
-        height: 5
-        depth: 5
+    width: 5
+    height: 5
+    depth: 5
 
     ready: () ->
-        $.extend(@properties, @_properties)
-        for key, value of @properties
-            if not @[key]?
-                @[key] = value
+        @shape = @create()
+        @_stack_element()
 
-        @create()
-        if not @shape?
-            return console.log 'make sure you define a proper set_shape function'
-
-        @position_element()
-        # @shape.position.set(@x_pos, @y_pos, @z_pos)
         window.particles.push(@)
         window.world.add(@shape)
 
-    position_element: () ->
-        """Unless manually hardcoded, stack element on top of the middle of 
-           the parent.
+    create: () ->
+        """Should be overwritten.
+
+           Returns some parent of Object3d to be added to the world.
+        """
+        return new THREE.Object3D()
+
+    _stack_element: () ->
+        """Stack particles on top of each other.
+
+           @todo: position elements according to siblings
         """
         @positioned = new $.Deferred()
 
@@ -53,21 +48,16 @@ Firecracker.register_element('particle-core', {
             if @x_pos is 0 and parent.x_pos?
                 @x_pos = parent.x_pos
 
+            ## position element according to its parent's depth
             if parent.z?
                 @z_pos = parent.z_pos
 
-            ## todo: position elements to the right of its siblings
-
-            console.log @properties
             @shape.position.set(@x_pos, @y_pos, @z_pos)
             @positioned.resolve()
         )
 
-    set_shape: () ->
-        @shape = new THREE.Object3D()
-
     remove: () ->
-        """Remove the object from the scene/DOM completely
+        """Remove the object from the scene and DOM completely
         """
         window.world.remove(@shape)
 
@@ -77,9 +67,18 @@ Firecracker.register_element('particle-core', {
 
         $(@).remove()
 
+    detached: () ->
+        """Fired when DOM element is removed
+        """
+        @remove()
+
     update: () ->
         @_animate_shape()
         @animate_shape()
+
+    movex: 0
+    movey: 0
+    movez: 0
 
     _animate_shape: () ->
         """API that all objects should get access to

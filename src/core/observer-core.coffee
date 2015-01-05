@@ -1,5 +1,5 @@
 
-Firecracker.register_particle('observer-eyes', {
+Firecracker.register_particle('observer-core', {
 
     controls:
         37: 'right'
