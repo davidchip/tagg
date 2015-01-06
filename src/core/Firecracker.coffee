@@ -7,6 +7,7 @@
 #                                                        #           
 ##########################################################
 
+
 class Firecracker
 
 
@@ -14,25 +15,52 @@ Firecracker = {}
 
 
 Firecracker.register_element = (tag, declaration) ->
-    Polymer("#{tag}", declaration)
-    el = document.createElement('div')
+    ## extend the element if applicable
+    _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
 
+
+    ## define attributes/properties of element
     property_keys = []
-    for key, value of _.omit(declaration, ['extends'])
+    for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts'])
         if not $.isFunction(value)
             property_keys.push(key)
 
-    properties = if property_keys.length > 0 then "attributes='#{property_keys.toString()}'" else ''
-    _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
+    properties = ''
+    if property_keys.length > 0 
+        properties = "attributes='#{property_keys.toString()}'"
 
-    el.innerHTML = """
-        <polymer-element name='#{tag}' #{_extends} #{properties}>
-            <template>
-            </template>
-        </polymer-element>
-    """
 
-    document.body.appendChild(el)
+    ## fetch scripts associated with object
+    ## @todo: do this more intelligently
+    scripts_fetched = new $.Deferred()
+    scripts = declaration.scripts
+    
+    if scripts?
+        num_scripts_fetched = 0
+        for script in scripts
+            $.when($.getScript(script)).then(() =>
+                num_scripts_fetched++
+                if num_scripts_fetched >= scripts.length
+                    scripts_fetched.resolve()
+            )
+    else
+        scripts_fetched.resolve()
+
+
+    ## create the actual element
+    $.when(scripts_fetched).then(() =>
+        Polymer("#{tag}", declaration)
+        el = document.createElement('div')
+
+        el.innerHTML = """
+            <polymer-element name='#{tag}' #{_extends} #{properties}>
+                <template>
+                </template>
+            </polymer-element>
+        """
+
+        document.body.appendChild(el)
+    )
 
 
 Firecracker.register_particle = (tag, declaration) ->

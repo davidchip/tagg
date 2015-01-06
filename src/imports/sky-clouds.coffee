@@ -1,53 +1,51 @@
-"""
-Adapted from Mr. Doobs amazing demo: 
-http://mrdoob.com/lab/javascript/webgl/clouds/
-"""
+Firecracker.register_particle('sky-clouds', {
 
+    vs: () ->
+        return """
+            varying vec2 vUv;
 
-Polymer('sky-clouds', {
+            void main() {
 
-    shaders:
-        vs: """
-                varying vec2 vUv;
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-                void main() {
+            }
+        """
 
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    fs: () ->
+        return """
+            uniform sampler2D map;
 
-                }
-            """
+            uniform vec3 fogColor;
+            uniform float fogNear;
+            uniform float fogFar;
 
-        fs: """
-                uniform sampler2D map;
+            varying vec2 vUv;
 
-                uniform vec3 fogColor;
-                uniform float fogNear;
-                uniform float fogFar;
+            void main() {
 
-                varying vec2 vUv;
+                float depth = gl_FragCoord.z / gl_FragCoord.w;
+                float fogFactor = smoothstep( fogNear, fogFar, depth );
 
-                void main() {
+                gl_FragColor = texture2D( map, vUv );
+                gl_FragColor.w *= pow( gl_FragCoord.z, 20.0 );
+                gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
 
-                    float depth = gl_FragCoord.z / gl_FragCoord.w;
-                    float fogFactor = smoothstep( fogNear, fogFar, depth );
+            }
+        """
 
-                    gl_FragColor = texture2D( map, vUv );
-                    gl_FragColor.w *= pow( gl_FragCoord.z, 20.0 );
-                    gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
-
-                }
-            """
-    
-    set_shape: () ->
+    create: () ->
         geometry = new THREE.Geometry();
 
-        texture = THREE.ImageUtils.loadTexture('elements/particles/sky-clouds/cloud10.png', null);
+        texture = THREE.ImageUtils.loadTexture('/assets/cloud.png', null);
 
         texture.magFilter = THREE.LinearMipMapLinearFilter;
         texture.minFilter = THREE.LinearMipMapLinearFilter;
 
         fog = new THREE.Fog( 0x4584b4, -100, 3000 );
+
+        console.log @vs()
+        console.log @fs()
 
         material = new THREE.ShaderMaterial( {
 
@@ -59,13 +57,13 @@ Polymer('sky-clouds', {
                 "fogFar" : { type: "f", value: fog.far },
 
             },
-            vertexShader: @vs
-            fragmentShader: @fs
+            vertexShader: @vs()
+            fragmentShader: @fs()
             depthWrite: false,
             depthTest: false,
             transparent: true
 
-        } );
+        })
 
         plane = new THREE.Mesh( new THREE.PlaneGeometry( 64, 64 ) );
 
