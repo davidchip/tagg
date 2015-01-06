@@ -59,9 +59,7 @@ Firecracker.ObjectUtils = {
                     map: THREE.ImageUtils.loadTexture(materials)
                 })
             else
-                mesh.material = new THREE.MeshLambertMaterial({
-                    map: materials
-                })
+                mesh.material = materials
               
             scene.add(mesh)
         )
@@ -181,7 +179,7 @@ Firecracker.ObserverUtils = {
         
         StereoEffect = ( renderer ) =>
 
-            this.separation = 2
+            this.separation = 0.10
 
             _width = null
             _height = null
