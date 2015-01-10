@@ -1,3 +1,7 @@
+## Used to ensure particles aren't created until
+## they world is created. Should be cleaned up.
+window.world_created = $.Deferred()
+
 
 Firecracker.register_element('world-core', {
 
@@ -28,6 +32,7 @@ Firecracker.register_element('world-core', {
             window.worldCSS = new THREE.Scene()
 
         @create()
+        window.world_created.resolve()
 
         ## render function
         animate = () ->

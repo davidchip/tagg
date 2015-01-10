@@ -1,10 +1,6 @@
 
 Firecracker.register_element('particle-core', {
 
-    rpmx: 0
-    rpmy: 0
-    rpmz: 0
-
     x_pos: 0
     y_pos: 0
     z_pos: 0
@@ -12,13 +8,23 @@ Firecracker.register_element('particle-core', {
     width: 5
     height: 5
     depth: 5
+    
+    movex: 0
+    movey: 0
+    movez: 0
+
+    rpmx: 0
+    rpmy: 0
+    rpmz: 0
 
     ready: () ->
-        @shape = @create()
-        @_stack_element()
+        $.when(window.world_created).then(() =>
+            @shape = @create()
+            @_stack_element()
 
-        window.particles.push(@)
-        window.world.add(@shape)
+            window.particles.push(@)
+            window.world.add(@shape)
+        )
 
     create: () ->
         """Should be overwritten.
@@ -75,10 +81,6 @@ Firecracker.register_element('particle-core', {
     update: () ->
         @_animate_shape()
         @animate_shape()
-
-    movex: 0
-    movey: 0
-    movez: 0
 
     _animate_shape: () ->
         """API that all objects should get access to
