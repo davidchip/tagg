@@ -82,27 +82,13 @@ Firecracker.ObjectUtils = {
 
             if materials.length? and (typeof materials isnt "string")
                 mesh.material = new THREE.MeshFaceMaterial(materials)
+                
             else if (typeof materials is "string")
                 mesh.material = new THREE.MeshLambertMaterial({
                     map: THREE.ImageUtils.loadTexture(materials)
                 })
+
             else if materials is 0
-                
-                # $.getJSON('Maps/sirus_city.js', (json_object) =>
-                #     _materials = json_object.materials
-                #     materials = []
-                #     for _material in _materials
-                #         materials.push(new THREE.MeshLambertMaterial({
-                #             map: THREE.ImageUtils.loadTexture("Maps/#{_material.mapDiffuse}")
-                #             })
-                #         )
-                #     setTimeout( ( () =>
-                #         console.log materials
-                #         mesh.material = new THREE.MeshFaceMaterial(materials)
-                #         ),
-                #     10000)
-                # )
-    
                 mesh.material = new THREE.MeshFaceMaterial(_materials)
                 console.log mesh.material
 
