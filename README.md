@@ -45,6 +45,8 @@ Mobile: from your phone, connect to port 9000 of your computer's IP address (192
 Todo
 --------
 - Build out support for returning multiple meshes from a particle's create func
-  - Will need to account for DOM removal/appending
-- Have world-core extend particle-core.
-  - Should allow removal of window.world_created
+    - Will need to account for DOM removal/appending
+- Have world-core extend particle-core
+    - Should allow removal of window.world_created
+    
+    

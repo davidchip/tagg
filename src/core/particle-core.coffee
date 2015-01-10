@@ -79,12 +79,12 @@ Firecracker.register_element('particle-core', {
         @remove()
 
     update: () ->
-        @_animate_shape()
-        @animate_shape()
+        return
 
-    _animate_shape: () ->
-        """API that all objects should get access to
-        """
+    _update: () ->
+        @update()
+
+        ## attributes all objects get
         @shape.position.x += @movex
         @shape.position.y += @movey
         @shape.position.z += @movez
@@ -93,6 +93,4 @@ Firecracker.register_element('particle-core', {
         @shape.rotation.y += (Math.PI / 60) * (@rpmy / 60)
         @shape.rotation.z += (Math.PI / 60) * (@rpmz / 60)
 
-    animate_shape: () ->
-        return
 })
