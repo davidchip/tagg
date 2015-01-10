@@ -45,10 +45,10 @@ Firecracker.register_particle = (tag, declaration) ->
 ## World Objects/Particles ##
 Firecracker.ObjectUtils = {
 
-    load3DModel: (model_json, materials, scene, mesh = new THREE.Mesh()) =>
+    load3DModel: (model_json, materials, mesh = new THREE.Mesh()) =>
         loader = new THREE.JSONLoader() 
 
-        loader.load( model_json, (geometry) =>
+        loader.load( model_json, (geometry, _materials) =>
             geometry.computeVertexNormals() # Smoothing
             mesh.geometry = geometry
 
@@ -58,10 +58,28 @@ Firecracker.ObjectUtils = {
                 mesh.material = new THREE.MeshLambertMaterial({
                     map: THREE.ImageUtils.loadTexture(materials)
                 })
+            else if materials is 0
+                
+                # $.getJSON('Maps/sirus_city.js', (json_object) =>
+                #     _materials = json_object.materials
+                #     materials = []
+                #     for _material in _materials
+                #         materials.push(new THREE.MeshLambertMaterial({
+                #             map: THREE.ImageUtils.loadTexture("Maps/#{_material.mapDiffuse}")
+                #             })
+                #         )
+                #     setTimeout( ( () =>
+                #         console.log materials
+                #         mesh.material = new THREE.MeshFaceMaterial(materials)
+                #         ),
+                #     10000)
+                # )
+    
+                mesh.material = new THREE.MeshFaceMaterial(_materials)
+                console.log mesh.material
+
             else
                 mesh.material = materials
-              
-            scene.add(mesh)
         )
         return mesh
 
@@ -75,19 +93,21 @@ Firecracker.ObjectUtils = {
         return material_array
 
 
-    skyDome: ( scene ) =>
+    skyDome: ( texture = false ) =>
         geometry = new THREE.SphereGeometry( 5000, 60, 40 )
         geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) )
 
-        material = new THREE.MeshBasicMaterial( {
-            # map: THREE.ImageUtils.loadTexture( 'src/environments/panorama.jpg' )
-            color: 0x001100
-            wireframe: true
-        } )
+        if texture isnt false
+            material = new THREE.MeshBasicMaterial( {
+                map: THREE.ImageUtils.loadTexture( texture )
+            } )
+        else
+            material = new THREE.MeshBasicMaterial( {
+                color: 0x001100
+                wireframe: true
+            } )
 
         mesh = new THREE.Mesh( geometry, material )
-          
-        scene.add( mesh )
 
         return mesh
 
