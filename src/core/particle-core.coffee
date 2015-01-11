@@ -13,6 +13,10 @@ Firecracker.register_element('particle-core', {
     movey: 0
     movez: 0
 
+    turnx: 0
+    turny: 0
+    turnz: 0
+
     rpmx: 0
     rpmy: 0
     rpmz: 0
@@ -59,6 +63,9 @@ Firecracker.register_element('particle-core', {
                 @z_pos = parent.z_pos
 
             @shape.position.set(@x_pos, @y_pos, @z_pos)
+            @shape.rotation.set(@turnx * (Math.PI * 2), 
+                                @turny * (Math.PI * 2), 
+                                @turnz * (Math.PI * 2))
             @positioned.resolve()
         )
 

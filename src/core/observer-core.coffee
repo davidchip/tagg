@@ -3,7 +3,9 @@ Firecracker.register_particle('observer-core', {
 
     stereo: false
 
-    z_pos: 40
+    turny: .5
+
+    z_pos: -40
 
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
