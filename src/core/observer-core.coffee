@@ -5,7 +5,9 @@ Firecracker.register_particle('observer-core', {
 
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
-        @controls = Firecracker.Controls.MobileHeadTracking( camera )
+        
+        if Firecracker.isMobile()
+            @controls = Firecracker.Controls.MobileHeadTracking( camera )
 
         @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
         @stereo_effect.setSize( window.innerWidth, window.innerHeight )
@@ -20,7 +22,8 @@ Firecracker.register_particle('observer-core', {
         return camera
 
     update: () ->
-        @controls.update()
+        if Firecracker.isMobile()
+            @controls.update()
 
         if @stereo is true
             @stereo_effect.render( window.world, @shape )
