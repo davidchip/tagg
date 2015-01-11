@@ -70,6 +70,16 @@ Firecracker.register_particle = (tag, declaration) ->
     Firecracker.register_element(tag, declaration)
 
 
+Firecracker.isMobile = () =>
+    Android = () => return navigator.userAgent.match(/Android/i) 
+    BlackBerry = () => return navigator.userAgent.match(/BlackBerry/i)
+    iOS = () => return navigator.userAgent.match(/iPhone|iPad|iPod/i)
+    Opera = () => return navigator.userAgent.match(/Opera Mini/i) 
+    Windows = () => return navigator.userAgent.match(/IEMobile/i) 
+    
+    return (Android() or BlackBerry() or iOS() or Opera() or Windows())
+
+
 ## World Objects/Particles ##
 Firecracker.ObjectUtils = {
 
