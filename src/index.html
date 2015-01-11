@@ -5,8 +5,9 @@
 <head>
   <link href="/libs/reset.css" rel="stylesheet" type="text/css">
 
-  <link rel="import" href="/bower_components/polymer/polymer.html">
+  
   <script src="/bower_components/webcomponentsjs/webcomponents.js" type="text/javascript"></script>
+  <link rel="import" href="/bower_components/polymer/polymer.html">
 
   <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
   <script src="/bower_components/three.js/three.min.js" type="text/javascript"></script>
@@ -18,24 +19,21 @@
 
 <body>
   <script src="/core/world-core.js"></script>
-  <!-- <script src="imports/world-sunset.js"></script> -->
-  <script src="imports/world-sea.js"></script> 
   <script src="/core/particle-core.js"></script> 
   <script src="/core/observer-core.js"></script>
-  <script src="/imports/cube-3d.js"></script> 
-  <script src="/imports/sword-3d.js"></script>
+  <script src="/core/model-3d.js"></script>
+  <script src="/imports/cube-3d.js"></script>
 
-
-  <world-sea>
-    <observer-core stereo>
+  <world-core>
+    <observer-core stereo z_pos="0">
     </observer-core>
 
-<!--     <cube-3d wireframe>
-    </cube-3d> -->
+    <model-3d src="/assets/humvee/humvee.js">
+    </model-3d>
 
-    <sword-3d y_pos="-12" z_pos="-20" rpmx="60" rpmz="60">
-    </sword-3d>
-  </world-sea>
+    <!-- <cube-3d> -->
+    <!-- </cube-3d> -->
+  </world-core>
 </body>
 
 </html>

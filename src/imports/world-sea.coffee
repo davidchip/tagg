@@ -4,11 +4,6 @@ Firecracker.register_particle('world-sea', {
 
     create: () ->
         skydome = Firecracker.ObjectUtils.skyDome("/assets/sea_sky.jpg")
-        window.world.add(skydome)
-
-
-
-
-        # skydome.rotation.y += 3*Math.PI / 2      
+        window.world.add(skydome)  
 
 })

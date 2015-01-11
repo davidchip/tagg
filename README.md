@@ -48,5 +48,5 @@ Todo
     - Will need to account for DOM removal/appending
 - Have world-core extend particle-core
     - Should allow removal of window.world_created
-    
+- Add control layer for head tracking from multiple sources that affects rotation of cameras.
     
