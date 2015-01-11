@@ -3,6 +3,8 @@ Firecracker.register_particle('observer-core', {
 
     stereo: false
 
+    y_pos: 50
+
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
         @controls = Firecracker.Controls.MobileHeadTracking( camera )
