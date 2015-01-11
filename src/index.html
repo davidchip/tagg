@@ -5,7 +5,6 @@
 <head>
   <link href="/libs/reset.css" rel="stylesheet" type="text/css">
 
-  
   <script src="/bower_components/webcomponentsjs/webcomponents.js" type="text/javascript"></script>
   <link rel="import" href="/bower_components/polymer/polymer.html">
 
@@ -21,18 +20,15 @@
   <script src="/core/world-core.js"></script>
   <script src="/core/particle-core.js"></script> 
   <script src="/core/observer-core.js"></script>
-  <script src="/core/model-3d.js"></script>
-  <script src="/imports/cube-3d.js"></script>
+  <script src="/imports/skydome-3d.js"></script>
+  <script src="/imports/sword-3d.js"></script>
 
   <world-core>
-    <observer-core stereo z_pos="0">
+    <observer-core stereo>
     </observer-core>
 
-    <model-3d src="/assets/humvee/humvee.js">
-    </model-3d>
-
-    <!-- <cube-3d> -->
-    <!-- </cube-3d> -->
+    <sword-3d rpmx="-60" rpmz="60" y_pos="-50">
+    </sword-3d>
   </world-core>
 </body>
 
