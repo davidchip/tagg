@@ -53,7 +53,8 @@ DC
 - Particle: add 2d browser plane (window)
 - Add basic sound element
     - Allow sound to modulate based on camera distance from it
-    - To enable local sound, just have sound element's position follow user
+    - To enable local sound, just have sound 
+    element's position follow user
 
 AC:
 --------
@@ -97,6 +98,7 @@ Other repos
 
 Bullet points
 --------
+- Easy to build. Easy to share. Easy to sell.
 - General users: Try it on Safari if you're on iOS, Chrome if you're on Android
 - Devs: The environment you're manipulating is mirrored in the DOM
   - In short, you're able to manipulate 3d space using jQuery
@@ -106,6 +108,8 @@ Bullet points
 - Make environments from other environments:
   - Share environments and the particles you used, and access other makers particles.
 - Experience VR for <$20
+- Import 3d models
+- The next generation of HTML
 
 
 Future
@@ -122,3 +126,4 @@ Future
 - Fuel creation
 - Point cloud rendering
 - Something with robots way afer this
+- CSS type language: be descriptive of an objects geometries, textures, rather than asset based. Difference between producting photoshop buttons and CSS buttons.
