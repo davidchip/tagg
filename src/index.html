@@ -18,24 +18,25 @@
 
 <body>
   <script src="/core/world-core.js"></script>
-  <!-- <script src="imports/world-sunset.js"></script> -->
-  <script src="imports/world-sea.js"></script> 
   <script src="/core/particle-core.js"></script> 
   <script src="/core/observer-core.js"></script>
-  <script src="/imports/cube-3d.js"></script> 
+  
+  <script src="/imports/skydome-3d.js"></script> 
   <script src="/imports/sword-3d.js"></script>
 
 
-  <world-sea>
+  <world-core>
+
     <observer-core stereo>
     </observer-core>
 
-<!--     <cube-3d wireframe>
-    </cube-3d> -->
+    <skydome-3d src="/assets/sea_sky_reduced.jpg">
+    </skydome-3d>
 
-    <sword-3d y_pos="-12" z_pos="-20" rpmx="60" rpmz="60">
+    <sword-3d y_pos="-12" z_pos="-80" rpmx="60" rpmz="60">
     </sword-3d>
-  </world-sea>
+
+  </world-core>
 </body>
 
 </html>
