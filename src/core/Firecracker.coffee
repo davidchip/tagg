@@ -52,6 +52,7 @@ Firecracker.register_element = (tag, declaration) ->
         Polymer("#{tag}", declaration)
         el = document.createElement('div')
 
+
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>
                 <template>
@@ -100,7 +101,6 @@ Firecracker.ObjectUtils = {
 
             else if materials is 0
                 mesh.material = new THREE.MeshFaceMaterial(_materials)
-                console.log mesh.material
 
             else
                 mesh.material = materials
@@ -542,5 +542,17 @@ Firecracker.Controls = {
         return controls
 
 }
+
+
+Firecracker.Utils = {
+
+    isArray: (array) ->
+        if array instanceof Array
+            return true
+        else
+            return false
+
+}
+
 
 @Firecracker = Firecracker

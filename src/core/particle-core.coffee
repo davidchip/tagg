@@ -1,9 +1,9 @@
 
 Firecracker.register_element('particle-core', {
 
-    x_pos: 0
-    y_pos: 0
-    z_pos: 0
+    x: 0
+    y: 0
+    z: 0
 
     width: 5
     height: 5
@@ -23,56 +23,68 @@ Firecracker.register_element('particle-core', {
 
     ready: () ->
         $.when(window.world_created).then(() =>
-            @shape = @create()
-            @_stack_element()
+            @objects = @create()
+            if not Firecracker.Utils.isArray(@objects)
+                @objects = [@objects]
+            
+            for object in @objects
+                @_place(object)
 
             window.particles.push(@)
-            window.world.add(@shape)
         )
 
     create: () ->
-        """Should be overwritten.
+        """create can either return a single THREE.Object3d object, or an array
+           of them. Either way, it will be pushed into an array of THREE.Object3d's.
 
-           Returns some parent of Object3d to be added to the world.
+           Each object in @objects can have many of the core-particle attributes set for
+           for it (x, y, z, turnx, turny, turnz).
         """
         return new THREE.Object3D()
 
-    _stack_element: () ->
-        """Stack particles on top of each other.
-
-           @todo: position elements according to siblings
-        """
-        @positioned = new $.Deferred()
+    _place: (object) ->
+        if not object?
+            console.log "no object returned from create function in #{@.nodeName.toLowerCase()}"
+            return
 
         parent = @.parentElement
         if not parent?
             return
 
+        ## if object doesn't explicity have an attr set, default to DOM attr
+        for attr in ['x', 'y', 'z', 'turnx', 'turny', 'turnz']
+            if not object[attr]?
+                object[attr] = @[attr]
+
+        @positioned = new $.Deferred()
         $.when(parent.positioned).then(() =>
             ## position element on top of its parent
-            parent_top = parent.y_pos + parseInt(parent.height) / 2
+            parent_top = parent.y + parseInt(parent.height) / 2
             if isNaN(parent_top) is false
-                @y_pos = parent_top + @height / 2
+                object.y = parent_top + @height / 2
 
             ## position element in the center of its parent
-            if @x_pos is 0 and parent.x_pos?
-                @x_pos = parent.x_pos
+            if @x is 0 and parent.x?
+                object.x = parent.x_pos
 
             ## position element according to its parent's depth
             if parent.z?
-                @z_pos = parent.z_pos
+                object.z = parent.z
 
-            @shape.position.set(@x_pos, @y_pos, @z_pos)
-            @shape.rotation.set(@turnx * (Math.PI * 2), 
-                                @turny * (Math.PI * 2), 
-                                @turnz * (Math.PI * 2))
+            object.position.set(object.x, object.y, object.z)
+            object.rotation.set(object.turnx * (Math.PI * 2), 
+                                object.turny * (Math.PI * 2), 
+                                object.turnz * (Math.PI * 2))
             @positioned.resolve()
+
+            window.world.add(object)
         )
 
     remove: () ->
         """Remove the object from the scene and DOM completely
         """
-        window.world.remove(@shape)
+        for object in @objects
+            window.world.remove(object)
 
         particle_index = window.particles.indexOf(@)
         if particle_index > -1
@@ -80,24 +92,27 @@ Firecracker.register_element('particle-core', {
 
         $(@).remove()
 
-    detached: () ->
-        """Fired when DOM element is removed
-        """
-        @remove()
-
     update: () ->
         return
 
-    _update: () ->
+    _update: (object) ->
+        """Updatable attributes. Can be accessed through dom, and updated
+           whenever.
+        """
         @update()
 
         ## attributes all objects get
-        @shape.position.x += @movex
-        @shape.position.y += @movey
-        @shape.position.z += @movez
+        object.position.x += @movex
+        object.position.y += @movey
+        object.position.z += @movez
 
-        @shape.rotation.x += (Math.PI / 60) * (@rpmx / 60)
-        @shape.rotation.y += (Math.PI / 60) * (@rpmy / 60)
-        @shape.rotation.z += (Math.PI / 60) * (@rpmz / 60)
+        object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
+        object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
+        object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
+
+    detached: () ->
+        """Polymer func fired when DOM element is removed
+        """
+        @remove()
 
 })

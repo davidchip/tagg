@@ -47,9 +47,9 @@ Beta: Concrete To-Dos
 
 DC
 --------
-- Build out support for returning array of meshes from a particle's create func
+- <s>Build out support for returning array of meshes from a particle's create func</s>
 - Have world-core extend particle-core (define grouping paradigm)
-- All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)
+- <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
 - Particle: add 2d browser plane (window)
 - Add basic sound element
     - Allow sound to modulate based on camera distance from it

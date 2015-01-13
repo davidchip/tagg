@@ -7,8 +7,13 @@ Firecracker.register_particle('model-3d', {
             console.log "define a src attribute pointing to your JSON obj file"
             return
 
-        obj = Firecracker.ObjectUtils.load3DModel(@src, new THREE.MeshNormalMaterial())
+        objs = []
+        num = 10
+        for int in [1..num]
+            obj = Firecracker.ObjectUtils.load3DModel(@src, new THREE.MeshNormalMaterial())
+            obj.turnz = int * (1 / num)
+            objs.push(obj)
 
-        return obj
+        return objs
 
 })

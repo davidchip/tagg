@@ -5,7 +5,7 @@ Firecracker.register_particle('observer-core', {
 
     turny: .5
 
-    z_pos: -40
+    z: -40
 
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
@@ -17,8 +17,8 @@ Firecracker.register_particle('observer-core', {
         @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
         onWindowResize = () =>
-            @shape.aspect = window.innerWidth / window.innerHeight
-            @shape.updateProjectionMatrix()
+            @objects[0].aspect = window.innerWidth / window.innerHeight
+            @objects[0].updateProjectionMatrix()
             @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
         window.addEventListener( 'resize', onWindowResize, false )
@@ -30,8 +30,8 @@ Firecracker.register_particle('observer-core', {
             @controls.update()
 
         if @stereo is true
-            @stereo_effect.render( window.world, @shape )
+            @stereo_effect.render( window.world, @objects[0] )
         else
-            window.renderer.render( window.world, @shape )
+            window.renderer.render( window.world, @objects[0] )
 
 })
