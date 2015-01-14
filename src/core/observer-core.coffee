@@ -34,4 +34,6 @@ Firecracker.register_particle('observer-core', {
         else
             window.renderer.render( window.world, @objects[0] )
 
+        window.rendererCSS.render( window.worldCSS, @objects[0] )
+
 })
