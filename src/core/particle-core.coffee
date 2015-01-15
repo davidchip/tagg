@@ -78,7 +78,7 @@ Firecracker.register_element('particle-core', {
             @positioned.resolve()
 
             if object instanceof THREE.CSS3DObject
-                window.worldCSS.add(object)
+                return
             else
                 window.world.add(object)
         )

@@ -22,15 +22,17 @@ Firecracker.register_element('world-core', {
         window.renderer.domElement.style.zIndex = 1
         window.world = new THREE.Scene()
 
-        # if @css_renderer is true
-        css_renderer = new THREE.CSS3DRenderer()
-        css_renderer.setSize(window.innerWidth, window.innerHeight)
-        document.body.appendChild(css_renderer.domElement)
-        window.rendererCSS = css_renderer
-        window.rendererCSS.domElement.style.position = 'absolute'
-        window.rendererCSS.domElement.style.top = 0
-        window.renderer.domElement.style.zIndex = 2
-        window.worldCSS = new THREE.Scene()
+        cssRendererL = new THREE.CSS3DRenderer()
+        document.body.appendChild(cssRendererL.domElement)
+        $(cssRendererL.domElement).addClass('left')
+        window.rendererCSSL = cssRendererL
+        window.worldCSSL = new THREE.Scene()
+
+        cssRendererR = new THREE.CSS3DRenderer()
+        document.body.appendChild(cssRendererR.domElement)
+        $(cssRendererR.domElement).addClass('right')
+        window.rendererCSSR = cssRendererR
+        window.worldCSSR = new THREE.Scene()
 
         @create()
         window.world_created.resolve()
