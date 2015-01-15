@@ -464,48 +464,9 @@ Firecracker.Controls = {
     #                                                         #
     ###########################################################
 
-    ##  Requires PointerLockControls.js to be included in project  ##
-    standardControls: (camera, scene) =>
-        controls = new THREE.PointerLockControls( camera )
-        controls.enabled = true
-        scene.add( controls.getObject() )
+    SimpleKeyboardControls: ( camera, y_height=null ) =>
 
-        havePointerLock = 'pointerLockElement' in document or 'mozPointerLockElement' in document or 'webkitPointerLockElement' in document
-        if ( havePointerLock ) 
-            element = document.body
-
-            pointerlockchange = ( event ) =>
-                if (document.pointerLockElement is element or document.mozPointerLockElement is element or document.webkitPointerLockElement is element ) 
-                    controls.enabled = true
-                else 
-                    controls.enabled = false
-
-            requestPointerLock = () =>
-                element.requestPointerLock = element.requestPointerLock or element.mozRequestPointerLock or element.webkitRequestPointerLock
-                element.requestPointerLock()
-            
-            pointerlockerror = ( event ) =>
-                alert("Pointer Lock Error")
-
-            listenForPointerLock = () =>
-                    
-                document.addEventListener( 'pointerlockchange', pointerlockchange, false )
-                document.addEventListener( 'mozpointerlockchange', pointerlockchange, false )
-                document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false )
-
-                document.addEventListener( 'pointerlockerror', pointerlockerror, false )
-                document.addEventListener( 'mozpointerlockerror', pointerlockerror, false )
-                document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false )
-
-                document.addEventListener( 'click', requestPointerLock, false )
-
-            listenForPointerLock()
-        else 
-            alert("Pointer Lock Error")
-                
-        return controls
-
-    SimpleKeyboardControls: ( camera ) =>
+        camera.rotation.order = "YXZ"
 
         controls = {
             
@@ -538,14 +499,14 @@ Firecracker.Controls = {
                     @turn_right = false
 
             MouseMove: ( event ) =>
-                PI_2 = (Math.PI)*(Math.PI)
+                PI_2 = Math.PI / 2
 
                 @movementX = event.movementX or event.mozMovementX or event.webkitMovementX or 0
                 @movementY = event.movementY or event.mozMovementY or event.webkitMovementY or 0
 
                 camera.rotation.y -= @movementX * 0.002 
-                # camera.rotation.x += @movementY * 0.002 
-                # camera.rotation.x = Math.max( - PI_2, Math.min( PI_2, camera.rotation.x ) )
+                camera.rotation.x -= @movementY * 0.002 
+                camera.rotation.x = Math.max( - PI_2, Math.min( PI_2, camera.rotation.x ) )
 
             update: () =>
                 if @move_forward
@@ -557,9 +518,12 @@ Firecracker.Controls = {
                 if @move_right
                     camera.translateX(4)
                 if @turn_left
-                    camera.rotateY(Math.PI/100)
+                    camera.rotation.y += 10 * 0.002 
                 if @turn_right
-                    camera.rotateY(-Math.PI/100)   
+                    camera.rotation.y -= 10 * 0.002 
+
+                if y_height?
+                    camera.position.y = y_height  
         }
 
         canvas = $("canvas")[0]
