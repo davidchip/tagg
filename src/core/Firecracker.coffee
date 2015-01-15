@@ -511,39 +511,76 @@ Firecracker.Controls = {
                 
         return controls
 
-    simpleKeyboardControls: ( camera ) =>
+    SimpleKeyboardControls: ( camera ) =>
+
         controls = {
-            mouse_x: event.clientX
-            mouse_y: event.clientY
-
-            Mouse: () =>
-                if @mouse_x < event.clientX
-                    camera.rotation.y -= (event.clientX - @mouse_x)/420
-                else if @mouse_x > event.clientX
-                    camera.rotation.y += (@mouse_x - event.clientX)/420
-
-                if @mouse_y < event.clientY
-                    camera.rotation.x -= (event.clientY - @mouse_y)/420
-                else if @mouse_y > event.clientY
-                    camera.rotation.x += (@mouse_y - event.clientY)/420
-
-                @mouse_x = event.clientX
-                @mouse_y = event.clientY
-
-            Keyboard: () =>
-                if event.keyCode is 87
-                    camera.position.z -= 1
+            
+            KeyPressed: ( event ) =>
+                if event.keyCode is 87 
+                    @move_forward = true
                 else if event.keyCode is 83
-                    camera.position.z += 1
-
+                    @move_backward = true
                 else if event.keyCode is 65
-                    camera.position.x -= 1
+                    @move_left = true
                 else if event.keyCode is 68
-                    camera.position.x += 1
+                    @move_right = true
+                else if event.keyCode is 37
+                    @turn_left = true
+                else if event.keyCode is 39
+                    @turn_right = true
+
+            KeyUp: ( event ) =>
+                if event.keyCode is 87 
+                    @move_forward = false
+                else if event.keyCode is 83
+                    @move_backward = false
+                else if event.keyCode is 65
+                    @move_left = false
+                else if event.keyCode is 68
+                    @move_right = false
+                else if event.keyCode is 37
+                    @turn_left = false
+                else if event.keyCode is 39
+                    @turn_right = false
+
+            MouseMove: ( event ) =>
+                PI_2 = (Math.PI)*(Math.PI)
+
+                @movementX = event.movementX or event.mozMovementX or event.webkitMovementX or 0
+                @movementY = event.movementY or event.mozMovementY or event.webkitMovementY or 0
+
+                camera.rotation.y -= @movementX * 0.002 
+                # camera.rotation.x += @movementY * 0.002 
+                # camera.rotation.x = Math.max( - PI_2, Math.min( PI_2, camera.rotation.x ) )
+
+            update: () =>
+                if @move_forward
+                    camera.translateZ(-4)
+                if @move_backward
+                    camera.translateZ(4)
+                if @move_left
+                    camera.translateX(-4)
+                if @move_right
+                    camera.translateX(4)
+                if @turn_left
+                    camera.rotateY(Math.PI/100)
+                if @turn_right
+                    camera.rotateY(-Math.PI/100)   
         }
 
-        document.addEventListener( 'mousemove', controls.Mouse, false )
-        document.addEventListener( 'keydown', controls.Keyboard, false )
+        canvas = $("canvas")[0]
+        
+        canvas.requestPointerLock = canvas.requestPointerLock or canvas.mozRequestPointerLock or canvas.webkitRequestPointerLock
+
+        canvas.addEventListener('dblclick', ( () =>
+            canvas.requestPointerLock()
+            ), 
+            false
+        )
+
+        document.addEventListener( 'mousemove', controls.MouseMove, false )
+        document.addEventListener( 'keydown', controls.KeyPressed, false )
+        document.addEventListener( 'keyup', controls.KeyUp, false )
 
         return controls
 

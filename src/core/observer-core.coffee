@@ -12,6 +12,8 @@ Firecracker.register_particle('observer-core', {
         
         if Firecracker.isMobile()
             @controls = Firecracker.Controls.MobileHeadTracking( camera )
+        else 
+            @controls = Firecracker.Controls.SimpleKeyboardControls( camera )
 
         if @stereo is true
             @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
@@ -33,8 +35,7 @@ Firecracker.register_particle('observer-core', {
         return camera
 
     update: () ->
-        if Firecracker.isMobile()
-            @controls.update()
+        @controls.update()
 
         if @stereo is true
             @stereo_effect.render( window.world, @objects[0] )
