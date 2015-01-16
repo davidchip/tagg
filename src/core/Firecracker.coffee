@@ -452,11 +452,37 @@ Firecracker.Controls = {
     #                                                         #
     ###########################################################
 
-    ##  Requires VRControls.js to be included in project  ##
-    hmdControls: (camera, done) =>
-        vr_controls = new THREE.VRControls( camera )
-        return vr_controls
+    OculusControls: ( camera ) =>
 
+        @detect_device = ( devices ) =>
+            for device in devices
+                if device instanceof PositionSensorVRDevice
+                    @hmd_input = device
+                    break
+
+        if navigator.getVRDevices 
+            navigator.getVRDevices().then( @detect_device )
+        else 
+            navigator.mozGetVRDevices( @detect_device )
+
+        controls = {
+
+            update: () ->
+                look_direction = @getDirection()
+                camera.quaternion.fromArray( look_direction )
+
+            getDirection: () =>
+                orientation = @hmd_input.getState().orientation
+                look_direction = [ 
+                    orientation.x
+                    orientation.y
+                    orientation.z 
+                    orientation.w
+                ]
+                return look_direction
+        }
+
+        return controls
 
     ###########################################################
     #                                                         #
