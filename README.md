@@ -63,8 +63,8 @@ DC
 
 AC:
 --------
-- Desktop: have pointer tracking
-- Desktop: add oculus support
+- <s>Desktop: have pointer tracking</s>
+- <s>Desktop: add oculus support</s>
 - All: add lighting
 - Particle: video mapped to texture (unlocks panorama video, theatre xp)
 - Positional tracking (accelerometer)

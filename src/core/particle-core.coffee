@@ -77,10 +77,11 @@ Firecracker.register_element('particle-core', {
                                 object.turnz * (Math.PI * 2))
             @positioned.resolve()
 
-            if object instanceof THREE.CSS3DObject
-                return
-            else
-                window.world.add(object)
+            ## uncomment for CSS rendering
+            # if object instanceof THREE.CSS3DObject
+            #     return
+            
+            window.world.add(object)
         )
 
     remove: () ->
