@@ -154,6 +154,32 @@ Firecracker.ObjectUtils = {
         floor.position.y -= 10
         
         return floor
+
+
+    VideoTexture: ( video_src ) =>
+        video = document.createElement("video");
+        video.src = video_src
+        video.style = "display:none; position:absolute; top:1px; left:0;"
+        video.autoplay = true
+        video.loop = true
+
+        videoTexture = new THREE.Texture( video )
+        videoTexture.minFilter = THREE.LinearFilter
+        videoTexture.magFilter = THREE.LinearFilter
+
+        video_object = {
+
+            material: new THREE.MeshBasicMaterial({
+                map: videoTexture
+                overdraw: true
+                side:THREE.DoubleSide
+            })
+            
+            update: () =>
+                setTimeout( ( () => videoTexture.needsUpdate = true ), 4000 )
+        }
+
+        return video_object
 }
 
 
