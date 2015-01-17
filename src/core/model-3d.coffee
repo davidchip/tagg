@@ -8,7 +8,7 @@ Firecracker.register_particle('model-3d', {
             return
 
         objs = []
-        num = 10
+        num = 15
         for int in [1..num]
             obj = Firecracker.ObjectUtils.load3DModel(@src, new THREE.MeshNormalMaterial())
             obj.turnz = int * (1 / num)

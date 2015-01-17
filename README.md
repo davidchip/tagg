@@ -48,9 +48,14 @@ Beta: Concrete To-Dos
 DC
 --------
 - <s>Build out support for returning array of meshes from a particle's create func</s>
-- Have world-core extend particle-core (define grouping paradigm)
+- Have world-core extend particle-core (define grouping paradigm). Scene should just be a particle.
 - <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
 - Particle: add 2d browser plane (window)
+  - Fix camera angle in stereo
+  - Make it efficient, and not repetitive
+  - Fix scaling of innerHTML
+  - Add src tag like <iframe>
+  - Add proper renderer sizing/resizing (especially in stereo)
 - Add basic sound element
     - Allow sound to modulate based on camera distance from it
     - To enable local sound, just have sound 

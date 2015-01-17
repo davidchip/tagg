@@ -15,13 +15,20 @@ Firecracker.register_particle('observer-core', {
         else 
             @controls = Firecracker.Controls.SimpleKeyboardControls( camera )
 
-        @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
-        @stereo_effect.setSize( window.innerWidth, window.innerHeight )
+        if @stereo is true
+            @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
+            @stereo_effect.setSize( window.innerWidth, window.innerHeight )
+            window.rendererCSSL.setSize( window.innerWidth / 2, window.innerHeight )
+            window.rendererCSSR.setSize( window.innerWidth / 2, window.innerHeight )
+
+        # window.rendererCSSL.setSize(window.innerWidth, window.innerHeight)
 
         onWindowResize = () =>
             @objects[0].aspect = window.innerWidth / window.innerHeight
             @objects[0].updateProjectionMatrix()
-            @stereo_effect.setSize( window.innerWidth, window.innerHeight )
+
+            if @stereo is true
+                @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
         window.addEventListener( 'resize', onWindowResize, false )
 
@@ -32,7 +39,10 @@ Firecracker.register_particle('observer-core', {
 
         if @stereo is true
             @stereo_effect.render( window.world, @objects[0] )
+            window.rendererCSSL.render( window.worldCSSL, @stereo_effect.getCameraL() )
+            window.rendererCSSR.render( window.worldCSSR, @stereo_effect.getCameraL() )
         else
             window.renderer.render( window.world, @objects[0] )
+            window.rendererCSSL.render( window.worldCSSL, @objects[0] )
 
 })

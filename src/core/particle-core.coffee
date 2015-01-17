@@ -77,7 +77,10 @@ Firecracker.register_element('particle-core', {
                                 object.turnz * (Math.PI * 2))
             @positioned.resolve()
 
-            window.world.add(object)
+            if object instanceof THREE.CSS3DObject
+                return
+            else
+                window.world.add(object)
         )
 
     remove: () ->
@@ -92,23 +95,22 @@ Firecracker.register_element('particle-core', {
 
         $(@).remove()
 
-    update: () ->
+    update: (objects) ->
         return
 
-    _update: (object) ->
+    _update: (objects) ->
         """Updatable attributes. Can be accessed through dom, and updated
            whenever.
         """
-        @update()
+        @update(objects)
+        for object in objects
+            object.position.x += @movex
+            object.position.y += @movey
+            object.position.z += @movez
 
-        ## attributes all objects get
-        object.position.x += @movex
-        object.position.y += @movey
-        object.position.z += @movez
-
-        object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
-        object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
-        object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
+            object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
+            object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
+            object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
 
     detached: () ->
         """Polymer func fired when DOM element is removed

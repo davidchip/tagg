@@ -263,6 +263,12 @@ Firecracker.ObserverUtils = {
 
             renderer.autoClear = false
 
+            getCameraL: () =>
+                return _cameraL
+
+            getCameraR: () =>
+                return _cameraR
+
             setSize: ( width, height ) =>
 
                 _width = width / 2
