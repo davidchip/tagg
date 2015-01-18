@@ -42,6 +42,13 @@ Firefox download link
 Mobile: from your phone, connect to port 9000 of your computer's IP address (192.168.1.145:9000 for example)
 
 
+Bugs:
+--------
+- Add head rotation (using mouse) to Safari
+- Fix AudioContext choppiness on Android
+- Fix script/lib loading for elements
+
+
 Beta: Concrete To-Dos
 --------
 - Add support for template property when declaring Firecracker Element
@@ -58,9 +65,13 @@ Beta: Concrete To-Dos
   - Add proper support for .ogg, .mp3, .m4a
   - Be more sophisticated about reading frequencies, generating movement
   - Allow volume to modulate based on camera distance (tie audio-file gain to distance from observer)
+  - Add handling of pausing/stopping audio
+  - Split audio processing into other JS worker (is this possible?)
 - Add native headtracking back to iOS and/or Android Apps
 - Add looping to object creation
 - Create proper Prototype representation of each Firecracker element 
+- Prevent screen dimming on iOS / Android
+- Move attribute setting to created function
 
 
 DC

@@ -10,7 +10,7 @@ Firecracker.register_particle('audio-jump', {
     #     source.connect(@audioContext.destination)
     #     source.start(0, 0, 0)
 
-    #     @get_crazy()
+    #     @affect_world()
 
     create: () ->
         if not @src?
