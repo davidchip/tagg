@@ -44,22 +44,34 @@ Mobile: from your phone, connect to port 9000 of your computer's IP address (192
 
 Beta: Concrete To-Dos
 --------
+- Add support for template property when declaring Firecracker Element
+  - Should work like Polymer <template> tag. Should allow:
+    - firing of methods found in the Element declaration
+    - Interpolation of attributes
+- Rev 1.5 on b-frame
+  - Fix camera angle in stereo
+  - Don't render 2 CSSRenderers. Figure out a better way.
+  - Fix scaling of innerHTML
+  - Add src tag like <iframe> to load in external frames
+  - Add proper renderer sizing/resizing on window change
+- Rev 2 on audio-file
+  - Add proper support for .ogg, .mp3, .m4a
+  - Be more sophisticated about reading frequencies, generating movement
+  - Allow volume to modulate based on camera distance (tie audio-file gain to distance from observer)
+- Add native headtracking back to iOS and/or Android Apps
+- Add looping to object creation
+- Create proper Prototype representation of each Firecracker element 
+
 
 DC
 --------
 - <s>Build out support for returning array of meshes from a particle's create func</s>
 - Have world-core extend particle-core (define grouping paradigm). Scene should just be a particle.
 - <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
-- Particle: add 2d browser plane (window)
-  - Fix camera angle in stereo
-  - Make it efficient, and not repetitive
-  - Fix scaling of innerHTML
-  - Add src tag like <iframe>
-  - Add proper renderer sizing/resizing (especially in stereo)
-- Add basic sound element
-    - Allow sound to modulate based on camera distance from it
-    - To enable local sound, just have sound 
-    element's position follow user
+- <s>Particle: add basic 2d browser plane (window)</s>
+- <s>Particle: Add basic sound element</s>
+
+
 
 AC:
 --------
@@ -99,6 +111,12 @@ Other repos
 - Backend to store repos of environments that can be collaborated on
   - Repo, with branches
   - Collaborators (people who have contributed to this, ie, a model ws used)
+- Build an app that uses 3-4 panels of modular width, height
+  - One for preview
+  - One for library of particles
+  - One for code generated
+  - One for publishing content, generating a link to it, selling it?
+  
 
 
 Bullet points

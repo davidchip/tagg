@@ -1,6 +1,7 @@
 ## Used to ensure particles aren't created until
 ## they world is created. Should be cleaned up.
 window.world_created = $.Deferred()
+window.world_started = $.Deferred()
 
 
 Firecracker.register_element('world-core', {
@@ -31,6 +32,40 @@ Firecracker.register_element('world-core', {
         # $(cssRendererR.domElement).addClass('right')
         # window.rendererCSSR = cssRendererR
         # window.worldCSSR = new THREE.Scene()
+
+        ## add start button / event handler
+        ## extract me once Polymer templates are working properly
+        ready = document.createElement('div')
+        ready.id = 'ready'
+        ready.style.position = 'absolute'
+        ready.style.zIndex = 2
+        ready.innerHTML = """
+            <div style="border:2px solid #fff; 
+                        color:#fff;
+                        font-family:'Helvetica Neue','Helvetica',Arial,sans-serif; 
+                        font-size:18px;
+                        font-weight:500; 
+                        height:60px; 
+                        left:50%; 
+                        line-height:60px; 
+                        margin-left:-100px; 
+                        margin-top:-30px; 
+                        position:absolute; 
+                        text-align:center; 
+                        top:50%; 
+                        text-transform:uppercase; 
+                        width:200px;">
+                START
+            </div>
+        """
+        ready.onclick = () ->
+            $('#ready').fadeOut()
+            window.world_started.resolve()
+
+        for position in ['top', 'right', 'bottom', 'left']
+            ready.style[position] = '0'
+
+        document.body.appendChild(ready)
 
         @create()
         window.world_created.resolve()

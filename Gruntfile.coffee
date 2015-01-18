@@ -16,7 +16,7 @@ module.exports = ->
         ## copy our html, any js, compile our coffeescript/less
         "copy:html"
         "copy:js"
-        "copy:images"
+        "copy:media"
         "coffee:compile"
         "less:compile"
     ])

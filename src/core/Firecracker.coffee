@@ -14,6 +14,15 @@ class Firecracker
 Firecracker = {}
 
 
+# Prevent Screen Dimming on iOS
+# iosSleepPreventInterval = setInterval(() ->
+#     window.location.href = "/prevent/dimming/";
+#     window.setTimeout(() ->
+#         window.stop()
+#     , 0)
+# , 30000)
+
+
 Firecracker.register_element = (tag, declaration) ->
     ## extend the element if applicable
     _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
@@ -51,7 +60,6 @@ Firecracker.register_element = (tag, declaration) ->
     $.when(scripts_fetched).then(() =>
         Polymer("#{tag}", declaration)
         el = document.createElement('div')
-
 
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>

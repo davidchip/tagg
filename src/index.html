@@ -10,15 +10,10 @@
 
   <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
   <script src="/bower_components/three.js/three.min.js" type="text/javascript"></script>
-  <script src="/libs/three-css3d.min.js" type="text/javascript"></script>
+  <!-- <script src="/libs/three-css3d.min.js" type="text/javascript"></script> -->
 
   <script src="/bower_components/underscore/underscore-min.js"></script>
   <script src="/core/firecracker.js" type="text/javascript"></script>
-
-  <!-- <style>
-    .left  {position:absolute; left:0;}
-    .right {position:absolute; left:623px;}
-  </style> -->
 </head>
 
 <body>
@@ -27,19 +22,27 @@
   <script src="/core/observer-core.js"></script>
   <script src="/core/sky-dome.js"></script>
   <script src="/core/model-3d.js"></script>
+  <script src="/imports/audio-jump.js"></script>
+  <script src="/imports/cube-3d.js"></script>
 
   <world-core>
     <observer-core stereo>
     </observer-core>
 
+    <audio-jump src="/assets/file.mp3" id="audio">
+    </audio-jump>
+
     <sky-dome src="/assets/sea_sky.jpg">
     </sky-dome>
 
-    <model-3d src="/assets/sword/sword.js" rpmy="40" z="40" rpmx="20">
-    </model-3d>
-
-    <model-3d src="/assets/sword/sword.js" rpmy="10" y="20" x="-20" rpmx="20">
-    </model-3d>
+    <cube-3d x="-15" id="0" wireframe></cube-3d>
+    <cube-3d x="-10" id="1" wireframe></cube-3d>
+    <cube-3d x="-5" id="2" wireframe></cube-3d>
+    <cube-3d x="0" id="3" wireframe></cube-3d>
+    <cube-3d x="5" id="4" wireframe></cube-3d>
+    <cube-3d x="10" id="5" wireframe></cube-3d>
+    <cube-3d x="15" id="6" wireframe></cube-3d>
+    <cube-3d x="20" id="7" wireframe></cube-3d>
   </world-core>
 </body>
 
