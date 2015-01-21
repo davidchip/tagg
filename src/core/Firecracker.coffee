@@ -672,17 +672,6 @@ Firecracker.Controls = {
 }
 
 
-Firecracker.Utils = {
-
-    isArray: (array) ->
-        if array instanceof Array
-            return true
-        else
-            return false
-
-}
-
-
 @Firecracker = Firecracker
 
 

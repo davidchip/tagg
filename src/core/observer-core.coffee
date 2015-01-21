@@ -1,3 +1,11 @@
+""" A representation of a viewport into the world. Works alongside some sort
+    of world-core, to facilitate rendering.
+
+    Example:
+        <observer-core>
+        </observer-core>
+"""
+
 
 Firecracker.register_particle('observer-core', {
 
@@ -27,8 +35,8 @@ Firecracker.register_particle('observer-core', {
             # window.rendererCSSR.domElement.style.left = window.innerWidth / 2 + 'px';
 
         onWindowResize = () =>
-            @objects[0].aspect = window.innerWidth / window.innerHeight
-            @objects[0].updateProjectionMatrix()
+            @object.aspect = window.innerWidth / window.innerHeight
+            @object.updateProjectionMatrix()
 
             if @stereo is true
                 @stereo_effect.setSize( window.innerWidth, window.innerHeight )
@@ -41,9 +49,9 @@ Firecracker.register_particle('observer-core', {
         @controls.update()
 
         if @stereo is true
-            @stereo_effect.render( window.world, @objects[0] )
+            @stereo_effect.render( window.world, @object )
         else
-            window.renderer.render( window.world, @objects[0] )
+            window.renderer.render( window.world, @object )
 
         ## uncomment for CSS renderering
         # if @stereo is true

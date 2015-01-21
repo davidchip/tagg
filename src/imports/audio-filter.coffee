@@ -2,6 +2,8 @@
 
 Firecracker.register_particle('audio-filter', {
 
+    extends: 'group-core'
+
     src: undefined
 
     # playMusic: (event) ->
@@ -12,7 +14,7 @@ Firecracker.register_particle('audio-filter', {
 
     #     @affect_world()
 
-    create: () ->
+    initialize: () ->
         if not @src?
             console.log " define a source tag for the audio-jump tag"
             return
@@ -29,8 +31,6 @@ Firecracker.register_particle('audio-filter', {
             @_onfileload(_audioData)
 
         request.send()
-
-        return new THREE.Object3D()
 
     _onfileload: (audioData) ->
         @audioContext.decodeAudioData(audioData, (buffer) =>
@@ -95,12 +95,7 @@ Firecracker.register_particle('audio-filter', {
         return
 
     update: () ->
-        for child, index in @.children
-            if not child.objects? or child.objects.length is 0
-                continue
-
-            object = child.objects[0]
-
+        for object, index in @get_objects()
             if @frequencies?
                 jump = @frequencies[index]
                 if jump?
@@ -111,7 +106,5 @@ Firecracker.register_particle('audio-filter', {
                 object.position.y = 0
             else
                 object.position.y -= .5
-
-
 
 })
