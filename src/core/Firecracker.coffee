@@ -23,6 +23,80 @@ Firecracker = {}
 # , 30000)
 
 
+Firecracker.getScriptURL = (elementName) ->
+
+
+window.loadedElements = {}
+
+
+Firecracker.loadScript = (path) ->
+    # http://stackoverflow.com/a/21637141/1959392
+
+    result = $.Deferred()
+    script = document.createElement("script")
+    script.async = "async"
+    script.type = "text/javascript"
+    script.src = path
+    script.onload = script.onreadystatechange = (_, isAbort) =>
+      if not script.readyState or /loaded|complete/.test(script.readyState)
+         if (isAbort)
+            result.reject()
+         else
+            result.resolve()
+
+    script.onerror = () ->
+        result.reject()
+
+    $("body")[0].appendChild(script)
+    
+    return result.promise()
+
+
+Firecracker.loadElementScript = (tagName) ->
+    """Load an elements Firecracker script if it hasn't been loaded
+    """
+    tagName = tagName.toLowerCase()
+
+    if not window.loadedElements[tagName]?
+        checkURLExists = (url) ->
+            http = new XMLHttpRequest()
+            http.open('HEAD', url, false)
+            http.send()
+            return http.status != 404
+
+        core_url = "/core/#{tagName}.js"
+        if checkURLExists(core_url) is true
+            url = core_url
+
+        if not url?
+            imports_url = "/imports/#{tagName}.js"
+            if checkURLExists(imports_url) is true
+                url = imports_url
+
+        if not url?
+            alert """
+                Couldn't local script for #{tagName}. 
+                Make sure it's in your /core/ or /imports/ directory
+            """
+
+        window.loadedElements[tagName] = Firecracker.loadScript(url)
+
+    return window.loadedElements[tagName]
+
+
+Firecracker.loadElement = (element) ->
+    """Load a Firecracker elements registration by passing 
+       in its DOM element
+    """
+    tagName = element.tagName
+    element_loaded = Firecracker.loadElementScript(tagName)
+    
+    $.when(element_loaded).then(() =>
+        for child in element.children
+            Firecracker.loadElement(child)
+    )
+
+
 Firecracker.register_element = (tag, declaration) ->
     ## extend the element if applicable
     _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
@@ -38,26 +112,13 @@ Firecracker.register_element = (tag, declaration) ->
     if property_keys.length > 0 
         properties = "attributes='#{property_keys.toString()}'"
 
-
-    ## fetch scripts associated with object
-    ## @todo: do this more intelligently
-    scripts_fetched = new $.Deferred()
-    scripts = declaration.scripts
-    
-    if scripts?
-        num_scripts_fetched = 0
-        for script in scripts
-            $.when($.getScript(script)).then(() =>
-                num_scripts_fetched++
-                if num_scripts_fetched >= scripts.length
-                    scripts_fetched.resolve()
-            )
+    if declaration.extends?
+        parent_loaded = Firecracker.loadElementScript("#{declaration.extends}")
     else
-        scripts_fetched.resolve()
-
+        parent_loaded = ''
 
     ## create the actual element
-    $.when(scripts_fetched).then(() =>
+    $.when(parent_loaded).then(() =>
         Polymer("#{tag}", declaration)
         el = document.createElement('div')
 
@@ -623,3 +684,9 @@ Firecracker.Utils = {
 
 
 @Firecracker = Firecracker
+
+
+window.addEventListener('polymer-ready', (e) ->
+    world = $('body').find('world-core')[0]
+    Firecracker.loadElement(world)
+)

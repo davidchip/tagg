@@ -58,18 +58,18 @@ Firecracker.register_element('particle-core', {
 
         @positioned = new $.Deferred()
         $.when(parent.positioned).then(() =>
-            ## position element on top of its parent
-            parent_top = parent.y + parseInt(parent.height) / 2
-            if isNaN(parent_top) is false
-                object.y = parent_top + @height / 2
+            # ## position element on top of its parent
+            # parent_top = parent.y + parseInt(parent.height) / 2
+            # if isNaN(parent_top) is false
+            #     object.y = parent_top + @height / 2
 
-            ## position element in the center of its parent
-            if @x is 0 and parent.x?
-                object.x = parent.x_pos
+            # ## position element in the center of its parent
+            # if @x is 0 and parent.x?
+            #     object.x = parent.x_pos
 
-            ## position element according to its parent's depth
-            if parent.z?
-                object.z = parent.z
+            # ## position element according to its parent's depth
+            # if parent.z?
+            #     object.z = parent.z
 
             object.position.set(object.x, object.y, object.z)
             object.rotation.set(object.turnx * (Math.PI * 2), 

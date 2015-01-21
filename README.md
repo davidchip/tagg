@@ -47,10 +47,12 @@ Bugs:
 - Add head rotation (using mouse) to Safari
 - Fix AudioContext choppiness on Android
 - Fix script/lib loading for elements
+- Fix AudioContext not playing in Firefox
 
 
 Beta: Concrete To-Dos
 --------
+- <s>Add lazy loading of scripts based on elements in world</s>
 - Add support for template property when declaring Firecracker Element
   - Should work like Polymer <template> tag. Should allow:
     - firing of methods found in the Element declaration
@@ -61,7 +63,7 @@ Beta: Concrete To-Dos
   - Fix scaling of innerHTML
   - Add src tag like <iframe> to load in external frames
   - Add proper renderer sizing/resizing on window change
-- Rev 2 on audio-file
+- Rev 2 on audio-jump
   - Add proper support for .ogg, .mp3, .m4a
   - Be more sophisticated about reading frequencies, generating movement
   - Allow volume to modulate based on camera distance (tie audio-file gain to distance from observer)
@@ -71,7 +73,7 @@ Beta: Concrete To-Dos
 - Add looping to object creation
 - Create proper Prototype representation of each Firecracker element 
 - Prevent screen dimming on iOS / Android
-- Move attribute setting to created function
+- Move attribute declaration to created function in Polymer
 
 
 DC
@@ -81,7 +83,6 @@ DC
 - <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
 - <s>Particle: add basic 2d browser plane (window)</s>
 - <s>Particle: Add basic sound element</s>
-
 
 
 AC:

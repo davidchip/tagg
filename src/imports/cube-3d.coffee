@@ -11,17 +11,22 @@ Firecracker.register_particle('cube-3d', {
         return instance
 
     update: () ->
-        object = @objects[0]
-        if window.frequencies?
-            jump = window.frequencies[parseInt(@id)]
-            if jump?
-                jump = jump / 500
-                object.position.y = jump * jump
-        
-        if object.position.y <= 0
-            object.position.y = 0
-        else
-            object.position.y -= .5
+        if @jump is true
+            object = @objects[0]
+            if window.frequencies?
+                jump = window.frequencies[parseInt(@_index)]
+                if jump?
+                    jump = jump / 500
+                    object.position.y = jump * jump
+            
+            if object.position.y <= 0
+                object.position.y = 0
+            else
+                object.position.y -= .5
+
+    child_update: () ->
+        @child.update()
+
 
 
 })

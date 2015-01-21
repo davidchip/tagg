@@ -1,6 +1,6 @@
 
 
-Firecracker.register_particle('audio-jump', {
+Firecracker.register_particle('audio-filter', {
 
     src: undefined
 
@@ -67,7 +67,7 @@ Firecracker.register_particle('audio-jump', {
         @playback = audioBufferSouceNode
         @playback.start(0)
 
-        window.frequencies = []
+        @frequencies = []
 
         drawWorld = () =>
             requestAnimationFrame(drawWorld)
@@ -76,8 +76,7 @@ Firecracker.register_particle('audio-jump', {
 
             # split up our 1024 frequency levels, add up
             # their levels, and shove them into window.frequencies
-            num_cubes = 8
-            offset = 
+            num_cubes = @.children.length
             chunk_length = (100) / num_cubes
             for cube_id in [0..(num_cubes - 1)]
                 array_start = chunk_length * cube_id 
@@ -89,10 +88,30 @@ Firecracker.register_particle('audio-jump', {
                 for i in array_chunk
                     full += i
 
-                window.frequencies[cube_id] = full
+                @frequencies[cube_id] = full
 
         drawWorld()
 
         return
+
+    update: () ->
+        for child, index in @.children
+            if not child.objects? or child.objects.length is 0
+                continue
+
+            object = child.objects[0]
+
+            if @frequencies?
+                jump = @frequencies[index]
+                if jump?
+                    jump = jump / 500
+                    object.position.y = jump
+            
+            if object.position.y <= 0
+                object.position.y = 0
+            else
+                object.position.y -= .5
+
+
 
 })
