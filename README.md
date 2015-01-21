@@ -52,7 +52,7 @@ Bugs:
 
 Beta: Concrete To-Dos
 --------
-- <s>Add lazy loading of scripts based on elements in world</s>
+- <s>Add dynamic loading of scripts based on elements in world</s>
 - Add support for template property when declaring Firecracker Element
   - Should work like Polymer <template> tag. Should allow:
     - firing of methods found in the Element declaration
@@ -111,6 +111,10 @@ Beta: Needs Some Time
 
 Other repos
 --------
+- Build Polymer Loading Engine
+  - Loads in polymer elements just be declaring them on the page.
+  - Should search distributed places to pull in elements.
+  - Should accept list of places to search for
 - Polymer app to navigate between hyperlinked experiences. Narnia? 
   - Render sortable collection of models (environment)
 - Presentation website of us
