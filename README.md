@@ -53,6 +53,7 @@ Bugs:
 Beta: Concrete To-Dos
 --------
 - <s>Add dynamic loading of scripts based on elements in world</s>
+- Introduce ability to make complex particles (ie, particles that use multiple meshses to be constructed)
 - Add support for template property when declaring Firecracker Element
   - Should work like Polymer <template> tag. Should allow:
     - firing of methods found in the Element declaration

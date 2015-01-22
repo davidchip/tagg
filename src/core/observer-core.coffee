@@ -9,6 +9,8 @@
 
 Firecracker.register_particle('observer-core', {
 
+    oculus: false
+
     stereo: false
 
     turny: .5
@@ -20,8 +22,11 @@ Firecracker.register_particle('observer-core', {
         
         if Firecracker.isMobile()
             @controls = Firecracker.Controls.MobileHeadTracking( camera )
-        else 
+        else
             @controls = Firecracker.Controls.SimpleKeyboardControls( camera )
+
+        if @oculus is true
+            @controls = Firecracker.Controls.OculusControls( camera )
 
         if @stereo is true
             @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
