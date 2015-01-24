@@ -22,11 +22,11 @@ module.exports = ->
       }]
     }
 
-    images: {
+    media: {
       files: [{
         expand: true
         cwd: 'src/'
-        src: ['**/*.png', '**/*.jpg', '**/*.bmp']
+        src: ['**/*.png', '**/*.jpg', '**/*.bmp', '**/*.mp3', '**/*.m4a','**/*.ogg']
         dest: 'target/'
       }]
     }

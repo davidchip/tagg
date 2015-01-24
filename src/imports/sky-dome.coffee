@@ -2,8 +2,6 @@ Firecracker.register_particle('sky-dome', {
 
     src: undefined
 
-    wireframe: false
-
     create: () ->
         if not @src?
             console.log 'define a src attribute for your skydome-3d obj'

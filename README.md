@@ -42,29 +42,54 @@ Firefox download link
 Mobile: from your phone, connect to port 9000 of your computer's IP address (192.168.1.145:9000 for example)
 
 
+Bugs:
+--------
+- Add head rotation (using mouse) to Safari
+- Fix AudioContext choppiness on Android
+- Fix script/lib loading for elements
+- Fix AudioContext not playing in Firefox
+
+
 Beta: Concrete To-Dos
 --------
+- <s>Add dynamic loading of scripts based on elements in world</s>
+- Introduce ability to make complex particles (ie, particles that use multiple meshses to be constructed)
+- Add support for template property when declaring Firecracker Element
+  - Should work like Polymer <template> tag. Should allow:
+    - firing of methods found in the Element declaration
+    - Interpolation of attributes
+- Rev 1.5 on b-frame
+  - Fix camera angle in stereo
+  - Don't render 2 CSSRenderers. Figure out a better way.
+  - Fix scaling of innerHTML
+  - Add src tag like <iframe> to load in external frames
+  - Add proper renderer sizing/resizing on window change
+- Rev 2 on audio-jump
+  - Add proper support for .ogg, .mp3, .m4a
+  - Be more sophisticated about reading frequencies, generating movement
+  - Allow volume to modulate based on camera distance (tie audio-file gain to distance from observer)
+  - Add handling of pausing/stopping audio
+  - Split audio processing into other JS worker (is this possible?)
+- Add native headtracking back to iOS and/or Android Apps
+- Add looping to object creation
+- Create proper Prototype representation of each Firecracker element 
+- Prevent screen dimming on iOS / Android
+- Move attribute declaration to created function in Polymer
+
 
 DC
 --------
 - <s>Build out support for returning array of meshes from a particle's create func</s>
 - Have world-core extend particle-core (define grouping paradigm). Scene should just be a particle.
 - <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
-- Particle: add 2d browser plane (window)
-  - Fix camera angle in stereo
-  - Make it efficient, and not repetitive
-  - Fix scaling of innerHTML
-  - Add src tag like <iframe>
-  - Add proper renderer sizing/resizing (especially in stereo)
-- Add basic sound element
-    - Allow sound to modulate based on camera distance from it
-    - To enable local sound, just have sound 
-    element's position follow user
+- <s>Particle: add basic 2d browser plane (window)</s>
+- <s>Particle: Add basic sound element</s>
+
 
 AC:
 --------
-- Desktop: have pointer tracking
-- Desktop: add oculus support
+- <s>Desktop: have pointer tracking</s>
+- <s>Desktop: add oculus support</s>
 - All: add lighting
 - Particle: video mapped to texture (unlocks panorama video, theatre xp)
 - Positional tracking (accelerometer)
@@ -87,6 +112,10 @@ Beta: Needs Some Time
 
 Other repos
 --------
+- Build Polymer Loading Engine
+  - Loads in polymer elements just be declaring them on the page.
+  - Should search distributed places to pull in elements.
+  - Should accept list of places to search for
 - Polymer app to navigate between hyperlinked experiences. Narnia? 
   - Render sortable collection of models (environment)
 - Presentation website of us
@@ -99,6 +128,12 @@ Other repos
 - Backend to store repos of environments that can be collaborated on
   - Repo, with branches
   - Collaborators (people who have contributed to this, ie, a model ws used)
+- Build an app that uses 3-4 panels of modular width, height
+  - One for preview
+  - One for library of particles
+  - One for code generated
+  - One for publishing content, generating a link to it, selling it?
+  
 
 
 Bullet points
