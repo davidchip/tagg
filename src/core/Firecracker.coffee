@@ -232,7 +232,6 @@ Firecracker.ObjectUtils = {
         video.autoplay = true
         video.loop = true
         $(video).attr('webkit-playsinline', 'webkit-playsinline')
-        console.log video
 
         videoTexture = new THREE.Texture( video )
         videoTexture.minFilter = THREE.LinearFilter
