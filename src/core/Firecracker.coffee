@@ -231,6 +231,8 @@ Firecracker.ObjectUtils = {
         video.style = "display:none; position:absolute; top:1px; left:0;"
         video.autoplay = true
         video.loop = true
+        $(video).attr('webkit-playsinline', 'webkit-playsinline')
+        console.log video
 
         videoTexture = new THREE.Texture( video )
         videoTexture.minFilter = THREE.LinearFilter
@@ -245,7 +247,8 @@ Firecracker.ObjectUtils = {
             })
             
             update: () =>
-                setTimeout( ( () => videoTexture.needsUpdate = true ), 4000 )
+                if( video.readyState is video.HAVE_ENOUGH_DATA )
+                    setTimeout( ( () => videoTexture.needsUpdate = true ), 4000 )
         }
 
         return video_object
