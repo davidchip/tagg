@@ -13,6 +13,7 @@ Firecracker.register_element('world-core', {
         ## setup WebGL renderer
         renderer = new THREE.WebGLRenderer({alpha:true})
         renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setClearColor(0x000000)
         document.body.appendChild( renderer.domElement )
 
         window.renderer = renderer
