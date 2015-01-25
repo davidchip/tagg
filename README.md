@@ -75,6 +75,12 @@ Beta: Concrete To-Dos
 - Create proper Prototype representation of each Firecracker element 
 - Prevent screen dimming on iOS / Android
 - Move attribute declaration to created function in Polymer
+- Behavior group - affects the same attributes of the objects within it
+- Complex particle - uses multiple particles that move in conjunction to a master/center particle
+- Build drag and drop interface on the dom. Build a manipulatable map of how code is laid out. Show layout of how code looks. Show rendering of code (world-core).
+- Build a demo - 'take a seat'
+- Add tweening to update functions
+- Add <sky-box> particle
 
 
 DC
@@ -84,14 +90,17 @@ DC
 - <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
 - <s>Particle: add basic 2d browser plane (window)</s>
 - <s>Particle: Add basic sound element</s>
+- <s>Add native 'video' support for iphone app</s>
+
 
 
 AC:
 --------
 - <s>Desktop: have pointer tracking</s>
 - <s>Desktop: add oculus support</s>
+- Figure out quaternion math for iphone app
+- Particle (material mapped to a plane). Theatre experience.
 - All: add lighting
-- Particle: video mapped to texture (unlocks panorama video, theatre xp)
 - Positional tracking (accelerometer)
 
 

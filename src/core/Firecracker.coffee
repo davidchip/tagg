@@ -471,21 +471,24 @@ Firecracker.Controls = {
             window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false )
 
         this.update = () =>
-
             if ( scope.freeze ) 
                 return
 
-            if scope.deviceOrientation.gamma then alpha = THREE.Math.degToRad( scope.deviceOrientation.alpha )
-            else alpha = 0
-            if scope.deviceOrientation.beta then beta = THREE.Math.degToRad( scope.deviceOrientation.beta )
-            else beta = 0
-            if scope.deviceOrientation.gamma then gamma = THREE.Math.degToRad( scope.deviceOrientation.gamma )
-            else gamma = 0
-            if scope.screenOrientation then orient = THREE.Math.degToRad( scope.screenOrientation )
-            else orient = 0
+            quaternion = {}
+            for axis in ['alpha', 'beta', 'gamma', 'orient']
+                if window[axis]? ## set by native app
+                    quaternion[axis] = window[axis]
+                else if scope.deviceOrientation[axis]
+                    quaternion[axis] = THREE.Math.degToRad(scope.deviceOrientation[axis])
+                else
+                    quaternion[axis] = 0
 
-            setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient )
-            a = 1
+            if scope.screenOrientation?
+                quaternion.orient = THREE.Math.degToRad( scope.screenOrientation )
+            # else
+                # quaternion.orient = 0
+
+            setObjectQuaternion( scope.object.quaternion, quaternion.alpha, quaternion.beta, quaternion.gamma, quaternion.orient )
 
         this.connect()
 
@@ -561,7 +564,7 @@ Firecracker.Controls = {
                     @hmd_input = device
                     break
 
-        if navigator.getVRDevices 
+        if navigator.getVRDevices?
             navigator.getVRDevices().then( @detect_device )
         else 
             navigator.mozGetVRDevices( @detect_device )
