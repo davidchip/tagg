@@ -44,9 +44,6 @@ Firecracker.register_particle('sky-clouds', {
 
         fog = new THREE.Fog( 0x4584b4, -100, 3000 );
 
-        console.log @vs()
-        console.log @fs()
-
         material = new THREE.ShaderMaterial( {
 
             uniforms: {

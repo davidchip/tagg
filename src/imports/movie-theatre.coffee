@@ -8,7 +8,7 @@ Firecracker.register_group('movie-theatre', {
         </movie-screen>
     """
 
-    color: '0xc32a2a'
+    color: 0xc32a2a
     wireframe: false
 
     depth: 400
@@ -22,6 +22,15 @@ Firecracker.register_particle('theatre-floor', {
     color: undefined
     turnx: .25
     wireframe: false
+
+    template: -> """
+        <model-3d z="50" src="/assets/theatre/theater_seats.js" scale="15" x="97">
+        </model-3d>
+        <model-3d z="50" src="/assets/theatre/theater_seats.js" scale="15">
+        </model-3d>
+        <model-3d z="50" src="/assets/theatre/theater_seats.js" scale="15" x="-97">
+        </model-3d>
+    """
 
     create: () ->
         geometry = new THREE.PlaneBufferGeometry(@width, @depth)

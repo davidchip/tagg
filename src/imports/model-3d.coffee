@@ -1,5 +1,7 @@
 Firecracker.register_particle('model-3d', {
 
+    scale: 1
+
     src: undefined
 
     create: () ->
@@ -7,7 +9,11 @@ Firecracker.register_particle('model-3d', {
             console.log "define a src attribute pointing to your JSON obj file"
             return
 
-        obj = Firecracker.ObjectUtils.load3DModel(@src, new THREE.MeshNormalMaterial())
+        obj = Firecracker.ObjectUtils.load3DModel(@src, 0)
+        
+        obj.scale.x = @scale
+        obj.scale.y = @scale
+        obj.scale.z = @scale
 
         return obj
 

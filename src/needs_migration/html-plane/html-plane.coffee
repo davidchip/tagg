@@ -29,7 +29,8 @@ Polymer('html-plane', {
         # console.dir @.shadowRoot
         # console.dir host.shadowRoot
         # host.shadowRoot = @.shadowRoot
-        # console.dir host
+        # 
+         host
         # shadow = host.createShadowRoot()
         # shadow.styleSheets = @.shadowRoot.styleSheets
 

@@ -295,7 +295,6 @@ Firecracker.ObserverUtils = {
       
                 camera_stream = () =>
                     return ( (localMediaStream) => 
-                        console.log(localMediaStream)
                         # Grab video element
                         video = document.querySelector('video')
                         # Set its source to back camera stream
@@ -316,8 +315,6 @@ Firecracker.ObserverUtils = {
 
                 $('video').css('position', 'absoulte')
             )
-        else
-            console.log("getUserMedia not supported")
 
     stereoCameras: ( renderer ) =>
 
