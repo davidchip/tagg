@@ -100,11 +100,16 @@ Firecracker.loadElement = (element) ->
 Firecracker.register_element = (tag, declaration) ->
     ## extend the element if applicable
     _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
-
+    
+    template = declaration.template
+    if not template?
+        template = ""
+    else if $.isFunction(template)
+        template = declaration.template()
 
     ## define attributes/properties of element
     property_keys = []
-    for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts'])
+    for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts', 'template'])
         if not $.isFunction(value)
             property_keys.push(key)
 
@@ -124,8 +129,7 @@ Firecracker.register_element = (tag, declaration) ->
 
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>
-                <template>
-                </template>
+                <template>#{template}</template>                
             </polymer-element>
         """
 
@@ -136,6 +140,13 @@ Firecracker.register_element = (tag, declaration) ->
 Firecracker.register_particle = (tag, declaration) ->
     if not declaration.extends?
         declaration.extends = 'particle-core'
+
+    Firecracker.register_element(tag, declaration)
+
+
+Firecracker.register_group = (tag, declaration) ->
+    if not declaration.extends?
+        declaration.extends = 'group-core'
 
     Firecracker.register_element(tag, declaration)
 
@@ -476,21 +487,21 @@ Firecracker.Controls = {
             if ( scope.freeze ) 
                 return
 
-            quaternion = {}
-            for axis in ['alpha', 'beta', 'gamma', 'orient']
-                if window[axis]? ## set by native app
-                    quaternion[axis] = window[axis]
-                else if scope.deviceOrientation[axis]
-                    quaternion[axis] = THREE.Math.degToRad(scope.deviceOrientation[axis])
+            if window.nativeTracking?
+                scope.object.quaternion.fromArray(window.nativeTracking)
+            else if scope.deviceOrientation?
+                q = {}
+                for axis in ['alpha', 'beta', 'gamma']
+                    q[axis] = THREE.Math.degToRad(scope.deviceOrientation[axis])
+
+                if scope.screenOrientation?
+                    q.orient = THREE.Math.degToRad( scope.screenOrientation )
                 else
-                    quaternion[axis] = 0
+                    q.orient = 0
 
-            if scope.screenOrientation?
-                quaternion.orient = THREE.Math.degToRad( scope.screenOrientation )
-            # else
-                # quaternion.orient = 0
-
-            setObjectQuaternion( scope.object.quaternion, quaternion.alpha, quaternion.beta, quaternion.gamma, quaternion.orient )
+                setObjectQuaternion(scope.object.quaternion, q.alpha, q.beta, q.gamma, q.orient )            
+            else
+                scope.object.quaternion.set(0,0,0,0)
 
         this.connect()
 

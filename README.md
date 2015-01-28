@@ -54,10 +54,6 @@ Beta: Concrete To-Dos
 --------
 - <s>Add dynamic loading of scripts based on elements in world</s>
 - Introduce ability to make complex particles (ie, particles that use multiple meshses to be constructed)
-- Add support for template property when declaring Firecracker Element
-  - Should work like Polymer <template> tag. Should allow:
-    - firing of methods found in the Element declaration
-    - Interpolation of attributes
 - Rev 1.5 on b-frame
   - Fix camera angle in stereo
   - Don't render 2 CSSRenderers. Figure out a better way.
@@ -91,6 +87,10 @@ DC
 - <s>Particle: add basic 2d browser plane (window)</s>
 - <s>Particle: Add basic sound element</s>
 - <s>Add native 'video' support for iphone app</s>
+- <s>Figure out quaternion math for iphone app</s>
+- <s>Add support for template property when declaring Firecracker Element</s>
+  - Should work like Polymer <template> tag. Should allow:
+    - <s>Interpolation of attributes
 
 
 
@@ -98,8 +98,7 @@ AC:
 --------
 - <s>Desktop: have pointer tracking</s>
 - <s>Desktop: add oculus support</s>
-- Figure out quaternion math for iphone app
-- Particle (material mapped to a plane). Theatre experience.
+- <s>Video Particle (material mapped to a plane). Theatre experience.</s>
 - All: add lighting
 - Positional tracking (accelerometer)
 

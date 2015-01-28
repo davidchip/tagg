@@ -20,6 +20,9 @@ Firecracker.register_element('group-core', {
             window.particles.push(@)
         )
 
+    initialize: () ->
+        return
+
     get_objects: () ->
         """ Returns an array of objects corresponding with each child tag.
         """

@@ -13,7 +13,7 @@ Firecracker.register_element('world-core', {
         ## setup WebGL renderer
         renderer = new THREE.WebGLRenderer({alpha:true})
         renderer.setSize(window.innerWidth, window.innerHeight)
-        renderer.setClearColor(0x000000)
+        renderer.setClearColor(0xffffff)
         document.body.appendChild( renderer.domElement )
 
         window.renderer = renderer
@@ -66,7 +66,7 @@ Firecracker.register_element('world-core', {
         for position in ['top', 'right', 'bottom', 'left']
             ready.style[position] = '0'
 
-        document.body.appendChild(ready)
+        # document.body.appendChild(ready)
 
         @create()
         window.world_created.resolve()
