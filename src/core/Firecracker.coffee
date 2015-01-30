@@ -57,7 +57,8 @@ Firecracker.loadElementScript = (tagName) ->
     """
     tagName = tagName.toLowerCase()
 
-    if not window.loadedElements[tagName]?
+    hyphenated = tagName.split('-').length > 1
+    if not window.loadedElements[tagName]? and hyphenated is true
         checkURLExists = (url) ->
             http = new XMLHttpRequest()
             http.open('HEAD', url, false)
@@ -74,10 +75,11 @@ Firecracker.loadElementScript = (tagName) ->
                 url = imports_url
 
         if not url?
-            alert """
-                Couldn't local script for #{tagName}. 
-                Make sure it's in your /core/ or /imports/ directory
-            """
+            # alert """
+            #     Couldn't local script for #{tagName}. 
+            #     Make sure it's in your /core/ or /imports/ directory
+            # """
+            return
 
         window.loadedElements[tagName] = Firecracker.loadScript(url)
 
@@ -100,14 +102,9 @@ Firecracker.loadElement = (element) ->
 Firecracker.register_element = (tag, declaration) ->
     ## extend the element if applicable
     _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
-    
-    template = declaration.template
-    if not template?
-        template = ""
-    else if $.isFunction(template)
-        template = declaration.template()
 
-    ## define attributes/properties of element
+
+    ## define settable properties of element
     property_keys = []
     for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts', 'template'])
         if not $.isFunction(value)
@@ -117,15 +114,30 @@ Firecracker.register_element = (tag, declaration) ->
     if property_keys.length > 0 
         properties = "attributes='#{property_keys.toString()}'"
 
-    if declaration.extends?
-        parent_loaded = Firecracker.loadElementScript("#{declaration.extends}")
-    else
-        parent_loaded = ''
 
-    ## create the actual element
-    $.when(parent_loaded).then(() =>
-        Polymer("#{tag}", declaration)
+    ## load in parent registration
+    if declaration.extends?
+        parentElementLoaded = Firecracker.loadElementScript("#{declaration.extends}")
+    else
+        parentElementLoaded = ''
+
+
+    ## create the actual element when the parent's been loaded
+    $.when(parentElementLoaded).then(() =>
+        element = Polymer("#{tag}", declaration)
         el = document.createElement('div')
+
+
+        ## load in templates children
+        template = declaration.template
+        if template?
+            if $.isFunction(template)
+                template = declaration.template()
+
+            template = $.trim(template)
+        else
+            template = ""
+
 
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>
@@ -134,6 +146,11 @@ Firecracker.register_element = (tag, declaration) ->
         """
 
         document.body.appendChild(el)
+
+        if template isnt ""
+            template = "<div>#{template}</div>"
+            templateHTML = $.parseHTML(template)[0]
+            Firecracker.loadElement(templateHTML)
     )
 
 
@@ -234,34 +251,6 @@ Firecracker.ObjectUtils = {
         floor.position.y -= 10
         
         return floor
-
-
-    VideoTexture: ( video_src ) =>
-        video = document.createElement("video");
-        video.src = video_src
-        video.style = "display:none; position:absolute; top:1px; left:0;"
-        video.autoplay = true
-        video.loop = true
-        $(video).attr('webkit-playsinline', 'webkit-playsinline')
-
-        videoTexture = new THREE.Texture( video )
-        videoTexture.minFilter = THREE.LinearFilter
-        videoTexture.magFilter = THREE.LinearFilter
-
-        video_object = {
-
-            material: new THREE.MeshBasicMaterial({
-                map: videoTexture
-                overdraw: true
-                side:THREE.DoubleSide
-            })
-            
-            update: () =>
-                if( video.readyState is video.HAVE_ENOUGH_DATA )
-                    setTimeout( ( () => videoTexture.needsUpdate = true ), 4000 )
-        }
-
-        return video_object
 }
 
 
