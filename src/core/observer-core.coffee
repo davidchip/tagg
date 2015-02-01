@@ -15,7 +15,6 @@ Firecracker.register_particle('observer-core', {
 
     turny: .5
 
-    z: -40
     y: 5
 
     create: () ->

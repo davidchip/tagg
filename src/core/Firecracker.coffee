@@ -47,7 +47,8 @@ Firecracker.loadScript = (path) ->
     script.onerror = () ->
         result.reject()
 
-    $("body")[0].appendChild(script)
+
+    $("#loadedScripts")[0].appendChild(script)
     
     return result.promise()
 
@@ -86,17 +87,38 @@ Firecracker.loadElementScript = (tagName) ->
     return window.loadedElements[tagName]
 
 
-Firecracker.loadElement = (element) ->
-    """Load a Firecracker elements registration by passing 
-       in its DOM element
+Firecracker.loadElement = (element, index=1) ->
+    """Stagger loading world elements by depths.
     """
     tagName = element.tagName
     element_loaded = Firecracker.loadElementScript(tagName)
     
     $.when(element_loaded).then(() =>
-        for child in element.children
-            Firecracker.loadElement(child)
+        setTimeout (() =>
+            allChildren = Firecracker.getAllChildren(element)
+
+            for child in allChildren
+                Firecracker.loadElement(child, index++)
+        ), index * 100
     )
+
+
+Firecracker.getAllChildren = (element) ->
+    if element.children?
+        children = [].slice.call(element.children)
+    else
+        children = []
+
+    if element.shadowRoot?
+        if element.shadowRoot.children?
+            shadowChildren = [].slice.call(element.shadowRoot.children)
+        else
+            shadowChildren = []
+    else
+        shadowChildren = []
+
+    allChildren = children.concat(shadowChildren)
+    return allChildren
 
 
 Firecracker.register_element = (tag, declaration) ->
@@ -122,35 +144,30 @@ Firecracker.register_element = (tag, declaration) ->
         parentElementLoaded = ''
 
 
+    ## load in templates children
+    template = declaration.template
+    if template?
+        if $.isFunction(template)
+            template = declaration.template()
+
+        template = $.trim(template)
+    else
+        template = ""
+
     ## create the actual element when the parent's been loaded
     $.when(parentElementLoaded).then(() =>
         element = Polymer("#{tag}", declaration)
-        el = document.createElement('div')
-
-
-        ## load in templates children
-        template = declaration.template
-        if template?
-            if $.isFunction(template)
-                template = declaration.template()
-
-            template = $.trim(template)
-        else
-            template = ""
-
+        el = document.createElement("div")
+        el.id = "#{tag}-definition"
 
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>
-                <template>#{template}</template>                
+                <template>#{template}</template>
             </polymer-element>
         """
 
-        document.body.appendChild(el)
-
-        if template isnt ""
-            template = "<div>#{template}</div>"
-            templateHTML = $.parseHTML(template)[0]
-            Firecracker.loadElement(templateHTML)
+        definitions = $("#definitions")
+        definitions.append(el)
     )
 
 
@@ -677,7 +694,17 @@ Firecracker.Controls = {
 @Firecracker = Firecracker
 
 
+## load our registrations
 window.addEventListener('polymer-ready', (e) ->
+    $('body').append('<div id="definitions">')
+    $('body').append('<div id="loadedScripts">')
+
     world = $('body').find('world-core')[0]
     Firecracker.loadElement(world)
+
 )
+
+
+## extends jquery search to search in shadowRoots
+@f = (searchString) ->
+    return $("body /deep/ #{searchString}")

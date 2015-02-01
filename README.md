@@ -77,12 +77,12 @@ Beta: Concrete To-Dos
 - Build a demo - 'take a seat'
 - Add tweening to update functions
 - Add <sky-box> particle
-- Need idea of firecracker-atom (entwine, interwoven) - which is how multiple languages represent an item. As in <firecracker-atom> represents the WebGL and HTML respresentations. Different channels? WebGL Channel, HTML channel? The atom swims in both.
 - Need smarter loading of scripts.
   - Catch if an item has already been registered in a file with multiple registrations.
-- Properly do DOM attribute binding. If attribute on parent is changed, change child.
+- <s>Properly do DOM attribute binding. If attribute on parent is changed, change child.</s>
   - Maybe add getters/setters to attributes so that they can be calcuated, and changes in the parent can propagate down to its children.
-- BUG: Remove double loading of weaves within template tags
+
+- build template grouping. 
 
 
 DC
@@ -97,6 +97,7 @@ DC
 - <s>Add support for template property when declaring Firecracker Element</s>
   - Should work like Polymer <template> tag. Should allow:
     - <s>Interpolation of attributes
+- <s>BUG: Remove double loading of atoms within template tags</s>
 
 
 

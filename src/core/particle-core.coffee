@@ -31,7 +31,6 @@ Firecracker.register_element('particle-core', {
     rpmz: 0
 
     ready: () ->
-        @created = new $.Deferred()
         $.when(window.world_created).then(() =>
             @initialize()
             
@@ -65,7 +64,7 @@ Firecracker.register_element('particle-core', {
                             object.turny * (Math.PI * 2), 
                             object.turnz * (Math.PI * 2))
         window.world.add(object)
-        @created.resolve()
+
 
     update: () ->
         return
