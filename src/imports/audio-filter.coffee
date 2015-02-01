@@ -48,23 +48,23 @@ Firecracker.register_particle('audio-filter', {
 
         buffer = @buffer
 
-        audioBufferSouceNode = @audioContext.createBufferSource()
+        audioBufferSourceNode = @audioContext.createBufferSource()
         @analyser = @audioContext.createAnalyser()
 
-        audioBufferSouceNode.connect(@analyser)
+        audioBufferSourceNode.connect(@analyser)
     
         # connect the analyser to the destination(the speaker), or we won't hear the sound
         @analyser.connect(@audioContext.destination)
     
         # then assign the buffer to the buffer source node
-        audioBufferSouceNode.buffer = buffer
+        audioBufferSourceNode.buffer = buffer
     
         # play the source (with fallback to noteOn)
-        if not audioBufferSouceNode.start?
-            audioBufferSouceNode.start = audioBufferSouceNode.noteOn 
-            audioBufferSouceNode.stop = audioBufferSouceNode.noteOff
+        if not audioBufferSourceNode.start?
+            audioBufferSourceNode.start = audioBufferSourceNode.noteOn 
+            audioBufferSourceNode.stop = audioBufferSourceNode.noteOff
 
-        @playback = audioBufferSouceNode
+        @playback = audioBufferSourceNode
         @playback.start(0)
 
         @frequencies = []
@@ -100,7 +100,7 @@ Firecracker.register_particle('audio-filter', {
                 jump = @frequencies[index]
                 if jump?
                     jump = jump / 500
-                    object.position.y = jump
+                    object.position.y = jump * jump * jump * jump * jump * jump * jump
             
             if object.position.y <= 0
                 object.position.y = 0

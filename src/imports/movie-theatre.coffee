@@ -107,6 +107,7 @@ Firecracker.register_particle('movie-screen', {
         video.style = "display:none; position:absolute; top:1px; left:0;"
         video.autoplay = true
         video.loop = true
+        @video = video
         $(video).attr('webkit-playsinline', 'webkit-playsinline')
         if @muted is true
             $(video).attr('muted', true)
