@@ -102,17 +102,23 @@ Firecracker.register_particle('movie-screen', {
         return obj
 
     get_video_material: () ->
-        video = document.createElement("video");
+        video = document.createElement("video")
         video.src = @src
         video.style = "display:none; position:absolute; top:1px; left:0;"
         video.autoplay = true
         video.loop = true
-        @video = video
         $(video).attr('webkit-playsinline', 'webkit-playsinline')
         if @muted is true
             $(video).attr('muted', true)
 
-        videoTexture = new THREE.Texture( video )
+        @video = video
+
+        canvas = document.createElement("canvas")
+        canvas.width = 960
+        canvas.height = 400
+        @canvas = canvas.getContext("2d")
+
+        videoTexture = new THREE.Texture( canvas )
         videoTexture.minFilter = THREE.LinearFilter
         videoTexture.magFilter = THREE.LinearFilter
 
@@ -132,6 +138,21 @@ Firecracker.register_particle('movie-screen', {
         return video_object
 
     update: () ->
+        @canvas.drawImage(@video, 0, 0)
+        brightness = @canvas.getImageData(0,0,320,180)
+        
+        r = 0
+        g = 0
+        b = 0
+        for rgba, index in brightness.data by 4
+            r = r + brightness.data[index] * .2126
+            g = g + brightness.data[index + 1] * .7152
+            b = b + brightness.data[index + 2] * .0722
+
+        luminance = r + g + b
+
+        window.luminance = luminance / 10000000
+
         @video_material.update()
 
 })
@@ -198,7 +219,7 @@ Firecracker.register_particle('theatre-wall', {
 
     create: () ->
         geometry = new THREE.PlaneBufferGeometry(@width, @height)
-        material = new THREE.MeshBasicMaterial({
+        material = new THREE.MeshLambertMaterial({
             color: @color, 
             side: THREE.DoubleSide 
         })

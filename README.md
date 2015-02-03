@@ -82,8 +82,6 @@ Beta: Concrete To-Dos
 - <s>Properly do DOM attribute binding. If attribute on parent is changed, change child.</s>
   - Maybe add getters/setters to attributes so that they can be calcuated, and changes in the parent can propagate down to its children.
 
-- build template grouping. 
-
 
 DC
 --------
@@ -98,6 +96,7 @@ DC
   - Should work like Polymer <template> tag. Should allow:
     - <s>Interpolation of attributes
 - <s>BUG: Remove double loading of atoms within template tags</s>
+- build template grouping. should remove all child elements  
 
 
 

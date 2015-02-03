@@ -7,4 +7,12 @@ Firecracker.register_particle('torch-light', {
         
         return light
 
+    update: () ->
+        if window.luminance < .4
+            intensity = .4
+        else
+            intensity = window.luminance
+        
+        @object.intensity = intensity
+
 })
