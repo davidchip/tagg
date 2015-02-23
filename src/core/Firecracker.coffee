@@ -103,7 +103,7 @@ Firecracker.loadElement = (element, index=1) ->
     )
 
 
-Firecracker.getAllChildren = (element) ->
+Firecracker.getAllChildren = (element, deep=false) ->
     if element.children?
         children = [].slice.call(element.children)
     else
@@ -118,6 +118,12 @@ Firecracker.getAllChildren = (element) ->
         shadowChildren = []
 
     allChildren = children.concat(shadowChildren)
+
+    if deep is true
+        for child in allChildren
+            allDescendants = Firecracker.getAllChildren(child, true)
+            allChildren = allChildren.concat(allDescendants)
+
     return allChildren
 
 

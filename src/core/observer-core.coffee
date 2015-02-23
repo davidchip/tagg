@@ -53,6 +53,15 @@ Firecracker.register_particle('observer-core', {
     update: () ->
         @controls.update()
 
+        currentURL = window.location.href
+        if currentURL.split('?').length is 1
+            window.data.set({
+                x: @object.quaternion.x
+                y: @object.quaternion.y
+                z: @object.quaternion.z
+                w: @object.quaternion.w
+            })
+
         if @stereo is true
             @stereo_effect.render( window.world, @object )
         else

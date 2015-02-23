@@ -15,6 +15,10 @@ Firecracker.register_particle('model-3d', {
         obj.scale.y = @scale
         obj.scale.z = @scale
 
+        window.data.on('child_changed', (snapshot) =>
+            @object.quaternion[snapshot.key()] = snapshot.val()
+        )
+
         return obj
 
 })

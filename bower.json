@@ -6,5 +6,8 @@
     "three.js": "*",
     "underscore": "~1.7.0",
     "webcomponentsjs": "#0.5.1"
+  },
+  "devDependencies": {
+    "firebase": "~2.2.0"
   }
 }

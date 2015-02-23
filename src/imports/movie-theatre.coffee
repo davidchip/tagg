@@ -1,29 +1,13 @@
-Firecracker.register_group('movie-theatre', {
+Firecracker.register_group('theatre-walls', {
 
     depth: 600
-    muted: false
-    
-    screenRaise: 100
-    videoSrc: '/assets/oceans.mp4'
     groundColor: 0x000000
+    screenRaise: 60
     wallColor: 0x111111
     width: 700
-
-    screenHeight: 395
     theatreHeight: 495
     
     template: """
-        <movie-screen height="{{screenHeight}}" 
-                      muted="{{muted}}" 
-                      src="{{videoSrc}}" 
-                      width="{{width}}" 
-                      y="{{screenRaise + screenHeight / 2}}" 
-                      z="{{depth - 1}}">
-        </movie-screen>
-
-        <theatre-seats z="280">
-        </theatre-seats>
-
         <!-- ceiling -->
         <theatre-wall color="{{wallColor}}" 
                       height="{{depth}}"
@@ -84,6 +68,25 @@ Firecracker.register_group('movie-theatre', {
 })
 
 
+Firecracker.register_particle('theatre-wall', {
+    
+    color: undefined
+    height: undefined
+    width: undefined
+
+    create: () ->
+        geometry = new THREE.PlaneBufferGeometry(@width, @height)
+        material = new THREE.MeshLambertMaterial({
+            color: @color, 
+            side: THREE.DoubleSide 
+        })
+        instance = new THREE.Mesh( geometry, material )
+
+        return instance
+
+})
+
+
 Firecracker.register_particle('movie-screen', {
 
     src: undefined
@@ -97,7 +100,7 @@ Firecracker.register_particle('movie-screen', {
             
         @video_material = @get_video_material()
         screen_geometry = new THREE.PlaneBufferGeometry(@width, @height)
-        obj = new THREE.Mesh( screen_geometry, @video_material.material)
+        obj = new THREE.Mesh(screen_geometry, @video_material.material)
 
         return obj
 
@@ -108,7 +111,7 @@ Firecracker.register_particle('movie-screen', {
         video.autoplay = true
         video.loop = true
         $(video).attr('webkit-playsinline', 'webkit-playsinline')
-        if @muted is true
+        if @muted? and @muted isnt false
             $(video).attr('muted', true)
 
         @video = video
@@ -154,77 +157,5 @@ Firecracker.register_particle('movie-screen', {
         window.luminance = luminance / 10000000
 
         @video_material.update()
-
-})
-
-
-Firecracker.register_group('theatre-seats', {
-
-    z: 0
-
-    template: """
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="194" z="{{z + 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="97" z="{{z + 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" z="{{z + 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-97" z="{{z + 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-194" z="{{z + 100}}">
-        </model-3d>
-
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="194" z="{{z}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="97" z="{{z}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" z="{{z}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-97" z="{{z}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-194" z="{{z}}">
-        </model-3d>
-
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="194" z="{{z - 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="97" z="{{z - 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" z="{{z - 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-97" z="{{z - 100}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-194" z="{{z - 100}}">
-        </model-3d>
-
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="194" z="{{z - 200}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="97" z="{{z - 200}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" z="{{z - 200}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-97" z="{{z - 200}}">
-        </model-3d>
-        <model-3d src="/assets/theatre/theater_seats.js" scale="15" x="-194" z="{{z - 200}}">
-        </model-3d>
-    """
-
-})
-
-
-Firecracker.register_particle('theatre-wall', {
-    
-    color: undefined
-    height: undefined
-    width: undefined
-
-    create: () ->
-        geometry = new THREE.PlaneBufferGeometry(@width, @height)
-        material = new THREE.MeshLambertMaterial({
-            color: @color, 
-            side: THREE.DoubleSide 
-        })
-        instance = new THREE.Mesh( geometry, material )
-
-        return instance
 
 })

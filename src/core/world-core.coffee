@@ -7,6 +7,8 @@ window.world_started = $.Deferred()
 Firecracker.register_element('world-core', {
 
     ready: () ->
+        window.data = new Firebase("https://firecracker.firebaseIO.com")
+
         window.particles = []
         window.world = new THREE.Scene()
 
@@ -66,7 +68,7 @@ Firecracker.register_element('world-core', {
         for position in ['top', 'right', 'bottom', 'left']
             ready.style[position] = '0'
 
-        # document.body.appendChild(ready)
+        document.body.appendChild(ready)
 
         @create()
         window.world_created.resolve()
@@ -84,6 +86,32 @@ Firecracker.register_element('world-core', {
                 particle._update()
 
         animate()
+
+        # email = prompt('email')
+        # password = prompt('password')
+
+        # window.data.createUser({
+        #     email: email
+        #     password: password
+        # }, (error, userData) ->
+        #     if error
+        #         if error.code is "EMAIL_TAKEN"
+        #             alert "The new user account cannot be created because the email is already in use."
+        #         else if error.code is "INVALID_EMAIL"
+        #             alert "The specified email is not a valid email."
+        #         else
+        #             alert "Error creating user:"
+        #     else
+        #         alert 'logged in'
+
+        #     alert 'auth'
+        # window.data.authWithPassword({
+        #     email: email
+        #     password: password
+        # }, (error) ->
+        #     alert 'error'
+        #     console.log error
+        # )
 
     create: () ->
         return

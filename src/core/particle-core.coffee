@@ -10,6 +10,8 @@
 
 Firecracker.register_element('particle-core', {
 
+    ghost: false
+
     x: 0
     y: 0
     z: 0
@@ -31,13 +33,16 @@ Firecracker.register_element('particle-core', {
     rpmz: 0
 
     ready: () ->
+        @created = new $.Deferred()
         $.when(window.world_created).then(() =>
             @initialize()
+
+            if @ghost isnt true
+                @object = @create()
+                @_place(@object)
             
-            @object = @create()
-            @_place(@object)
-            
-            window.particles.push(@)
+                window.particles.push(@)
+                @created.resolve()
         )
 
     initialize: () ->

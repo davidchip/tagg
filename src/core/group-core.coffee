@@ -24,7 +24,7 @@ Firecracker.register_element('group-core', {
         """ Returns an array of objects corresponding with each child tag.
         """
         objects = []
-        for dom_child in Firecracker.getAllChildren(@)
+        for dom_child in Firecracker.getAllChildren(@, true)
             if dom_child.object?
                 objects.push(dom_child.object)
 
@@ -37,7 +37,7 @@ Firecracker.register_element('group-core', {
         """Remove dom elements of group, which will in turn destroy
            our objects.
         """
-        for child in Firecracker.getAllChildren(@)
+        for child in Firecracker.getAllChildren(@, true)
             child.remove()
         
         $(@).remove()

@@ -9,17 +9,28 @@
 
 
 <world-core>
-    <observer-core z="165" y="68">
+    <movie-theatre></movie-theatre>
+
+    <observer-core z="190" y="80">
     </observer-core>
 
-    <torch-light y="50">
-    </torch-light>
+    <theatre-walls height="560" width="960">
+        <movie-screen src="/assets/oceans.mp4" y="200" height="320" width="920" z="599" muted>
+        </movie-screen>
 
-    <torch-light y="50" z="400">
-    </torch-light>
+        <torch-light y="50" z="100">
+        </torch-light>
 
-    <movie-theatre screenRaise="60" depth="700" width="1300">
-    </movie-theatre>
+        <torch-light y="50" z="400">
+        </torch-light>
+
+        <audio-filter src="/assets/file.mp3">
+            <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
+                <model-3d src="/assets/theatre/theater_seats.js" scale="15" ghost>
+                </model-3d>
+            </grid-particles>
+        </audio-filter>
+    </theatre-walls>
 </world-core>
 
 
