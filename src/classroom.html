@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <script src="/bower_components/webcomponentsjs/webcomponents.js" type="text/javascript">
+    </script>
+    <link rel="import" href="/core/firecracker.html">
+</head>
+<body>
+
+<!--
+
+USSR map
+posters - motivational
+chalkboard
+clock
+trash can
+apples
+bin
+teacher desk, covered
+old ass book shelf
+big windows
+door
+cement walls
+cupboards
+intercom
+US flag
+
+-->
+
+
+<scene-core>
+    <basic-room depth="1400">
+        <observer-core z="110" y="110" x="65">
+        </observer-core>
+
+        <torch-light y="50" z="100">
+        </torch-light>
+
+        <torch-light y="50" z="400">
+        </torch-light>
+
+        <grid-particles rows="3" row_spacing="250" columns="3" column_spacing="260" x="-194" z="100">
+            <model-3d src="/cracks/models/schoolchair/lamp_2.js" y="150" scale="80" ghost>
+            </model-3d>
+        </grid-particles>
+
+        <grid-particles rows="4" row_spacing="150" columns="5" column_spacing="130" x="-194" z="100">
+            <model-3d src="/cracks/models/schoolchair/chair.js" y="20" scale="15" ghost>
+            </model-3d>
+        </grid-particles>
+    </basic-room>
+</scene-core>
+
+
+</body>
+</html>

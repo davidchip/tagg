@@ -35,8 +35,6 @@ Firecracker.register_element('particle-core', {
     ready: () ->
         @created = new $.Deferred()
         $.when(window.world_created).then(() =>
-            @initialize()
-
             if @ghost isnt true
                 @object = @create()
                 @_place(@object)
@@ -44,9 +42,6 @@ Firecracker.register_element('particle-core', {
                 window.particles.push(@)
                 @created.resolve()
         )
-
-    initialize: () ->
-        return
 
     create: () ->
         """Create should return the THREE.Object3D 

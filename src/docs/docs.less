@@ -1,0 +1,70 @@
+@import (reference) "mixins.less";
+
+// Globals
+body                                   {.font-m; font-family:Proxima Nova;}
+div                                    {box-sizing:border-box;}
+
+
+// Colors
+@white:#FCFFF5;
+@neutral:#D1DBBD;
+@dark_neutral:#91AA9D;
+@pale_blue:#3E606F;
+@dark_blue:#193441;
+@black:#000;
+
+
+// Geometries
+@corner_radius:20px;
+
+
+// Fonts
+.thin                                  {font-weight:100;}
+.light                                 {font-weight:300;}
+.regular                               {font-weight:400;}
+.semibold                              {font-weight:600;}
+.bold, b                               {font-weight:700;}
+.italic                                {font-style:italic;}
+
+.font-xs                               {font-size:6px;}
+.font-s                                {font-size:12px;}
+.font-sm                               {font-size:14px;}
+.font-m                                {font-size:16px;}
+.font-ml, h3                           {font-size:20px;}
+.font-l, h2                            {font-size:32px;}
+.font-xl, h1                           {font-size:44px;}
+h1, h2, h3                             {line-height:1.4em;}
+
+
+header                                 {overflow:auto; padding:0 30px;
+    img, nav                           {display:inline-block; vertical-align:middle;}
+    img                                {height:auto; padding:20px 0; width:8%;}
+    nav                                {text-align:right; width:92%;
+        a                              {text-decoration:none;}    
+        a:last-child                   {margin-right:0;}
+    }    
+}
+
+header, section                        {position:relative; z-index:2;}
+
+section                                {padding:60px}
+section:nth-child(even)                {background-color:#fff;}
+section:nth-child(odd)                 {background-color:#f2f2f2;}
+
+canvas#demo-scene                      {left:0; top:0; position:absolute; z-index:1;}
+section.hero                           {background-color:transparent; color:#fff; padding-left:150px; padding-right:150px;
+    h1, h2                             {}
+    h1                                 {margin-bottom:40px; margin-top:140px;}
+    h2                                 {margin-bottom:140px;}
+    b                                  {color:#FFD34E;}
+}
+
+section.example                        {padding:60px;
+    h2                                 {.semibold; display:block; margin-bottom:40px; text-align:center;}
+    .code                              {color:#666; font-family:monospace; padding:20px 0; white-space:pre-wrap;}
+}
+
+.button                                {.font-sm; .semibold; .transition(.2s); border:2px solid #fff; border-radius:@corner_radius; color:#fff; cursor:pointer; display:inline-block; margin-right:16px; outline:none; padding:12px 24px; text-transform:uppercase;}
+.button:hover                          {background-color:@neutral; border-color:#000; color:#000;}
+
+

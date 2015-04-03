@@ -5,7 +5,7 @@ module.exports = ->
     @loadTasks("grunt_tasks")
 
   
-    # compile for local or production serving
+    # Compile for local or production serving
     @registerTask("compile", [
         ## remove our target/ directory
         "clean:everything"

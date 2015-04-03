@@ -31,7 +31,6 @@ window.loadedElements = {}
 
 Firecracker.loadScript = (path) ->
     # http://stackoverflow.com/a/21637141/1959392
-
     result = $.Deferred()
     script = document.createElement("script")
     script.async = "async"
@@ -66,12 +65,12 @@ Firecracker.loadElementScript = (tagName) ->
             http.send()
             return http.status != 404
 
-        core_url = "/core/#{tagName}.js"
+        core_url = "../core/#{tagName}.js"
         if checkURLExists(core_url) is true
             url = core_url
 
         if not url?
-            imports_url = "/imports/#{tagName}.js"
+            imports_url = "../cracks/#{tagName}.js"
             if checkURLExists(imports_url) is true
                 url = imports_url
 
@@ -139,7 +138,7 @@ Firecracker.register_element = (tag, declaration) ->
             property_keys.push(key)
 
     properties = ''
-    if property_keys.length > 0 
+    if property_keys.length > 0
         properties = "attributes='#{property_keys.toString()}'"
 
 
@@ -705,8 +704,11 @@ window.addEventListener('polymer-ready', (e) ->
     $('body').append('<div id="definitions">')
     $('body').append('<div id="loadedScripts">')
 
-    world = $('body').find('world-core')[0]
-    Firecracker.loadElement(world)
+    for code_snippet in $("code-snippet")
+        Firecracker.loadElement(code_snippet)
+
+    for scene in $("scene-core")
+        Firecracker.loadElement(scene)
 
 )
 

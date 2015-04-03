@@ -13,11 +13,11 @@ Firecracker.register_element('group-core', {
 
     ready: () ->
         $.when(window.world_created).then(() =>
-            @initialize()
+            @create()
             window.particles.push(@)
         )
 
-    initialize: () ->
+    create: () ->
         return
 
     get_objects: () ->

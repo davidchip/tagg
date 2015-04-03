@@ -1,5 +1,5 @@
 """ A representation of a viewport into the world. Works alongside some sort
-    of world-core, to facilitate rendering.
+    of scene-core, to facilitate rendering.
 
     Example:
         <observer-core>
@@ -53,14 +53,14 @@ Firecracker.register_particle('observer-core', {
     update: () ->
         @controls.update()
 
-        currentURL = window.location.href
-        if currentURL.split('?').length is 1
-            window.data.set({
-                x: @object.quaternion.x
-                y: @object.quaternion.y
-                z: @object.quaternion.z
-                w: @object.quaternion.w
-            })
+        # currentURL = window.location.href
+        # if currentURL.split('?').length is 1
+        #     window.data.set({
+        #         x: @object.quaternion.x
+        #         y: @object.quaternion.y
+        #         z: @object.quaternion.z
+        #         w: @object.quaternion.w
+        #     })
 
         if @stereo is true
             @stereo_effect.render( window.world, @object )

@@ -12,7 +12,7 @@ Firecracker.register_group('grid-particles', {
     row_spacing: 1
     column_spacing: 1
 
-    initialize: () ->
+    create: () ->
         particle = $(@innerHTML).first()
         clone = particle.clone()
         particle.remove()
