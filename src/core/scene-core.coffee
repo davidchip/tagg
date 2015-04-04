@@ -28,7 +28,7 @@ Firecracker.register_element('scene-core', {
             document.body.appendChild( renderer.domElement )
             
         renderer.setSize(window.innerWidth, window.innerHeight)
-        renderer.setClearColor(0x000000)
+        renderer.setClearColor(0xffffff)
         
         window.renderer = renderer
         # window.renderer.domElement.style.position = 'absolute'

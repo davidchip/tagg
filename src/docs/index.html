@@ -21,24 +21,24 @@
 
     <section class="hero">
         <h1><b>Firecracker</b> is about expressiveness.</h1>
-        <h2>Its about creating amazing, <b>cross-platform VR scenes in seconds.</b></h2>
+        <h2>Its about creating WebGL + VR scenes fast.</b></h2>
     </section>
 
     <section class="example">
-        <h2>That scene above? It took 11 lines of HTML to write it.</h2>
+        <h2>That scene above? It took 10 lines of HTML to write it.</h2>
 
         <!-- CODE -->
         <code-snippet>
-<scene-core target="demo-scene">
-    <observer-core z="190" y="80"></observer-core>
-    <basic-room height="560" width="960">
-        <movie-screen src="/cracks/media/oceans.mp4" y="200" height="320" width="920" z="599" muted></movie-screen>
+            <scene-core target="demo-scene">
+                <observer-core z="190" y="80"></observer-core>
+                <basic-room height="560" width="960">
+                    <movie-screen src="/cracks/media/oceans.mp4" y="200" height="320" width="920" z="595"></movie-screen>
 
-        <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
-            <model-3d src="/cracks/models/seats/theater_seat.js" scale="15" ghost></model-3d>
-        </grid-particles>
-    </basic-room>
-</scene-core>
+                    <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
+                        <model-3d src="/cracks/models/seats/theater_seat.js" scale="15" ghost></model-3d>
+                    </grid-particles>
+                </basic-room>
+            </scene-core>
         </code-snippet>
 
     </section>

@@ -61,7 +61,9 @@ section.hero                           {background-color:transparent; color:#fff
 
 section.example                        {padding:60px;
     h2                                 {.semibold; display:block; margin-bottom:40px; text-align:center;}
-    .code                              {color:#666; font-family:monospace; padding:20px 0; white-space:pre-wrap;}
+    .code                              {background:@dark_blue; border:solid @pale_blue; border-width:.1em .1em .1em .8em; color:#666; display:block; font-family:monospace; line-height:125%; padding:.2em .6em; white-space:pre-wrap;
+      b                                {color:#FFD34E; font-weight:600;}
+    }
 }
 
 .button                                {.font-sm; .semibold; .transition(.2s); border:2px solid #fff; border-radius:@corner_radius; color:#fff; cursor:pointer; display:inline-block; margin-right:16px; outline:none; padding:12px 24px; text-transform:uppercase;}
