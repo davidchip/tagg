@@ -4,12 +4,17 @@
 
 Firecracker.register_group('code-snippet', {
 
+    light: undefined
+
     create: () ->
         escaped_html = @innerHTML.replace(/[\u00A0-\u9999<>\&]/gim, (i) =>
             return '&#' + i.charCodeAt(0) + ';')
+        
         code_html = @_format_into_code(escaped_html)
 
-        code_el = $('<code>').addClass('code').html(code_html)
+        theme = if @light then 'light-theme' else 'dark-theme'
+        code_el = $('<code>').addClass(theme).html(code_html)
+
         $(code_el).insertAfter(@)
 
     _format_into_code: (raw_string, num_indents=12) ->
@@ -17,8 +22,7 @@ Firecracker.register_group('code-snippet', {
 
         ## remove global indentation
         newline_array = raw_string.split(/\r\n|\r|\n/g)
-        console.log newline_array
-        indent = newline_array[1].match(/^\s{0,40}/)[0].length
+        indent = if newline_array.length > 0 then newline_array[1].match(/^\s{0,40}/)[0].length else 0
 
         for raw_line in newline_array
             ## remove the indent

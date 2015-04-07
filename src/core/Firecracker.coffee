@@ -1,4 +1,4 @@
-##########################################################
+#########################################################
 #                                                        #
 #              ###    Firecracker    ###                 #
 #                                                        #
@@ -82,12 +82,15 @@ Firecracker.loadElementScript = (tagName) ->
             return
 
         window.loadedElements[tagName] = Firecracker.loadScript(url)
+    else if hyphenated is false
+        ## ignore default 1-word tags
+        window.loadedElements[tagName] = ''
 
     return window.loadedElements[tagName]
 
 
 Firecracker.loadElement = (element, index=1) ->
-    """Stagger loading world elements by depths.
+    """Load an element, and then load its children.
     """
     tagName = element.tagName
     element_loaded = Firecracker.loadElementScript(tagName)
@@ -133,7 +136,7 @@ Firecracker.register_element = (tag, declaration) ->
 
     ## define settable properties of element
     property_keys = []
-    for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts', 'template'])
+    for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts', 'template', 'style'])
         if not $.isFunction(value)
             property_keys.push(key)
 
@@ -149,15 +152,9 @@ Firecracker.register_element = (tag, declaration) ->
         parentElementLoaded = ''
 
 
-    ## load in templates children
-    template = declaration.template
-    if template?
-        if $.isFunction(template)
-            template = declaration.template()
-
-        template = $.trim(template)
-    else
-        template = ""
+    ## load in template + styling
+    template = if declaration.template? then $.trim(declaration.template) else ""
+    styling = if declaration.style? then $.trim(declaration.style) else ""
 
     ## create the actual element when the parent's been loaded
     $.when(parentElementLoaded).then(() =>
@@ -165,9 +162,16 @@ Firecracker.register_element = (tag, declaration) ->
         el = document.createElement("div")
         el.id = "#{tag}-definition"
 
+        # if declaration.style?
+            # style = document.createElement('style')
+            # style.type = 'text/css';
+            # style.appendChild(document.createTextNode(declaration.style))
+            # el.appendChild(style)
+            # console.log el
+
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>
-                <template>#{template}</template>
+                <template>#{template}<style>#{styling}</style></template>
             </polymer-element>
         """
 
@@ -704,12 +708,7 @@ window.addEventListener('polymer-ready', (e) ->
     $('body').append('<div id="definitions">')
     $('body').append('<div id="loadedScripts">')
 
-    for code_snippet in $("code-snippet")
-        Firecracker.loadElement(code_snippet)
-
-    for scene in $("scene-core")
-        Firecracker.loadElement(scene)
-
+    Firecracker.loadElement(document.body)
 )
 
 

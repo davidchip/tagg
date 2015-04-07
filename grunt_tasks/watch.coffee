@@ -16,6 +16,11 @@ module.exports = ->
       tasks: ['newer:coffee:compile', 'notify:coffee']
     }
 
+    cmd: {
+      files: 'crack.coffee',
+      tasks: ['newer:coffee:cmd', 'notify:cmd']
+    }
+
     less: {
       files: 'src/**/*.less',
       tasks: ['newer:less:compile', 'notify:less']

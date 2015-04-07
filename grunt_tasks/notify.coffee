@@ -20,6 +20,13 @@ module.exports = ->
       }
     }
 
+    cmd: {
+      options: {
+        title: 'bammm!'
+        message: 'command line recompiled'
+      }
+    }
+
     less: {
       options: {
         title: 'naileddd it'

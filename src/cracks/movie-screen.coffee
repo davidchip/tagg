@@ -5,9 +5,9 @@ Firecracker.register_group('movie-screen', {
     z: undefined
 
     src: undefined
-    height: undefined
-    muted: undefined
-    width: undefined
+    height: 320
+    muted: true
+    width: 960
 
     template: """
         <video-screen src="{{src}} "muted="{{muted}}" height="{{height}}" x="{{x}}" y="{{y}}" z="{{z}}" width="{{width}}">
@@ -45,8 +45,8 @@ Firecracker.register_particle('video-screen', {
         @video = video
 
         canvas = document.createElement("canvas")
-        canvas.width = 960
-        canvas.height = 400
+        canvas.width = @width
+        canvas.height = @height
         @canvas = canvas.getContext("2d")
 
         @videoTexture = new THREE.Texture( canvas )

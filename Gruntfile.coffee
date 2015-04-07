@@ -18,6 +18,7 @@ module.exports = ->
         "copy:js"
         "copy:media"
         "coffee:compile"
+        "coffee:cmd"
         "less:compile"
     ])
 

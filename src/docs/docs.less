@@ -36,6 +36,9 @@ div                                    {box-sizing:border-box;}
 h1, h2, h3                             {line-height:1.4em;}
 
 
+canvas#demo-scene                      {left:0; top:0; position:absolute; z-index:1;}
+
+header, section.hero                   {position:relative; z-index:2;}
 header                                 {overflow:auto; padding:0 30px;
     img, nav                           {display:inline-block; vertical-align:middle;}
     img                                {height:auto; padding:20px 0; width:8%;}
@@ -45,25 +48,25 @@ header                                 {overflow:auto; padding:0 30px;
     }    
 }
 
-header, section                        {position:relative; z-index:2;}
-
 section                                {padding:60px}
 section:nth-child(even)                {background-color:#fff;}
 section:nth-child(odd)                 {background-color:#f2f2f2;}
 
-canvas#demo-scene                      {left:0; top:0; position:absolute; z-index:1;}
-section.hero                           {background-color:transparent; color:#fff; padding-left:150px; padding-right:150px;
+section.hero                           {background-color:transparent; color:#fff; margin-bottom:50px; padding-left:150px; padding-right:150px;    
     h1, h2                             {}
     h1                                 {margin-bottom:40px; margin-top:140px;}
-    h2                                 {margin-bottom:140px;}
+    h2                                 {margin-bottom:50px;}
     b                                  {color:#FFD34E;}
+    .code                              {display:inline-block;}
+}
+
+code.dark-theme                        {background:@dark_blue; border:solid @pale_blue; border-width:.1em .1em .1em .8em; color:#666; display:block; font-family:monospace; line-height:125%; padding:.2em .6em; white-space:pre-wrap;
+  b                                    {color:#FFD34E; font-weight:600;}
 }
 
 section.example                        {padding:60px;
-    h2                                 {.semibold; display:block; margin-bottom:40px; text-align:center;}
-    .code                              {background:@dark_blue; border:solid @pale_blue; border-width:.1em .1em .1em .8em; color:#666; display:block; font-family:monospace; line-height:125%; padding:.2em .6em; white-space:pre-wrap;
-      b                                {color:#FFD34E; font-weight:600;}
-    }
+    h2                                 {.thin; display:block; margin-bottom:40px; text-align:center;}
+    p                                  {.font-l; .thin; line-height:1.4em; max-width:720px; margin:80px auto 20px auto; text-align:center; width:90%;}
 }
 
 .button                                {.font-sm; .semibold; .transition(.2s); border:2px solid #fff; border-radius:@corner_radius; color:#fff; cursor:pointer; display:inline-block; margin-right:16px; outline:none; padding:12px 24px; text-transform:uppercase;}

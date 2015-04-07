@@ -17,4 +17,15 @@ module.exports = ->
       }]
     }
 
+    cmd: {
+      files: [{
+        expand: true,
+        cwd: '.',
+        src: ['crack.coffee'],
+        dest: '.',
+        ext: '.js',
+        extDot: 'first'
+      }]
+    }
+
   }
