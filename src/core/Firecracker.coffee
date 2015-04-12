@@ -154,7 +154,7 @@ Firecracker.register_element = (tag, declaration) ->
 
     ## load in template + styling
     template = if declaration.template? then $.trim(declaration.template) else ""
-    styling = if declaration.style? then $.trim(declaration.style) else ""
+    styling = if declaration.style? then "<style>#{$.trim(declaration.style)}</style>" else ""
 
     ## create the actual element when the parent's been loaded
     $.when(parentElementLoaded).then(() =>
@@ -171,7 +171,7 @@ Firecracker.register_element = (tag, declaration) ->
 
         el.innerHTML = """
             <polymer-element name='#{tag}' #{_extends} #{properties}>
-                <template>#{template}<style>#{styling}</style></template>
+                <template>#{template}#{styling}</template>
             </polymer-element>
         """
 
