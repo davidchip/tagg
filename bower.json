@@ -5,7 +5,8 @@
     "polymer": "Polymer/polymer#0.5.1",
     "three.js": "*",
     "underscore": "~1.7.0",
-    "webcomponentsjs": "#0.5.1"
+    "webcomponentsjs": "#0.5.1",
+    "interact": "~1.2.4"
   },
   "devDependencies": {
     "firebase": "~2.2.0"
