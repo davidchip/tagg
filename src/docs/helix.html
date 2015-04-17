@@ -5,12 +5,15 @@
     </script>
     <link rel="import" href="/core/firecracker.html">
     
-    <link  href="docs.css" rel="stylesheet">
+    <link  href="helix.css" rel="stylesheet">
 </head>
 <body>
-    <canvas id="demo-scene">
-    </canvas>
+    <div class="map-wrapper">
+        <div id="map" class="map">
+        </div>
+    </div>
 
+    <dom-map>
     <header>
         <img src="images/logo_inverse.png" alt="firecracker logo"><!--
         --><nav>
@@ -42,9 +45,6 @@
         </code-snippet>
         <p>Firecracker gets WebGL and HTML to play nice together, allowing you to create better, more beautiful things.</p>
     </section>
-
-    <section class="example">
-        <h2>Importing the core library gives you access to all of the core elements, and published dictionary of elements.</h2>
-    </section>
+    </dom-map>
 </body>
 </html>
