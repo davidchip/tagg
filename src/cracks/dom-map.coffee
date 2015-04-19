@@ -7,6 +7,7 @@ Firecracker.register_group('dom-map', {
         @configure_drag_and_drop()
 
         map = document.getElementById("map")
+        console.dir @
         @draw_circles(map, @, 120, 2500, 1500)
 
         # $('body').keydown(() ->
@@ -21,7 +22,7 @@ Firecracker.register_group('dom-map', {
         for child, index in children
             ## set up hashing
             if not $(child).attr('id')?
-                console.log 'no id'
+                # console.log 'no id'
                 hash = Math.random().toString(36).substring(7)
                 $(child).attr('id', hash)
             else
@@ -46,10 +47,10 @@ Firecracker.register_group('dom-map', {
             if depth == 0
                 color_index = index + 1
 
-            console.log "id: #{depth},#{index}"
-            console.log "degrees: #{degrees}"
-            console.log "parent degrees: #{parent_degrees}"
-            console.log ''
+            # console.log "id: #{depth},#{index}"
+            # console.log "degrees: #{degrees}"
+            # console.log "parent degrees: #{parent_degrees}"
+            # console.log ''
 
 
             degrees = degrees + parent_degrees
@@ -190,9 +191,12 @@ Firecracker.register_group('dom-map', {
                 dropzone_ref = $(event.target).data().ref
 
                 moved_el = $("##{dragged_element_ref}")
-                console.log moved_el
+                # console.log moved_el
                 dragged_into = $("##{dropzone_ref}")
+                console.log moved_el
+                console.log dragged_into
                 moved_el.appendTo(dragged_into)
+                console.log ''
                 # @stack.push({dropped:moved_el, dropzone:dragged_in})
 
                 @draw_circles(map, @, 120, 2500, 1500)

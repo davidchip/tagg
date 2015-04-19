@@ -11,40 +11,26 @@
     <div class="map-wrapper">
         <div id="map" class="map">
         </div>
-    </div>
-
+    </div><div class="el-wrapper">
     <dom-map>
-    <header>
-        <img src="images/logo_inverse.png" alt="firecracker logo"><!--
-        --><nav>
-            <a class="button" href="https://github.com/davidchippendale/firecracker">Github Repo</a>
-        </nav>
-    </header>
+      <section class="hero">
+            <h1>Firecracker is about expressiveness.</h1>
+            <h2>Its about stringing together surprisingly powerful little HTML into engaging, cross-platform experiences.</h2>
+        </section>
 
-    <section class="hero">
-        <h1><b>Firecracker</b> is about expressiveness.</h1>
-        <h2>Its about stringing together <b>surprisingly powerful little HTML into engaging, cross-platform experiences</b>.</h2>
+        <section class="example">
+            <ul>
+                <li>1. test</li>
+                <li>2. test 2</li>
+            </ul>
+        </section>
 
-        <arrow-down>
-        </arrow-down>
-    </section>
 
-    <section class="example">
-        <h2>That scene above? It took <b>10 lines of HTML</b>.</h2>
-        <code-snippet>
-            <scene-core target="demo-scene">
-                <observer-core z="190" y="80"></observer-core>
-                <basic-room height="560" width="960">
-                    <movie-screen src="/cracks/media/oceans.mp4" y="200" z="545"></movie-screen>
-
-                    <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
-                        <model-3d src="/cracks/models/seats/theater_seat.js" scale="15" ghost></model-3d>
-                    </grid-particles>
-                </basic-room>
-            </scene-core>
-        </code-snippet>
-        <p>Firecracker gets WebGL and HTML to play nice together, allowing you to create better, more beautiful things.</p>
-    </section>
+        <section class="example">
+            <h3>Importing the core library gives you access to all of the core elements, and published dictionary of elements.</h3>
+            <h4>Don't forget about this last part!!</h4>
+        </section>
     </dom-map>
+    </div>
 </body>
 </html>

@@ -7,7 +7,6 @@
 #                                                        #           
 ##########################################################
 
-
 class Firecracker
 
 
@@ -52,7 +51,7 @@ Firecracker.loadScript = (path) ->
     return result.promise()
 
 
-Firecracker.loadElementScript = (tagName) ->
+Firecracker.loadElementRegistration = (tagName) ->
     """Load an elements Firecracker script if it hasn't been loaded
     """
     tagName = tagName.toLowerCase()
@@ -89,15 +88,29 @@ Firecracker.loadElementScript = (tagName) ->
     return window.loadedElements[tagName]
 
 
+Firecracker.registerElement = (element) ->
+    tagName = element.tagName.toLowerCase()
+    elementRegistered = Firecracker.loadElementRegistration(tagName)
+    
+    $.when(elementRegistered).then(() =>
+        if window.customElements[tagName]?
+            rendered = new window.customElements[tagName]()
+            # console.dir rendered
+            # console.log rendered
+
+        for child in element.children
+            Firecracker.registerElement(child)
+    )
+
 Firecracker.loadElement = (element, index=1) ->
     """Load an element, and then load its children.
     """
     tagName = element.tagName
-    element_loaded = Firecracker.loadElementScript(tagName)
+    element_loaded = Firecracker.loadElementRegistration(tagName)
     
     $.when(element_loaded).then(() =>
         setTimeout (() =>
-            allChildren = Firecracker.getAllChildren(element)
+            allChildren = 
 
             for child in allChildren
                 Firecracker.loadElement(child, index++)
@@ -128,55 +141,106 @@ Firecracker.getAllChildren = (element, deep=false) ->
 
     return allChildren
 
+window.customElements = {}
+Firecracker.register_element = (tag, el_declaration) ->
+    """Registers a JS callable constructors for the element
+    """
+    excludedAttributes = ['extends', 
+                          'style' ]
 
-Firecracker.register_element = (tag, declaration) ->
-    ## extend the element if applicable
-    _extends = if declaration.extends? then "extends='#{declaration.extends}'" else ''
+    ## assemble values, functions ascribed to this element
+    proto = {}
+    for attribute, attributeValue of el_declaration
+        if attribute not in excludedAttributes
+            proto[attribute] = attributeValue
 
-
-    ## define settable properties of element
-    property_keys = []
-    for key, value of _.omit(declaration, ['extends', 'shaders', 'scripts', 'template', 'style'])
-        if not $.isFunction(value)
-            property_keys.push(key)
-
-    properties = ''
-    if property_keys.length > 0
-        properties = "attributes='#{property_keys.toString()}'"
-
-
-    ## load in parent registration
-    if declaration.extends?
-        parentElementLoaded = Firecracker.loadElementScript("#{declaration.extends}")
-    else
-        parentElementLoaded = ''
-
-
-    ## load in template + styling
-    template = if declaration.template? then $.trim(declaration.template) else ""
-    styling = if declaration.style? then "<style>#{$.trim(declaration.style)}</style>" else ""
-
+    ## load in template, styling
+    _extends = el_declaration.extends
+    parentElementLoaded = if _extends?  then Firecracker.loadElementRegistration("#{_extends}") else ''
+    
     ## create the actual element when the parent's been loaded
     $.when(parentElementLoaded).then(() =>
-        element = Polymer("#{tag}", declaration)
-        el = document.createElement("div")
-        el.id = "#{tag}-definition"
+        ## get our base prototype object
+        parentConstructor = window.customElements["#{_extends}"]
+        if _extends? and parentConstructor?
+            elPrototype = Object.create(parentConstructor.prototype)
+        else
+            elPrototype = Object.create(HTMLElement.prototype)
+
+        elPrototype.attachedCallback = () ->
+            ## overwrite default attributes
+            for attribute in @attributes
+                Object.defineProperty(@, attribute.name, {value: attribute.value})
+
+            ## combine our innerHTML and template
+            if @template?
+                console.dir @
+                console.log @template
+
+            template = if @template? then @template else ''
+            template = template.replace(/\{\{(.*?)\}\}/g, (delimited) =>
+                attributeKey = delimited.slice(2, -2)
+                if @[attributeKey]? 
+                    return @[attributeKey])
+
+            console.log template
+
+
+            
+            @innerHTML += template 
+        
+            @ready()
+
+        ## set functions as callable functions, set values as prorperties
+        for key, value of proto
+            if $.isFunction(value)
+                elPrototype[key] = value
+            else
+                Object.defineProperty(elPrototype, "#{key}", {value: value})
+
+        ## register the element
+        CustomElement = document.registerElement("#{tag}", {
+            prototype: elPrototype })
+
+        ## keep track of the constructor
+        window.customElements["#{tag}"] = CustomElement
+
+
+        ## define the template of the object
+        
+        # _styles = declaration.style
+        # styling =             if _styles?   then "<style>#{$.trim(_styles)}</style>"          else ''
 
         # if declaration.style?
-            # style = document.createElement('style')
-            # style.type = 'text/css';
-            # style.appendChild(document.createTextNode(declaration.style))
-            # el.appendChild(style)
-            # console.log el
+        #     style = document.createElement('style')
+        #     style.type = 'text/css'
+            
+        #     style.appendChild(document.createTextNode(declaration.style))
+        #     el_definition.appendChild(style)
 
-        el.innerHTML = """
-            <polymer-element name='#{tag}' #{_extends} #{properties}>
-                <template>#{template}#{styling}</template>
-            </polymer-element>
-        """
+        # definitions = $("#definitions")
+        # definitions.append(el_definition)
 
-        definitions = $("#definitions")
-        definitions.append(el)
+        # console.log el_definition
+        # el_definition.ready()
+        # $.when(el_definition.created).then(() =>
+            
+        # )
+
+        # element = Polymer("#{tag}", declaration)
+        # el = document.createElement("div")
+        # el.id = "#{tag}-definition"
+
+
+
+        # el.innerHTML = """
+        #     <polymer-element name='#{tag}' #{_extends} #{properties}>
+        #         <template>#{template}#{styling}</template>
+        #     </polymer-element>
+        # """
+
+        # definitions = $("#definitions")
+        # definitions.append(el)
     )
 
 
@@ -704,12 +768,13 @@ Firecracker.Controls = {
 
 
 ## load our registrations
-window.addEventListener('polymer-ready', (e) ->
-    $('body').append('<div id="definitions">')
-    $('body').append('<div id="loadedScripts">')
+# window.addEventListener('polymer-ready', (e) ->
+$('body').append('<div id="definitions">')
+$('body').append('<div id="loadedScripts">')
 
-    Firecracker.loadElement(document.body)
-)
+# alert
+Firecracker.registerElement(document.body)
+# )
 
 
 ## extends jquery search to search in shadowRoots

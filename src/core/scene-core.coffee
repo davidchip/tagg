@@ -11,8 +11,7 @@ Firecracker.register_element('scene-core', {
     start: false
 
     ready: () ->
-        window.data = new Firebase("https://firecracker.firebaseIO.com")
-
+        # window.data = new Firebase("https://firecracker.firebaseIO.com")
         window.particles = []
         window.world = new THREE.Scene()
 
@@ -28,7 +27,7 @@ Firecracker.register_element('scene-core', {
             document.body.appendChild( renderer.domElement )
             
         renderer.setSize(window.innerWidth, window.innerHeight)
-        renderer.setClearColor(0xffffff)
+        renderer.setClearColor(0x000000)
         
         window.renderer = renderer
         # window.renderer.domElement.style.position = 'absolute'

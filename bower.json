@@ -2,9 +2,7 @@
   "name": "firecracker",
   "dependencies": {
     "jquery": "~2.1.1",
-    "polymer": "Polymer/polymer#0.5.1",
     "three.js": "*",
-    "underscore": "~1.7.0",
     "webcomponentsjs": "#0.5.1",
     "interact": "~1.2.4",
     "jquery.kinetic": "~2.0.5"

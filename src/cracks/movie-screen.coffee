@@ -1,6 +1,6 @@
 Firecracker.register_group('movie-screen', {
 
-    x: undefined
+    x: 0
     y: undefined
     z: undefined
 

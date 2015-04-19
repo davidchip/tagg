@@ -11,13 +11,6 @@
     <canvas id="demo-scene">
     </canvas>
 
-    <header>
-        <img src="images/logo_inverse.png" alt="firecracker logo"><!--
-        --><nav>
-            <a class="button" href="https://github.com/davidchippendale/firecracker">Github Repo</a>
-        </nav>
-    </header>
-
     <section class="hero">
         <h1><b>Firecracker</b> is about expressiveness.</h1>
         <h2>Its about stringing together <b>surprisingly powerful little HTML into engaging, cross-platform experiences</b>.</h2>
@@ -28,18 +21,18 @@
 
     <section class="example">
         <h2>That scene above? It took <b>10 lines of HTML</b>.</h2>
-        <code-snippet>
-            <scene-core target="demo-scene">
-                <observer-core z="190" y="80"></observer-core>
-                <basic-room height="560" width="960">
-                    <movie-screen src="/cracks/media/oceans.mp4" y="200" z="545"></movie-screen>
+        <!-- <code-snippet> -->
+        <scene-core target="demo-scene">
+            <observer-core z="190" y="80"></observer-core>
+            <!-- <basic-room height="560" width="960"> -->
+                <movie-screen src="/cracks/media/oceans.mp4" y="200" z="545"></movie-screen>
 
-                    <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
-                        <model-3d src="/cracks/models/seats/theater_seat.js" scale="15" ghost></model-3d>
-                    </grid-particles>
-                </basic-room>
-            </scene-core>
-        </code-snippet>
+<!--                 <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
+                    <model-3d src="/cracks/models/seats/theater_seat.js" scale="15" ghost></model-3d>
+                </grid-particles> -->
+            <!-- </basic-room> -->
+        </scene-core>
+        <!-- </code-snippet> -->
         <p>Firecracker gets WebGL and HTML to play nice together, allowing you to create better, more beautiful things.</p>
     </section>
 

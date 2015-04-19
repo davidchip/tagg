@@ -59,7 +59,7 @@ Firecracker.register_element('particle-core', {
             if not object[attr]?
                 object[attr] = @[attr]
 
-        object.position.set(object.x, object.y, object.z)
+        object.position.set(parseInt(object.x), parseInt(object.y), parseInt(object.z))
         object.rotation.set(object.turnx * (Math.PI * 2), 
                             object.turny * (Math.PI * 2), 
                             object.turnz * (Math.PI * 2))
