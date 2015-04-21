@@ -1,13 +1,15 @@
-Firecracker.register_group('movie-screen', {
+Firecracker.registerElement('movie-screen', {
 
-    x: 0
-    y: undefined
-    z: undefined
+    model: {
+        x: 0
+        y: 0
+        z: 0
 
-    src: undefined
-    height: 320
-    muted: true
-    width: 960
+        src: undefined
+        height: 320
+        muted: true
+        width: 960
+    }
 
     template: """
         <video-screen src="{{src}} "muted="{{muted}}" height="{{height}}" x="{{x}}" y="{{y}}" z="{{z}}" width="{{width}}">
@@ -19,34 +21,36 @@ Firecracker.register_group('movie-screen', {
     """
 
     create: () ->
-        if not @src?
+        if not @get('src')?
             alert 'provide a src value'
 
 })
 
 
-Firecracker.register_particle('video-screen', {
+Firecracker.registerParticle('video-screen', {
 
-    height: undefined
-    width: undefined
-    muted: undefined
-    src: undefined
+    model: {
+        height: undefined
+        width: undefined
+        muted: undefined
+        src: undefined
+    }
 
     create: () ->
         video = document.createElement("video")
-        video.src = @src
+        video.src = @get('src')
         video.style = "display:none; position:absolute; top:1px; left:0;"
         video.autoplay = true
         video.loop = true
         $(video).attr('webkit-playsinline', 'webkit-playsinline')
-        if @muted? and @muted isnt false
+        if @get('muted')? and @get('muted') isnt false
             $(video).attr('muted', true)
 
         @video = video
 
         canvas = document.createElement("canvas")
-        canvas.width = @width
-        canvas.height = @height
+        canvas.width = @get('width')
+        canvas.height = @get('height')
         @canvas = canvas.getContext("2d")
 
         @videoTexture = new THREE.Texture( canvas )
@@ -60,7 +64,7 @@ Firecracker.register_particle('video-screen', {
         })
 
         ## attach our material to a plane
-        screen_geometry = new THREE.PlaneBufferGeometry(@width, @height)
+        screen_geometry = new THREE.PlaneBufferGeometry(@get('width'), @get('height'))
         screen_object = new THREE.Mesh(screen_geometry, material)
 
         return screen_object
@@ -68,7 +72,6 @@ Firecracker.register_particle('video-screen', {
     update: () ->
         # if( video.readyState is video.HAVE_ENOUGH_DATA )
         #     setTimeout( ( () => videoTexture.needsUpdate = true ), 4000 )
-
         @canvas.drawImage(@video, 0, 0)
 
         brightness = @canvas.getImageData(0,0,320,180)
@@ -91,7 +94,7 @@ Firecracker.register_particle('video-screen', {
 })
 
 
-Firecracker.register_particle('screen-brightness', {
+Firecracker.registerParticle('screen-brightness', {
 
     extends: 'point-light'
 

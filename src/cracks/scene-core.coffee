@@ -4,20 +4,22 @@ window.world_created = $.Deferred()
 window.world_started = $.Deferred()
 
 
-Firecracker.register_element('scene-core', {
+Firecracker.registerElement('scene-core', {
 
-    target: undefined
+    model: {
+        target: undefined   
+        scene: 'plus' 
+    }
 
-    start: false
-
-    ready: () ->
+    create: () ->
         # window.data = new Firebase("https://firecracker.firebaseIO.com")
         window.particles = []
         window.world = new THREE.Scene()
 
         ## setup WebGL renderer
-        if @target?
-            target_el = $("##{@target}")
+        if @get('target')?
+            
+            target_el = $("##{@get('target')}")
             if target_el.length > 0
                 renderer = new THREE.WebGLRenderer({alpha:true, canvas:target_el[0]})
             else
@@ -82,7 +84,6 @@ Firecracker.register_element('scene-core', {
         if @start is true
             document.body.appendChild(ready)
 
-        @create()
         window.world_created.resolve()
 
         ## render function
@@ -124,8 +125,5 @@ Firecracker.register_element('scene-core', {
         #     alert 'error'
         #     console.log error
         # )
-
-    create: () ->
-        return
         
 })

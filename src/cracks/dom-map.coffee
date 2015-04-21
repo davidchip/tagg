@@ -1,32 +1,69 @@
-Firecracker.register_group('dom-map', {
+Firecracker.registerElement('node-ref', {
 
-    stack: []
+    class: 'circle'
+
+    model: {
+        color_index: 0
+        el: undefined
+        left: undefined
+        top: undefined
+        reference: undefined
+    }
+
+    template: """
+        <div class="circle-inner color-{{color_index}}">{{refTagName}}</div>
+    """
+
+    prerender: () ->
+        ref = @get('reference')
+        @set('refTagName', $("[data-elref=#{ref}]")[0].tagName.toLowerCase())
+
+})
+
+
+Firecracker.registerElement('dom-map', {
+
+    class: 'site-dom-map'
+
+    model: {
+        pointer: 5
+        target: undefined        
+    }
+
+    template: """
+        <div class="map-wrapper">
+            <div id="map" class="map">
+            </div>
+        </div>
+    """
 
     create: () ->
         @configure_kinetic_scrolling()
         @configure_drag_and_drop()
+        @redraw()
 
-        map = document.getElementById("map")
-        console.dir @
-        @draw_circles(map, @, 120, 2500, 1500)
+    redraw: () ->
+        if @get('target')
+            target = document.getElementById('site')
+        else
+            target = @
 
-        # $('body').keydown(() ->
+        map = $(@).find('#map')
+        @draw_circles(map[0], target, 120, 2500, 1500)
 
-        #     revert = @stack.pop()
-        #     revert.dropped.appendTo('dropzone')
-        # )
 
     draw_circles: (map, element, scale, offset_left, offset_top, depth=0, parent_degrees=0, color_index=0) ->
         children = element.children
         line_multiplier = 1.5
+
         for child, index in children
             ## set up hashing
-            if not $(child).attr('id')?
+            if not $(child).attr('data-elref')?
                 # console.log 'no id'
                 hash = Math.random().toString(36).substring(7)
-                $(child).attr('id', hash)
+                $(child).attr('data-elref', hash)
             else
-                hash = $(child).attr('id')
+                hash = $(child).attr('data-elref')
 
             ## if there are 2+ children: 
             ## distribute the child evently among the other children
@@ -87,15 +124,18 @@ Firecracker.register_group('dom-map', {
 
             ## if a node circle doesn't exist, create one
             css = {}
-            node_circle = $(".circle[data-ref=#{hash}]")
+            node_circle = $("#map").find(".circle[data-ref=#{hash}]")
             if not node_circle.length > 0
-                node_circle = $("<div>").addClass("circle").html("<div class='circle-inner color-#{color_index}'>#{child.tagName}</div>")
+                node_circle = Firecracker.createElement('node-ref', {
+                    color_index: color_index
+                    reference: hash })
+
                 $(map).append(node_circle)
             
-            css.opacity = 1 - (depth / 5)
             css.left = _offset_left
             css.top = _offset_top
-            node_circle.css(css)
+            css.opacity = 1 - (depth / 5)
+            $(node_circle).css(css)
 
             ## set the ref attribute
             $(node_circle)[0].setAttribute('data-ref', "#{hash}")
@@ -190,16 +230,14 @@ Firecracker.register_group('dom-map', {
                 dragged_element_ref = $(event.relatedTarget).data().ref
                 dropzone_ref = $(event.target).data().ref
 
-                moved_el = $("##{dragged_element_ref}")
-                # console.log moved_el
-                dragged_into = $("##{dropzone_ref}")
-                console.log moved_el
-                console.log dragged_into
-                moved_el.appendTo(dragged_into)
-                console.log ''
+                moved_el = $("[data-elref=#{dragged_element_ref}]")
+                dragged_into = $("[data-elref=#{dropzone_ref}]")
+                moved_el.prependTo(dragged_into)
                 # @stack.push({dropped:moved_el, dropzone:dragged_in})
 
-                @draw_circles(map, @, 120, 2500, 1500)
+                @redraw()
             )
 
 })
+
+

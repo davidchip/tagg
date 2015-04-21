@@ -1,10 +1,34 @@
-Firecracker.register_group('basic-room', {
+Firecracker.registerParticle('basic-wall', {
+    
+    model: {
+        color: undefined
+        height: undefined
+        width: undefined
+    }
 
-    depth: 600
-    groundColor: 0x000000
-    wallColor: 0xffffff
-    width: 700
-    height: 495
+
+    create: () ->
+        geometry = new THREE.PlaneBufferGeometry(@get('width'), @get('height'))
+        material = new THREE.MeshLambertMaterial({
+            color: @get('color'), 
+            side: THREE.DoubleSide 
+        })
+        instance = new THREE.Mesh( geometry, material )
+
+        return instance
+
+})
+
+Firecracker.registerElement('basic-room', {
+
+    model: {
+        depth: 600
+        groundColor: 0x000000
+        wallColor: 'black'
+        width: 700
+        height: 495
+    }
+
     
     template: """
         <!-- ceiling -->
@@ -61,25 +85,6 @@ Firecracker.register_group('basic-room', {
     """
 
     create: () ->
-        @screenHeight = @width / (16/9)
-
-})
-
-
-Firecracker.register_particle('basic-wall', {
-    
-    color: undefined
-    height: undefined
-    width: undefined
-
-    create: () ->
-        geometry = new THREE.PlaneBufferGeometry(@width, @height)
-        material = new THREE.MeshLambertMaterial({
-            color: @color, 
-            side: THREE.DoubleSide 
-        })
-        instance = new THREE.Mesh( geometry, material )
-
-        return instance
+        @screenHeight = @get('width') / (16/9)
 
 })

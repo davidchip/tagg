@@ -2,7 +2,7 @@
 """
 
 
-Firecracker.register_group('code-snippet', {
+Firecracker.registerElement('code-snippet', {
 
     light: undefined
 

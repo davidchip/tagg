@@ -8,29 +8,36 @@
     <link  href="helix.css" rel="stylesheet">
 </head>
 <body>
-    <div class="map-wrapper">
-        <div id="map" class="map">
+    <dom-map class="left" target="#site">
+    </dom-map><div class="right">
+        <div class="selections">
+            <div class="circle color-1" data-ref="111">
+                <div class="circle-inner">LI</div>
+            </div>
+            <li data-elref="111">
+                Testing a bucket!
+            </li>
         </div>
-    </div><div class="el-wrapper">
-    <dom-map>
-      <section class="hero">
-            <h1>Firecracker is about expressiveness.</h1>
-            <h2>Its about stringing together surprisingly powerful little HTML into engaging, cross-platform experiences.</h2>
-        </section>
+        <div id="site">
+          <section class="hero">
+                <h1>Firecracker is about expressiveness.</h1>
+                <h2>Its about stringing together surprisingly powerful little HTML into engaging, cross-platform experiences.</h2>
+            </section>
 
-        <section class="example">
-            <ul>
-                <li>1. test</li>
-                <li>2. test 2</li>
-            </ul>
-        </section>
+            <section class="example">
+                <ul>
+                    <li>1. test</li>
+                    <li>2. test</li>
+                    <li>3. test</li>
+                    <li>4. test</li>
+                </ul>
+            </section>
 
-
-        <section class="example">
-            <h3>Importing the core library gives you access to all of the core elements, and published dictionary of elements.</h3>
-            <h4>Don't forget about this last part!!</h4>
-        </section>
-    </dom-map>
+            <section class="example">
+                <h3>Importing the core library gives you access to all of the core elements, and published dictionary of elements.</h3>
+                <h4>Don't forget about this last part!!</h4>
+            </section>
+        </div>
     </div>
 </body>
 </html>

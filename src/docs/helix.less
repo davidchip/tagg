@@ -48,11 +48,12 @@ h1, h2, h3                             {line-height:1.4em;}
 section                                {margin-bottom:80px;}
 .node-line                             {.transition(all .4s); border:1px solid #ddd; position:absolute; transform-origin:left center; -webkit-transform-origin:left center; z-index: 1}
 
-.el-wrapper, .map-wrapper              {display:inline-block; vertical-align:top; width:50%;}
+.left, .right                          {display:inline-block; vertical-align:top; width:50%;}
+.selections                            {background-color:#fff;}
 
 @map_height:3000px;
 @map_width:5000px;
-.map-wrapper                           {overflow:hidden; position:relative; height:678px; width:50%; z-index:0;}
+.map-wrapper                           {overflow:hidden; position:relative; height:678px; width:100%; z-index:0;}
 .map-wrapper.minimize-circles {
     .circle                            {margin:(@circle_maximized - @circle_minimized) / 2;
         .circle-inner                  {color:transparent; height:@circle_minimized; line-height:@circle_minimized; width:@circle_minimized;}

@@ -1,4 +1,4 @@
-Firecracker.register_particle('point-light', {
+Firecracker.registerParticle('point-light', {
 
     create: () ->
         return new THREE.PointLight()

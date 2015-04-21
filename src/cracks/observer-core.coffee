@@ -7,15 +7,15 @@
 """
 
 
-Firecracker.register_particle('observer-core', {
+Firecracker.registerParticle('observer-core', {
 
-    oculus: false
+    model: {
+        oculus: false
+        stereo: false
+        turny: .5
+        y: 5 
+    }
 
-    stereo: false
-
-    turny: .5
-
-    y: 5
 
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
@@ -25,10 +25,10 @@ Firecracker.register_particle('observer-core', {
         else
             @controls = Firecracker.Controls.SimpleKeyboardControls( camera )
 
-        if @oculus is true
+        if @get('oculus') is true
             @controls = Firecracker.Controls.OculusControls( camera )
 
-        if @stereo is true
+        if @get('stereo') is true
             @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
             @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
@@ -40,10 +40,10 @@ Firecracker.register_particle('observer-core', {
             # window.rendererCSSR.domElement.style.left = window.innerWidth / 2 + 'px';
 
         onWindowResize = () =>
-            @object.aspect = window.innerWidth / window.innerHeight
-            @object.updateProjectionMatrix()
+            @get('object').aspect = window.innerWidth / window.innerHeight
+            @get('object').updateProjectionMatrix()
 
-            if @stereo is true
+            if @get('stereo') is true
                 @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
         window.addEventListener( 'resize', onWindowResize, false )
@@ -62,7 +62,7 @@ Firecracker.register_particle('observer-core', {
         #         w: @object.quaternion.w
         #     })
 
-        if @stereo is true
+        if @get('stereo') is true
             @stereo_effect.render( window.world, @object )
         else
             window.renderer.render( window.world, @object )

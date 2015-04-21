@@ -1,11 +1,13 @@
-Firecracker.register_particle('cube-3d', {
+Firecracker.registerParticle('cube-3d', {
 
-    color: 'black'
-    wireframe: false
+    model: {
+        color: 'white'    
+        wireframe: false
+    }
 
     create: () ->
-        geometry = new THREE.BoxGeometry(@width, @height, @depth)
-        material = new THREE.MeshBasicMaterial({color:@color, wireframe:@wireframe})
+        geometry = new THREE.BoxGeometry(@get('width'), @get('height'), @get('depth'))
+        material = new THREE.MeshBasicMaterial({color:@get('color'), wireframe:@get('@wireframe')})
         instance = new THREE.Mesh( geometry, material )
         
         return instance

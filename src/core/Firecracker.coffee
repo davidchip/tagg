@@ -45,14 +45,15 @@ Firecracker.loadScript = (path) ->
     script.onerror = () ->
         result.reject()
 
-
     $("#loadedScripts")[0].appendChild(script)
     
     return result.promise()
 
 
-Firecracker.loadElementRegistration = (tagName) ->
-    """Load an elements Firecracker script if it hasn't been loaded
+Firecracker.loadElement = (tagName) ->
+    """Returns a successful load if:
+         - tagName is native
+         - element has already been loaded
     """
     tagName = tagName.toLowerCase()
 
@@ -64,57 +65,28 @@ Firecracker.loadElementRegistration = (tagName) ->
             http.send()
             return http.status != 404
 
-        core_url = "../core/#{tagName}.js"
-        if checkURLExists(core_url) is true
-            url = core_url
+        imports_url = "../cracks/#{tagName}.js"
+        if tagName isnt 'element-core' and checkURLExists(imports_url) is true
+            url = imports_url
 
         if not url?
-            imports_url = "../cracks/#{tagName}.js"
-            if checkURLExists(imports_url) is true
-                url = imports_url
-
-        if not url?
-            # alert """
-            #     Couldn't local script for #{tagName}. 
-            #     Make sure it's in your /core/ or /imports/ directory
-            # """
-            return
+            core_url = "../core/#{tagName}.js"
+            if checkURLExists(core_url) is true
+                url = core_url
 
         window.loadedElements[tagName] = Firecracker.loadScript(url)
     else if hyphenated is false
-        ## ignore default 1-word tags
         window.loadedElements[tagName] = ''
 
     return window.loadedElements[tagName]
 
 
-Firecracker.registerElement = (element) ->
-    tagName = element.tagName.toLowerCase()
-    elementRegistered = Firecracker.loadElementRegistration(tagName)
-    
-    $.when(elementRegistered).then(() =>
-        if window.customElements[tagName]?
-            rendered = new window.customElements[tagName]()
-            # console.dir rendered
-            # console.log rendered
+Firecracker.traverseElements = (root) ->
+    elementLoaded = Firecracker.loadElement(root.tagName)
 
-        for child in element.children
-            Firecracker.registerElement(child)
-    )
-
-Firecracker.loadElement = (element, index=1) ->
-    """Load an element, and then load its children.
-    """
-    tagName = element.tagName
-    element_loaded = Firecracker.loadElementRegistration(tagName)
-    
-    $.when(element_loaded).then(() =>
-        setTimeout (() =>
-            allChildren = 
-
-            for child in allChildren
-                Firecracker.loadElement(child, index++)
-        ), index * 100
+    $.when(elementLoaded).then(() =>
+        for child in root.children
+            Firecracker.traverseElements(child)
     )
 
 
@@ -142,68 +114,105 @@ Firecracker.getAllChildren = (element, deep=false) ->
     return allChildren
 
 window.customElements = {}
-Firecracker.register_element = (tag, el_declaration) ->
-    """Registers a JS callable constructors for the element
+
+
+Firecracker.createElement = (tag, elOptions={}) ->
+    element = document.createElement("#{tag}")
+    for key, value of elOptions
+        element.set(key, value)
+
+    return element
+
+
+Firecracker.registerParticle = (tag, declaration) ->
+    if not declaration.extends?
+        declaration.extends = 'particle-core'
+
+    Firecracker.registerElement(tag, declaration)
+
+
+Firecracker.registerElement = (tag, declaration) ->
     """
-    excludedAttributes = ['extends', 
-                          'style' ]
+    """
+    if tag isnt 'element-core' and not declaration.extends?
+        declaration.extends = 'element-core'
 
-    ## assemble values, functions ascribed to this element
-    proto = {}
-    for attribute, attributeValue of el_declaration
-        if attribute not in excludedAttributes
-            proto[attribute] = attributeValue
-
-    ## load in template, styling
-    _extends = el_declaration.extends
-    parentElementLoaded = if _extends?  then Firecracker.loadElementRegistration("#{_extends}") else ''
+    ## load the parent of this element (if it's declared)
+    _extends = declaration.extends
+    parentElementLoaded = if _extends? then Firecracker.loadElement("#{_extends}") else ''
     
     ## create the actual element when the parent's been loaded
     $.when(parentElementLoaded).then(() =>
-        ## get our base prototype object
+        # excludedKeys = ['extends', 'style', 'template']
+
+        ## get the base prototype object
         parentConstructor = window.customElements["#{_extends}"]
         if _extends? and parentConstructor?
             elPrototype = Object.create(parentConstructor.prototype)
         else
             elPrototype = Object.create(HTMLElement.prototype)
 
-        elPrototype.attachedCallback = () ->
+        ## tease apart our custom functions/attributes from its declaration
+        declaredAttributes = {}
+        declaredFunctions = {}
+        for key, value of declaration
+            # if key not in excludedKeys
+            if $.isFunction(value) or key is 'template'
+                elPrototype[key] = value
+            else if key is 'class'
+                declaredAttributes[key] = value
+            else if key is 'model'
+                for modelKey, modelValue of value
+                    declaredAttributes[modelKey] = modelValue
+
+        elPrototype.declaredAttributes = declaredAttributes
+        elPrototype.model = $.extend({}, elPrototype.model, declaration.model)
+
+        ## declare our custom elements
+        CustomElement = document.registerElement("#{tag}", {prototype:elPrototype})
+        window.customElements["#{tag}"] = CustomElement
+    )
+
+
+        # elPrototype.attachedCallback = () ->
             ## overwrite default attributes
-            for attribute in @attributes
-                Object.defineProperty(@, attribute.name, {value: attribute.value})
+            # for 
 
-            ## combine our innerHTML and template
-            if @template?
-                console.dir @
-                console.log @template
+            # for attribute in @attributes
+            #     Object.defineProperty(@, attribute.name, {configurable:true, value: attribute.value})
 
-            template = if @template? then @template else ''
-            template = template.replace(/\{\{(.*?)\}\}/g, (delimited) =>
-                attributeKey = delimited.slice(2, -2)
-                if @[attributeKey]? 
-                    return @[attributeKey])
+            # ## combine our innerHTML and template
+            # # if @template?
+            #     # console.dir @
+            #     # console.log @template
 
-            console.log template
-
-
+            # @prerender()
             
-            @innerHTML += template 
+            # # $(@).append($.parseHTML(template))
+            # @innerHTML += template
+            # console.log @innerHTML
+            # rivets.bind(@, @)
+            # @ready()
+            # console.log @innerHTML
+            # console.dir @
         
-            @ready()
+
 
         ## set functions as callable functions, set values as prorperties
-        for key, value of proto
-            if $.isFunction(value)
-                elPrototype[key] = value
-            else
-                Object.defineProperty(elPrototype, "#{key}", {value: value})
+        # for key, value of proto
+        #     if $.isFunction(value)
+        #         elPrototype[key] = value
+        #     else
+        #         Object.defineProperty(elPrototype, "#{key}", {value: value})
 
         ## register the element
-        CustomElement = document.registerElement("#{tag}", {
-            prototype: elPrototype })
+        # CustomElement = document.registerElement("#{tag}", {
+        #     prototype: elPrototype })
+
+
 
         ## keep track of the constructor
-        window.customElements["#{tag}"] = CustomElement
+        
 
 
         ## define the template of the object
@@ -241,21 +250,8 @@ Firecracker.register_element = (tag, el_declaration) ->
 
         # definitions = $("#definitions")
         # definitions.append(el)
-    )
+    # )
 
-
-Firecracker.register_particle = (tag, declaration) ->
-    if not declaration.extends?
-        declaration.extends = 'particle-core'
-
-    Firecracker.register_element(tag, declaration)
-
-
-Firecracker.register_group = (tag, declaration) ->
-    if not declaration.extends?
-        declaration.extends = 'group-core'
-
-    Firecracker.register_element(tag, declaration)
 
 
 Firecracker.isMobile = () =>
@@ -773,7 +769,7 @@ $('body').append('<div id="definitions">')
 $('body').append('<div id="loadedScripts">')
 
 # alert
-Firecracker.registerElement(document.body)
+Firecracker.traverseElements(document.body)
 # )
 
 

@@ -1,6 +1,6 @@
 
 
-Firecracker.register_group('audio-filter', {
+Firecracker.registerElement('audio-filter', {
 
     src: undefined
 

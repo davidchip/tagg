@@ -1,4 +1,4 @@
-Firecracker.register_particle('sky-dome', {
+Firecracker.registerParticle('sky-dome', {
 
     src: undefined
 
