@@ -28,68 +28,6 @@ Firecracker.getScriptURL = (elementName) ->
 window.loadedElements = {}
 
 
-Firecracker.loadScript = (path) ->
-    # http://stackoverflow.com/a/21637141/1959392
-    result = $.Deferred()
-    script = document.createElement("script")
-    script.async = "async"
-    script.type = "text/javascript"
-    script.src = path
-    script.onload = script.onreadystatechange = (_, isAbort) =>
-      if not script.readyState or /loaded|complete/.test(script.readyState)
-         if (isAbort)
-            result.reject()
-         else
-            result.resolve()
-
-    script.onerror = () ->
-        result.reject()
-
-    $("#loadedScripts")[0].appendChild(script)
-    
-    return result.promise()
-
-
-Firecracker.loadElement = (tagName) ->
-    """Returns a successful load if:
-         - tagName is native
-         - element has already been loaded
-    """
-    tagName = tagName.toLowerCase()
-
-    hyphenated = tagName.split('-').length > 1
-    if not window.loadedElements[tagName]? and hyphenated is true
-        checkURLExists = (url) ->
-            http = new XMLHttpRequest()
-            http.open('HEAD', url, false)
-            http.send()
-            return http.status != 404
-
-        imports_url = "../cracks/#{tagName}.js"
-        if tagName isnt 'element-core' and checkURLExists(imports_url) is true
-            url = imports_url
-
-        if not url?
-            core_url = "../core/#{tagName}.js"
-            if checkURLExists(core_url) is true
-                url = core_url
-
-        window.loadedElements[tagName] = Firecracker.loadScript(url)
-    else if hyphenated is false
-        window.loadedElements[tagName] = ''
-
-    return window.loadedElements[tagName]
-
-
-Firecracker.traverseElements = (root) ->
-    elementLoaded = Firecracker.loadElement(root.tagName)
-
-    $.when(elementLoaded).then(() =>
-        for child in root.children
-            Firecracker.traverseElements(child)
-    )
-
-
 Firecracker.getAllChildren = (element, deep=false) ->
     if element.children?
         children = [].slice.call(element.children)
@@ -114,143 +52,6 @@ Firecracker.getAllChildren = (element, deep=false) ->
     return allChildren
 
 window.customElements = {}
-
-
-Firecracker.createElement = (tag, elOptions={}) ->
-    element = document.createElement("#{tag}")
-    for key, value of elOptions
-        element.set(key, value)
-
-    return element
-
-
-Firecracker.registerParticle = (tag, declaration) ->
-    if not declaration.extends?
-        declaration.extends = 'particle-core'
-
-    Firecracker.registerElement(tag, declaration)
-
-
-Firecracker.registerElement = (tag, declaration) ->
-    """
-    """
-    if tag isnt 'element-core' and not declaration.extends?
-        declaration.extends = 'element-core'
-
-    ## load the parent of this element (if it's declared)
-    _extends = declaration.extends
-    parentElementLoaded = if _extends? then Firecracker.loadElement("#{_extends}") else ''
-    
-    ## create the actual element when the parent's been loaded
-    $.when(parentElementLoaded).then(() =>
-        # excludedKeys = ['extends', 'style', 'template']
-
-        ## get the base prototype object
-        parentConstructor = window.customElements["#{_extends}"]
-        if _extends? and parentConstructor?
-            elPrototype = Object.create(parentConstructor.prototype)
-        else
-            elPrototype = Object.create(HTMLElement.prototype)
-
-        ## tease apart our custom functions/attributes from its declaration
-        declaredAttributes = {}
-        declaredFunctions = {}
-        for key, value of declaration
-            # if key not in excludedKeys
-            if $.isFunction(value) or key is 'template'
-                elPrototype[key] = value
-            else if key is 'class'
-                declaredAttributes[key] = value
-            else if key is 'model'
-                for modelKey, modelValue of value
-                    declaredAttributes[modelKey] = modelValue
-
-        elPrototype.declaredAttributes = declaredAttributes
-        elPrototype.model = $.extend({}, elPrototype.model, declaration.model)
-
-        ## declare our custom elements
-        CustomElement = document.registerElement("#{tag}", {prototype:elPrototype})
-        window.customElements["#{tag}"] = CustomElement
-    )
-
-
-        # elPrototype.attachedCallback = () ->
-            ## overwrite default attributes
-            # for 
-
-            # for attribute in @attributes
-            #     Object.defineProperty(@, attribute.name, {configurable:true, value: attribute.value})
-
-            # ## combine our innerHTML and template
-            # # if @template?
-            #     # console.dir @
-            #     # console.log @template
-
-            # @prerender()
-            
-            # # $(@).append($.parseHTML(template))
-            # @innerHTML += template
-            # console.log @innerHTML
-            # rivets.bind(@, @)
-            # @ready()
-            # console.log @innerHTML
-            # console.dir @
-        
-
-
-        ## set functions as callable functions, set values as prorperties
-        # for key, value of proto
-        #     if $.isFunction(value)
-        #         elPrototype[key] = value
-        #     else
-        #         Object.defineProperty(elPrototype, "#{key}", {value: value})
-
-        ## register the element
-        # CustomElement = document.registerElement("#{tag}", {
-        #     prototype: elPrototype })
-
-
-
-        ## keep track of the constructor
-        
-
-
-        ## define the template of the object
-        
-        # _styles = declaration.style
-        # styling =             if _styles?   then "<style>#{$.trim(_styles)}</style>"          else ''
-
-        # if declaration.style?
-        #     style = document.createElement('style')
-        #     style.type = 'text/css'
-            
-        #     style.appendChild(document.createTextNode(declaration.style))
-        #     el_definition.appendChild(style)
-
-        # definitions = $("#definitions")
-        # definitions.append(el_definition)
-
-        # console.log el_definition
-        # el_definition.ready()
-        # $.when(el_definition.created).then(() =>
-            
-        # )
-
-        # element = Polymer("#{tag}", declaration)
-        # el = document.createElement("div")
-        # el.id = "#{tag}-definition"
-
-
-
-        # el.innerHTML = """
-        #     <polymer-element name='#{tag}' #{_extends} #{properties}>
-        #         <template>#{template}#{styling}</template>
-        #     </polymer-element>
-        # """
-
-        # definitions = $("#definitions")
-        # definitions.append(el)
-    # )
 
 
 
@@ -760,19 +561,258 @@ Firecracker.Controls = {
 }
 
 
-@Firecracker = Firecracker
+window.elements = []
 
+
+Firecracker.startUpdatingModels = () ->
+    update = () ->
+        if window.stop is true
+            return
+
+        requestAnimationFrame(update)
+
+        # particles to update
+        for element in window.elements
+            element.update()
+
+        constructHelix = (el, inheritedModel={}) ->
+            if el.tagName is 'NODE-REF'
+                console.dir el
+                
+            if el.model? and $.isPlainObject(el.model)
+                for name, value of el.model
+                    if value.value? and value.dirty is true
+                        inheritedModel[name] = value.value
+                    else if inheritedModel[name]?
+                        el.set(name, inheritedModel[name])
+
+            for child in el.children
+                constructHelix(child, inheritedModel)
+
+        constructHelix(document.body)
+
+    update()
+
+
+Firecracker.loadScript = (path) ->
+    # http://stackoverflow.com/a/21637141/1959392
+    result = $.Deferred()
+    script = document.createElement("script")
+    script.async = "async"
+    script.type = "text/javascript"
+    script.src = path
+    script.onload = script.onreadystatechange = (_, isAbort) =>
+      if not script.readyState or /loaded|complete/.test(script.readyState)
+         if (isAbort)
+            result.reject()
+         else
+            result.resolve()
+
+    script.onerror = () ->
+        result.reject()
+
+    $("#loadedScripts")[0].appendChild(script)
+    
+    return result.promise()
+
+
+Firecracker.loadElement = (tagName) ->
+    """Returns a successful load if:
+         - tagName is native
+         - element has already been loaded
+    """
+
+    tagName = tagName.toLowerCase()
+
+    hyphenated = tagName.split('-').length > 1
+    if not window.loadedElements[tagName]? and hyphenated is true
+        checkURLExists = (url) ->
+            http = new XMLHttpRequest()
+            http.open('HEAD', url, false)
+            http.send()
+            return http.status != 404
+
+        imports_url = "../cracks/#{tagName}.js"
+        if tagName isnt 'element-core' and checkURLExists(imports_url) is true
+            url = imports_url
+
+        if not url?
+            core_url = "../core/#{tagName}.js"
+            if checkURLExists(core_url) is true
+                url = core_url
+
+        window.loadedElements[tagName] = Firecracker.loadScript(url)
+    else if hyphenated is false
+        window.loadedElements[tagName] = ''
+
+    return window.loadedElements[tagName]
+
+
+
+
+Firecracker.traverseElements = (el) ->
+    elementLoaded = Firecracker.loadElement(el.tagName)
+
+    $.when(elementLoaded).then(() =>
+        for child in el.children
+            Firecracker.traverseElements(child)
+
+    )
+
+
+Firecracker.createElement = (tag, elOptions={}) ->
+    element = document.createElement("#{tag}")
+    for key, value of elOptions
+        element.set(key, value)
+
+    return element
+
+
+Firecracker.registerParticle = (tag, declaration) ->
+    if not declaration.extends?
+        declaration.extends = 'particle-core'
+
+    Firecracker.registerElement(tag, declaration)
+
+
+Firecracker.registerElement = (tag, declaration) ->
+    if tag isnt 'element-core' and not declaration.extends?
+        declaration.extends = 'element-core'
+
+    ## load the parent of this element (if it's declared)
+    _extends = declaration.extends
+    parentElementLoaded = if _extends? then Firecracker.loadElement("#{_extends}") else ''
+    
+    ## create the actual element when the parent's been loaded
+    $.when(parentElementLoaded).then(() =>
+        # excludedKeys = ['extends', 'style', 'template']
+
+        ## get the base prototype object
+        parentConstructor = window.customElements["#{_extends}"]
+        if _extends? and parentConstructor?
+            elPrototype = Object.create(parentConstructor.prototype)
+        else
+            elPrototype = Object.create(HTMLElement.prototype)
+
+        ## tease apart our custom functions/attributes from its declaration
+        declaredAttributes = {}
+        declaredFunctions = {}
+        for key, value of declaration
+            # if key not in excludedKeys
+            if $.isFunction(value) or key is 'template'
+                elPrototype[key] = value
+            else if key is 'class'
+                declaredAttributes[key] = value
+            else if key is 'model'
+                for modelKey, modelValue of value
+                    declaredAttributes[modelKey] = modelValue
+
+        elPrototype.declaredAttributes = declaredAttributes
+        elPrototype.model = $.extend({}, elPrototype.model, declaration.model)
+
+        ## declare our custom elements
+        CustomElement = document.registerElement("#{tag}", {prototype:elPrototype})
+        window.customElements["#{tag}"] = CustomElement
+    )
+
+
+        # elPrototype.attachedCallback = () ->
+            ## overwrite default attributes
+            # for 
+
+            # for attribute in @attributes
+            #     Object.defineProperty(@, attribute.name, {configurable:true, value: attribute.value})
+
+            # ## combine our innerHTML and template
+            # # if @template?
+            #     # console.dir @
+            #     # console.log @template
+
+            # @prerender()
+            
+            # # $(@).append($.parseHTML(template))
+            # @innerHTML += template
+            # console.log @innerHTML
+            # rivets.bind(@, @)
+            # @ready()
+            # console.log @innerHTML
+            # console.dir @
+        
+
+
+        ## set functions as callable functions, set values as prorperties
+        # for key, value of proto
+        #     if $.isFunction(value)
+        #         elPrototype[key] = value
+        #     else
+        #         Object.defineProperty(elPrototype, "#{key}", {value: value})
+
+        ## register the element
+        # CustomElement = document.registerElement("#{tag}", {
+        #     prototype: elPrototype })
+
+
+
+        ## keep track of the constructor
+        
+
+
+        ## define the template of the object
+        
+        # _styles = declaration.style
+        # styling =             if _styles?   then "<style>#{$.trim(_styles)}</style>"          else ''
+
+        # if declaration.style?
+        #     style = document.createElement('style')
+        #     style.type = 'text/css'
+            
+        #     style.appendChild(document.createTextNode(declaration.style))
+        #     el_definition.appendChild(style)
+
+        # definitions = $("#definitions")
+        # definitions.append(el_definition)
+
+        # console.log el_definition
+        # el_definition.ready()
+        # $.when(el_definition.created).then(() =>
+            
+        # )
+
+        # element = Polymer("#{tag}", declaration)
+        # el = document.createElement("div")
+        # el.id = "#{tag}-definition"
+
+
+
+        # el.innerHTML = """
+        #     <polymer-element name='#{tag}' #{_extends} #{properties}>
+        #         <template>#{template}#{styling}</template>
+        #     </polymer-element>
+        # """
+
+        # definitions = $("#definitions")
+        # definitions.append(el)
+    # )
+
+
+@Firecracker = Firecracker
 
 ## load our registrations
 # window.addEventListener('polymer-ready', (e) ->
 $('body').append('<div id="definitions">')
 $('body').append('<div id="loadedScripts">')
 
-# alert
+window.stop = false
 Firecracker.traverseElements(document.body)
+Firecracker.startUpdatingModels()
+setTimeout (() =>
+    window.stop = true
+), 500
+
 # )
 
 
 ## extends jquery search to search in shadowRoots
 @f = (searchString) ->
     return $("body /deep/ #{searchString}")
+

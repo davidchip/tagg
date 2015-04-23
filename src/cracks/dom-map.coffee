@@ -6,8 +6,8 @@ Firecracker.registerElement('node-ref', {
         color_index: 0
         el: undefined
         left: undefined
-        top: undefined
         reference: undefined
+        top: undefined
     }
 
     template: """
@@ -27,7 +27,9 @@ Firecracker.registerElement('dom-map', {
 
     model: {
         pointer: 5
-        target: undefined        
+        top: 0
+        target: undefined      
+        top: undefined  
     }
 
     template: """
@@ -51,6 +53,11 @@ Firecracker.registerElement('dom-map', {
         map = $(@).find('#map')
         @draw_circles(map[0], target, 120, 2500, 1500)
 
+    update: () ->
+        @set('top', @get('top') + 1)
+        # $(@).css({
+        #     marginTop: @get('top') / 10
+        # })
 
     draw_circles: (map, element, scale, offset_left, offset_top, depth=0, parent_degrees=0, color_index=0) ->
         children = element.children

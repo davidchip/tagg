@@ -87,18 +87,18 @@ Firecracker.registerElement('scene-core', {
         window.world_created.resolve()
 
         ## render function
-        animate = () ->
-            requestAnimationFrame(animate)
+        # animate = () ->
+        #     requestAnimationFrame(animate)
 
-            ## camera to update
-            if window.viewer?
-                window.viewer.render_frame()
+        #     ## camera to update
+        #     if window.viewer?
+        #         window.viewer.render_frame()
 
-            # particles to update
-            for particle in window.particles
-                particle._update()
+        #     # particles to update
+        #     for particle in window.particles
+        #         particle._update()
 
-        animate()
+        # animate()
 
         # email = prompt('email')
         # password = prompt('password')

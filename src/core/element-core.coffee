@@ -11,8 +11,6 @@
 
 Firecracker.registerElement('element-core', {
 
-    model: {}
-
     _template: (str) ->
         regex = {
             brackets: /\{\{(.*?)\}\}/
@@ -40,7 +38,14 @@ Firecracker.registerElement('element-core', {
 
         return str
 
-    ready: () ->
+    _prerender: () ->
+        for key, value of @model
+            @set(key, value, value?)
+
+        @prerender()
+
+    _postrender: () ->
+        window.elements.push(@)
         @create()
 
     attachedCallback: () ->
@@ -62,13 +67,13 @@ Firecracker.registerElement('element-core', {
             else if not @get(key)? and value?
                 @set(key, value)
 
-        @prerender()
+        @_prerender()
 
         template = if @template? then @template else ''
         @innerHTML += $.trim(template)
         @innerHTML = @_template(@innerHTML)
 
-        @ready()
+        @_postrender()
 
     get: (attribute) ->
         attr = @getAttribute(attribute)
@@ -79,9 +84,16 @@ Firecracker.registerElement('element-core', {
         else
             return @getAttribute(attribute)
 
-    set: (attribute, attributeValue) ->
-        @setAttribute(attribute, attributeValue)        
-        @model[attribute] = @getAttribute(attribute)
+    set: (attribute, attributeValue, dirty) ->
+        @setAttribute(attribute, attributeValue) 
+
+        if not @model[attribute]?
+            @model[attribute] = {}
+
+        @model[attribute]['value'] = @getAttribute(attribute)
+        if dirty?
+            @model[attribute]['dirty'] = dirty
+
         return @model[attribute]
 
     create: () ->
