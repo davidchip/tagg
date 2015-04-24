@@ -3,10 +3,8 @@ Firecracker.registerElement('node-ref', {
     class: 'circle'
 
     model: {
-        color_index: 0
-        el: undefined
-        left: undefined
-        reference: undefined
+        color_index: undefined
+        move: undefined
         top: undefined
     }
 
@@ -14,9 +12,15 @@ Firecracker.registerElement('node-ref', {
         <div class="circle-inner color-{{color_index}}">{{refTagName}}</div>
     """
 
-    prerender: () ->
-        ref = @get('reference')
-        @set('refTagName', $("[data-elref=#{ref}]")[0].tagName.toLowerCase())
+    update: () ->
+        $(@).css({
+            left: "+=#{@get('move')}"
+        })
+
+    # prerender: () ->
+        # @set('refTagName', 'balh')
+        # ref = @get('reference')
+        # @set('refTagName', $("[data-elref=#{ref}]")[0].tagName.toLowerCase())
 
 })
 
@@ -26,10 +30,8 @@ Firecracker.registerElement('dom-map', {
     class: 'site-dom-map'
 
     model: {
-        pointer: 5
-        top: 0
-        target: undefined      
-        top: undefined  
+        move: 0
+        top: 20
     }
 
     template: """
@@ -54,7 +56,9 @@ Firecracker.registerElement('dom-map', {
         @draw_circles(map[0], target, 120, 2500, 1500)
 
     update: () ->
-        @set('top', @get('top') + 1)
+        @set('move', @get('move') + Math.random() * 2 - 1)
+        # @set('top', @get('top') + 1)
+        # console.log @model
         # $(@).css({
         #     marginTop: @get('top') / 10
         # })
@@ -150,7 +154,7 @@ Firecracker.registerElement('dom-map', {
             ## if there's no node line, remove any line associated with the elemtn
             if not node_line?
                 $(".node-line[data-ref=#{hash}]").remove()
-            else
+            # else
             ## or make sure its data ref is set
                 
             @draw_circles(map, child, scale, _offset_left, _offset_top, depth+1, degrees, color_index)

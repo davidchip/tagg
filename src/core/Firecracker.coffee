@@ -576,15 +576,12 @@ Firecracker.startUpdatingModels = () ->
             element.update()
 
         constructHelix = (el, inheritedModel={}) ->
-            if el.tagName is 'NODE-REF'
-                console.dir el
-                
             if el.model? and $.isPlainObject(el.model)
                 for name, value of el.model
-                    if value.value? and value.dirty is true
-                        inheritedModel[name] = value.value
-                    else if inheritedModel[name]?
+                    if inheritedModel[name]?
                         el.set(name, inheritedModel[name])
+                    else
+                        inheritedModel[name] = value
 
             for child in el.children
                 constructHelix(child, inheritedModel)
@@ -663,7 +660,8 @@ Firecracker.traverseElements = (el) ->
 Firecracker.createElement = (tag, elOptions={}) ->
     element = document.createElement("#{tag}")
     for key, value of elOptions
-        element.set(key, value)
+        if value?
+            element.set(key, value)
 
     return element
 
@@ -685,8 +683,6 @@ Firecracker.registerElement = (tag, declaration) ->
     
     ## create the actual element when the parent's been loaded
     $.when(parentElementLoaded).then(() =>
-        # excludedKeys = ['extends', 'style', 'template']
-
         ## get the base prototype object
         parentConstructor = window.customElements["#{_extends}"]
         if _extends? and parentConstructor?
@@ -695,23 +691,17 @@ Firecracker.registerElement = (tag, declaration) ->
             elPrototype = Object.create(HTMLElement.prototype)
 
         ## tease apart our custom functions/attributes from its declaration
-        declaredAttributes = {}
-        declaredFunctions = {}
         for key, value of declaration
-            # if key not in excludedKeys
-            if $.isFunction(value) or key is 'template'
+            if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
-            else if key is 'class'
-                declaredAttributes[key] = value
-            else if key is 'model'
-                for modelKey, modelValue of value
-                    declaredAttributes[modelKey] = modelValue
+            else if key in ['model', 'template', 'class']  ## set model keys
+                Object.defineProperty(elPrototype, key, {
+                    value: value
+                    writable: true
+                })
 
-        elPrototype.declaredAttributes = declaredAttributes
-        elPrototype.model = $.extend({}, elPrototype.model, declaration.model)
-
-        ## declare our custom elements
-        CustomElement = document.registerElement("#{tag}", {prototype:elPrototype})
+        CustomElement = document.registerElement("#{tag}", {
+            prototype: elPrototype })
         window.customElements["#{tag}"] = CustomElement
     )
 
@@ -805,9 +795,9 @@ $('body').append('<div id="loadedScripts">')
 window.stop = false
 Firecracker.traverseElements(document.body)
 Firecracker.startUpdatingModels()
-setTimeout (() =>
-    window.stop = true
-), 500
+# setTimeout (() =>
+#     window.stop = true
+# ), 500
 
 # )
 

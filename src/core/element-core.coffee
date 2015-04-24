@@ -11,6 +11,8 @@
 
 Firecracker.registerElement('element-core', {
 
+    model: {}
+
     _template: (str) ->
         regex = {
             brackets: /\{\{(.*?)\}\}/
@@ -39,35 +41,50 @@ Firecracker.registerElement('element-core', {
         return str
 
     _prerender: () ->
-        for key, value of @model
-            @set(key, value, value?)
-
         @prerender()
 
     _postrender: () ->
         window.elements.push(@)
         @create()
 
-    attachedCallback: () ->
-        for key, value of @declaredAttributes
-            ## use current ID if defined
-            if key is 'id' 
-                currentId = @getAttribute(key)
-                @setAttribute(key, if currentId? then currentId else value)
-            
-            ## append to current class
-            else if key is 'class' 
-                currentClass = @getAttribute(key)
-                @setAttribute(key, (if currentClass then (currentClass + " #{value}") else value)) 
-            
-            ## update model based on existing attributes
-            else if @getAttribute(key)?
-                @set(key, @getAttribute(key))
+    createdCallback: () ->
+        # alert 'created'
 
-            else if not @get(key)? and value?
-                @set(key, value)
+    attachedCallback: () ->
+        ## set non generic attributes to the model
+        for attr, attrMap of @attributes
+            if attr not in ['id', 'class', 'style']
+                if attrMap.name? and attrMap.value?
+                    @set(attrMap.name, attrMap.value)
+
+        if @class?
+            currentClass = @getAttribute('class')
+            @setAttribute('class', if currentClass? then (currentClass + " #{@class}") else @class)
+
+        for key, value of @model
+            @set(key, value)
+
+        # for key, value of @model
+        #     if key is 'id' ## use current ID if defined
+        #         currentId = @getAttribute('id')
+        #         @setAttribute('id', if currentId? then currentId else value)
+            
+        #     else if key is 'class' ## append to on any defined class
+        #         currentClass = @getAttribute('class')
+        #         @setAttribute('class', if currentClass? then (currentClass + " #{value}") else value)
+            
+        #     else if @getAttribute(key)? ## update model based on any declaredAttributes
+        #         @set(key, @getAttribute(key))
+
+        #     ## 
+        #     else if not @get(key)? and value?
+        #         @set(key, value)
 
         @_prerender()
+
+        # alert 'this'
+
+        # console.dir @
 
         template = if @template? then @template else ''
         @innerHTML += $.trim(template)
@@ -75,26 +92,25 @@ Firecracker.registerElement('element-core', {
 
         @_postrender()
 
+    alert: () ->
+        alert 'hello'
+
     get: (attribute) ->
-        attr = @getAttribute(attribute)
+        attr = @model[attribute]
 
-        parsed = parseInt(attr)
-        if "#{attr}" is "#{parsed}"
-            return parsed
+        parsedInt = parseInt(attr)
+        if "#{attr}" is "#{parsedInt}"
+            return parsedInt
         else
-            return @getAttribute(attribute)
+            return attr
 
-    set: (attribute, attributeValue, dirty) ->
-        @setAttribute(attribute, attributeValue) 
+    set: (attribute, value) ->
+        @model[attribute] = value
+        
+        if typeof value in ['string', 'number']
+            @setAttribute(attribute, value)
 
-        if not @model[attribute]?
-            @model[attribute] = {}
-
-        @model[attribute]['value'] = @getAttribute(attribute)
-        if dirty?
-            @model[attribute]['dirty'] = dirty
-
-        return @model[attribute]
+        return @get(attribute)
 
     create: () ->
         return
