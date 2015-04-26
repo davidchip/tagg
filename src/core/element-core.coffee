@@ -40,12 +40,11 @@ Firecracker.registerElement('element-core', {
 
         return str
 
-    _prerender: () ->
-        @prerender()
+    _beforeCreate: () ->
+        @beforeCreate()
 
-    _postrender: () ->
-        window.elements.push(@)
-        @create()
+    beforeCreate: () ->
+        return
 
     createdCallback: () ->
         # alert 'created'
@@ -80,20 +79,19 @@ Firecracker.registerElement('element-core', {
         #     else if not @get(key)? and value?
         #         @set(key, value)
 
-        @_prerender()
+        @_beforeCreate()
 
-        # alert 'this'
-
-        # console.dir @
-
-        template = if @template? then @template else ''
-        @innerHTML += $.trim(template)
+        template = if @template? then $.trim(@template) else ''
+        @innerHTML += template
         @innerHTML = @_template(@innerHTML)
 
-        @_postrender()
+        @object = @create()
+        window.elements.push(@)
 
-    alert: () ->
-        alert 'hello'
+        @afterCreate()
+
+    afterCreate: () ->
+        return
 
     get: (attribute) ->
         attr = @model[attribute]
@@ -142,9 +140,6 @@ Firecracker.registerElement('element-core', {
 
     _update: () ->
         @update()
-        return
-
-    prerender: () ->
         return
 
 

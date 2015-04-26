@@ -6,9 +6,13 @@ window.world_started = $.Deferred()
 
 Firecracker.registerElement('scene-core', {
 
+    template: """
+        <observer-core z="240" y="60">
+        </observer-core>
+    """
+
     model: {
-        target: undefined   
-        scene: 'plus' 
+        target: undefined
     }
 
     create: () ->
@@ -18,7 +22,6 @@ Firecracker.registerElement('scene-core', {
 
         ## setup WebGL renderer
         if @get('target')?
-            
             target_el = $("##{@get('target')}")
             if target_el.length > 0
                 renderer = new THREE.WebGLRenderer({alpha:true, canvas:target_el[0]})
@@ -27,9 +30,9 @@ Firecracker.registerElement('scene-core', {
         else
             renderer = new THREE.WebGLRenderer({alpha:true})
             document.body.appendChild( renderer.domElement )
-            
+
         renderer.setSize(window.innerWidth, window.innerHeight)
-        renderer.setClearColor(0x000000)
+        renderer.setClearColor(0xffffff)
         
         window.renderer = renderer
         # window.renderer.domElement.style.position = 'absolute'

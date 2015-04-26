@@ -34,15 +34,10 @@ Firecracker.registerElement('particle-core', {
         rpmz: 0
     }
 
-    ready: () ->
-        @created = new $.Deferred()
-        $.when(window.world_created).then(() =>
-            @object = @create()
-            @_place(@object)
-        
-            window.particles.push(@)
-            @created.resolve()
-        )
+    afterCreate: () ->
+        @_place(@object)
+        # console.log @object
+        window.particles.push(@)
 
     create: () ->
         """Create should return the THREE.Object3D 
@@ -55,50 +50,39 @@ Firecracker.registerElement('particle-core', {
             console.log "no object returned from create function in #{@.tagName.toLowerCase()}"
             return
 
-
-        # alert parseInt(@get('z'))
         object.position.set(@get('x'),@get('y'),@get('z'))
         # object.rotation.set(@get('turnx') * (Math.PI * 2), 
         #                     @get('turny') * (Math.PI * 2), 
         #                     @get('turnz') * (Math.PI * 2))
         window.world.add(object)
 
-
-    update: () ->
-        # console.log @
-        return
-
     # _update: () ->
-    #     """Updatable attributes. Can be accessed through dom, and updated
-    #        whenever.
+        """Updatable attributes. Can be accessed through dom, and updated
+           whenever.
+        """
+        # @object.position.y = @get('y')
+
+        # @object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
+        # @object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
+        # @object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
+
+        # @update()
+
+
+    # detached: () ->
+    #     """Polymer func fired when DOM element is removed
     #     """
-    #     @update()
+    #     @remove()
 
-    #     @object.position.x += @movex
-    #     @object.position.y += @movey
-    #     @object.position.z += @movez
+    # remove: () ->
+    #     """Remove the object from the scene and DOM completely
+    #     """
+    #     window.world.remove(@object)
 
-    #     @object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
-    #     @object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
-    #     @object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
+    #     particle_index = window.particles.indexOf(@)
+    #     if particle_index > -1
+    #         window.particles.splice(particle_index, 1)
 
-    detached: () ->
-        """Polymer func fired when DOM element is removed
-        """
-        @remove()
-
-    remove: () ->
-        """Remove the object from the scene and DOM completely
-        """
-        window.world.remove(@object)
-
-        particle_index = window.particles.indexOf(@)
-        if particle_index > -1
-            window.particles.splice(particle_index, 1)
-
-        $(@).remove()
-
-    prerender: () ->
-        return
+    #     $(@).remove()
 
 })

@@ -56,7 +56,8 @@ Firecracker.registerElement('dom-map', {
         @draw_circles(map[0], target, 120, 2500, 1500)
 
     update: () ->
-        @set('move', @get('move') + Math.random() * 2 - 1)
+        # console.log @set('move', @get('move') + 1)
+
         # @set('top', @get('top') + 1)
         # console.log @model
         # $(@).css({

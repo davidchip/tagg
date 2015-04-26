@@ -25,7 +25,7 @@ Firecracker = {}
 Firecracker.getScriptURL = (elementName) ->
 
 
-window.loadedElements = {}
+window.loadedScripts = {}
 
 
 Firecracker.getAllChildren = (element, deep=false) ->
@@ -51,7 +51,7 @@ Firecracker.getAllChildren = (element, deep=false) ->
 
     return allChildren
 
-window.customElements = {}
+window.registrations = {}
 
 
 
@@ -573,7 +573,7 @@ Firecracker.startUpdatingModels = () ->
 
         # particles to update
         for element in window.elements
-            element.update()
+            element._update()
 
         constructHelix = (el, inheritedModel={}) ->
             if el.model? and $.isPlainObject(el.model)
@@ -613,48 +613,62 @@ Firecracker.loadScript = (path) ->
     return result.promise()
 
 
-Firecracker.loadElement = (tagName) ->
+window.loadedElements = {}
+
+Firecracker.loadElement = (el, traverse=false) ->
     """Returns a successful load if:
          - tagName is native
          - element has already been loaded
     """
+    if el.tagName?
+        tagName = el.tagName
+    else if typeof el is "string"
+        tagName = el
+    else
+        return console.log "loadElement can only accept strings, and HTMLElements"
 
     tagName = tagName.toLowerCase()
-
     hyphenated = tagName.split('-').length > 1
-    if not window.loadedElements[tagName]? and hyphenated is true
-        checkURLExists = (url) ->
-            http = new XMLHttpRequest()
-            http.open('HEAD', url, false)
-            http.send()
-            return http.status != 404
 
-        imports_url = "../cracks/#{tagName}.js"
-        if tagName isnt 'element-core' and checkURLExists(imports_url) is true
-            url = imports_url
+    if not window.loadedElements[tagName]?
+        window.loadedElements[tagName] = new $.Deferred()
+    
+        if not hyphenated
+            window.loadedElements[tagName].resolve()
+        else ## if its a custom element
+            if window.registrations[tagName]? ## registration exists
+                window.loadedElements[tagName].resolve()
+            else
+                if not window.loadedScripts[tagName]? ## load the corresponding script
+                    checkURLExists = (url) ->
+                        http = new XMLHttpRequest()
+                        http.open('HEAD', url, false)
+                        http.send()
+                        return http.status != 404
 
-        if not url?
-            core_url = "../core/#{tagName}.js"
-            if checkURLExists(core_url) is true
-                url = core_url
+                    imports_url = "../cracks/#{tagName}.js"
+                    if tagName isnt 'element-core' and checkURLExists(imports_url) is true
+                        url = imports_url
 
-        window.loadedElements[tagName] = Firecracker.loadScript(url)
-    else if hyphenated is false
-        window.loadedElements[tagName] = ''
+                    if not url?
+                        core_url = "../core/#{tagName}.js"
+                        if checkURLExists(core_url) is true
+                            url = core_url
+         
+                    window.loadedScripts[tagName] = Firecracker.loadScript(url)
+
+                    $.when(window.loadedScripts[tagName]).then(() =>
+                        window.loadedElements[tagName].resolve())
+                else ## can't find any registration
+                    console.log "no definition for #{tagName}"
+
+    if traverse is true
+        $.when(window.loadedElements[tagName]).then(() =>
+            for child in el.children
+                Firecracker.loadElement(child, true)
+        )
 
     return window.loadedElements[tagName]
-
-
-
-
-Firecracker.traverseElements = (el) ->
-    elementLoaded = Firecracker.loadElement(el.tagName)
-
-    $.when(elementLoaded).then(() =>
-        for child in el.children
-            Firecracker.traverseElements(child)
-
-    )
 
 
 Firecracker.createElement = (tag, elOptions={}) ->
@@ -677,14 +691,24 @@ Firecracker.registerElement = (tag, declaration) ->
     if tag isnt 'element-core' and not declaration.extends?
         declaration.extends = 'element-core'
 
+    dependencyNodes = []
+    tags = []
     ## load the parent of this element (if it's declared)
     _extends = declaration.extends
-    parentElementLoaded = if _extends? then Firecracker.loadElement("#{_extends}") else ''
-    
-    ## create the actual element when the parent's been loaded
-    $.when(parentElementLoaded).then(() =>
-        ## get the base prototype object
-        parentConstructor = window.customElements["#{_extends}"]
+    parentNode = if _extends? then Firecracker.loadElement("#{_extends}") else ''
+    dependencyNodes.push(parentNode)
+    tags.push(_extends)
+
+    _template = declaration.template
+    templateNodes = if _template? then $.parseHTML(_template) else []
+    for element in templateNodes
+        if element.tagName?
+            dependencyNodes.push(Firecracker.loadElement(element.tagName))
+
+    ## DECLARE CUSTOM ELEMENT
+    $.when.apply($, dependencyNodes).then(() =>
+        parentConstructor = window.registrations["#{_extends}"]
+        
         if _extends? and parentConstructor?
             elPrototype = Object.create(parentConstructor.prototype)
         else
@@ -694,7 +718,10 @@ Firecracker.registerElement = (tag, declaration) ->
         for key, value of declaration
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
-            else if key in ['model', 'template', 'class']  ## set model keys
+            else if key in ['model', 'template', 'class']
+                if key is 'model' and elPrototype.model?
+                    value = $.extend({}, elPrototype.model, declaration.model)
+                
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true
@@ -702,8 +729,10 @@ Firecracker.registerElement = (tag, declaration) ->
 
         CustomElement = document.registerElement("#{tag}", {
             prototype: elPrototype })
-        window.customElements["#{tag}"] = CustomElement
+
+        window.registrations["#{tag}"] = CustomElement
     )
+
 
 
         # elPrototype.attachedCallback = () ->
@@ -793,11 +822,10 @@ $('body').append('<div id="definitions">')
 $('body').append('<div id="loadedScripts">')
 
 window.stop = false
-Firecracker.traverseElements(document.body)
+Firecracker.loadElement(document.body, true)
 Firecracker.startUpdatingModels()
-# setTimeout (() =>
-#     window.stop = true
-# ), 500
+window.pause = () ->
+    window.stop = true
 
 # )
 

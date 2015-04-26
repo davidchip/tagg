@@ -7,13 +7,15 @@ Firecracker.registerElement('grid-particles', {
 
         ## OR
 
-        rows: 1
-        columns: 1
+        rows: 3
+        columns: 3
 
-        row_spacing: 1
-        column_spacing: 1  
+        row_spacing: 100
+        column_spacing: 100  
     }
 
+    update: () ->
+        @set('y', @get('y') + 1)
 
     create: () ->
         particle = $(@innerHTML).first()
