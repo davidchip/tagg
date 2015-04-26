@@ -35,9 +35,11 @@ Firecracker.registerElement('particle-core', {
     }
 
     afterCreate: () ->
-        @_place(@object)
-        # console.log @object
-        window.particles.push(@)
+        $.when(window.world_created).then(() =>
+            @_place(@object)
+            window.world.add(@object)
+            window.particles.push(@)
+        )
 
     create: () ->
         """Create should return the THREE.Object3D 
@@ -54,7 +56,6 @@ Firecracker.registerElement('particle-core', {
         # object.rotation.set(@get('turnx') * (Math.PI * 2), 
         #                     @get('turny') * (Math.PI * 2), 
         #                     @get('turnz') * (Math.PI * 2))
-        window.world.add(object)
 
     # _update: () ->
         """Updatable attributes. Can be accessed through dom, and updated
@@ -69,20 +70,17 @@ Firecracker.registerElement('particle-core', {
         # @update()
 
 
-    # detached: () ->
-    #     """Polymer func fired when DOM element is removed
-    #     """
-    #     @remove()
+    detachedCallback: () ->
+        """Polymer func fired when DOM element is removed
+        """
+        $.when(window.world_created).then(() =>
+            window.world.remove(@object)
 
-    # remove: () ->
-    #     """Remove the object from the scene and DOM completely
-    #     """
-    #     window.world.remove(@object)
+            particle_index = window.particles.indexOf(@)
+            if particle_index > -1
+                window.particles.splice(particle_index, 1)
 
-    #     particle_index = window.particles.indexOf(@)
-    #     if particle_index > -1
-    #         window.particles.splice(particle_index, 1)
-
-    #     $(@).remove()
+            $(@).remove()
+        )
 
 })

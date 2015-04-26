@@ -40,13 +40,13 @@ Firecracker.registerParticle('observer-core', {
             # window.rendererCSSR.domElement.style.left = window.innerWidth / 2 + 'px';
 
         onWindowResize = () =>
-            @get('object').aspect = window.innerWidth / window.innerHeight
-            @get('object').updateProjectionMatrix()
+            @aspect = window.innerWidth / window.innerHeight
+            @updateProjectionMatrix()
 
             if @get('stereo') is true
                 @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
-        window.addEventListener( 'resize', onWindowResize, false )
+        window.addEventListener('resize', onWindowResize, false )
 
         return camera
 

@@ -613,12 +613,15 @@ Firecracker.loadScript = (path) ->
     return result.promise()
 
 
-window.loadedElements = {}
+window.registeredElements = {}
 
 Firecracker.loadElement = (el, traverse=false) ->
-    """Returns a successful load if:
-         - tagName is native
-         - element has already been loaded
+    """Returns the promise of the specified element OR tagname
+
+       The promise will be resolved if:
+         - the element is native (has no hyphen)
+         - a registration is found
+         - a script is successfully loaded
     """
     if el.tagName?
         tagName = el.tagName
@@ -630,45 +633,39 @@ Firecracker.loadElement = (el, traverse=false) ->
     tagName = tagName.toLowerCase()
     hyphenated = tagName.split('-').length > 1
 
-    if not window.loadedElements[tagName]?
-        window.loadedElements[tagName] = new $.Deferred()
+    if not window.registeredElements[tagName]?
+        window.registeredElements[tagName] = new $.Deferred()
     
         if not hyphenated
-            window.loadedElements[tagName].resolve()
+            window.registeredElements[tagName].resolve()
         else ## if its a custom element
-            if window.registrations[tagName]? ## registration exists
-                window.loadedElements[tagName].resolve()
-            else
-                if not window.loadedScripts[tagName]? ## load the corresponding script
-                    checkURLExists = (url) ->
-                        http = new XMLHttpRequest()
-                        http.open('HEAD', url, false)
-                        http.send()
-                        return http.status != 404
+            if not window.loadedScripts[tagName]? ## load the corresponding script
+                checkURLExists = (url) ->
+                    http = new XMLHttpRequest()
+                    http.open('HEAD', url, false)
+                    http.send()
+                    return http.status != 404
 
-                    imports_url = "../cracks/#{tagName}.js"
-                    if tagName isnt 'element-core' and checkURLExists(imports_url) is true
-                        url = imports_url
+                imports_url = "../cracks/#{tagName}.js"
+                if tagName isnt 'element-core' and checkURLExists(imports_url) is true
+                    url = imports_url
 
-                    if not url?
-                        core_url = "../core/#{tagName}.js"
-                        if checkURLExists(core_url) is true
-                            url = core_url
-         
-                    window.loadedScripts[tagName] = Firecracker.loadScript(url)
-
-                    $.when(window.loadedScripts[tagName]).then(() =>
-                        window.loadedElements[tagName].resolve())
-                else ## can't find any registration
-                    console.log "no definition for #{tagName}"
+                if not url?
+                    core_url = "../core/#{tagName}.js"
+                    if checkURLExists(core_url) is true
+                        url = core_url
+     
+                window.loadedScripts[tagName] = Firecracker.loadScript(url)
+            else ## can't find any registration
+                console.log "no definition for #{tagName}"
 
     if traverse is true
-        $.when(window.loadedElements[tagName]).then(() =>
+        $.when(window.registeredElements[tagName]).then(() =>
             for child in el.children
                 Firecracker.loadElement(child, true)
         )
 
-    return window.loadedElements[tagName]
+    return window.registeredElements[tagName]
 
 
 Firecracker.createElement = (tag, elOptions={}) ->
@@ -688,6 +685,9 @@ Firecracker.registerParticle = (tag, declaration) ->
 
 
 Firecracker.registerElement = (tag, declaration) ->
+    if not window.registeredElements["#{tag}"]?
+        window.registeredElements["#{tag}"] = new $.Deferred()
+
     if tag isnt 'element-core' and not declaration.extends?
         declaration.extends = 'element-core'
 
@@ -731,6 +731,7 @@ Firecracker.registerElement = (tag, declaration) ->
             prototype: elPrototype })
 
         window.registrations["#{tag}"] = CustomElement
+        window.registeredElements["#{tag}"].resolve()
     )
 
 

@@ -23,11 +23,11 @@ Firecracker.registerParticle('movie-screen', {
         width: 960
     }
 
-    # template: """
-    #     <!-- Adjust the brightness of the room -->
-    #     <screen-brightness y="50" z="400">
-    #     </screen-brightness>
-    # """
+    template: """
+        <!-- Adjust the brightness of the room -->
+        <screen-brightness y="50" z="400">
+        </screen-brightness>
+    """
 
     create: () ->
         if not @get('src')?
@@ -44,12 +44,14 @@ Firecracker.registerParticle('movie-screen', {
 
         @video = video
 
-        canvas = document.createElement("canvas")
-        canvas.width = @get('width')
-        canvas.height = @get('height')
-        @canvas = canvas.getContext("2d")
+        videoImage = document.createElement("canvas")
+        videoImage.width = @get('width')
+        videoImage.height = @get('height')
 
-        @videoTexture = new THREE.Texture( @canvas )
+        @videoImageContext = videoImage.getContext("2d")
+        @videoImageContext.fillRect(0, 0, videoImage.width, videoImage.height)
+
+        @videoTexture = new THREE.Texture( videoImage )
         @videoTexture.minFilter = THREE.LinearFilter
         @videoTexture.magFilter = THREE.LinearFilter
 
@@ -66,24 +68,25 @@ Firecracker.registerParticle('movie-screen', {
         return screen_object
 
     update: () ->
-        canvas = @canvas
-        canvas.drawImage(@video, 0, 0)
+        if @video.readyState is @video.HAVE_ENOUGH_DATA
+            @videoImageContext.drawImage(@video, 0, 0)
 
-        brightness = canvas.getImageData(0,0,320,180)
-        
-        r = 0
-        g = 0
-        b = 0
-        for rgba, index in brightness.data by 4
-            r = r + brightness.data[index] * .2126
-            g = g + brightness.data[index + 1] * .7152
-            b = b + brightness.data[index + 2] * .0722
+            brightness = @videoImageContext.getImageData(0,0,320,180)
+            
+            r = 0
+            g = 0
+            b = 0
+            for rgba, index in brightness.data by 4
+                r = r + brightness.data[index] * .2126
+                g = g + brightness.data[index + 1] * .7152
+                b = b + brightness.data[index + 2] * .0722
 
-        luminance = r + g + b
+            luminance = r + g + b
 
-        @set('luminance', (luminance / 10000000))
+            @set('luminance', (luminance / 10000000))
 
-        if( @video.readyState is @video.HAVE_ENOUGH_DATA )
-            setTimeout( ( () => @videoTexture.needsUpdate = true ), 4000 )
+            if @videoTexture?
+                @videoTexture.needsUpdate = true
+
 
 })

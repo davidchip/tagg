@@ -10,8 +10,8 @@ Firecracker.registerElement('grid-particles', {
         rows: 3
         columns: 3
 
-        row_spacing: 100
-        column_spacing: 100  
+        row_spacing: 180
+        column_spacing: 180  
     }
 
     update: () ->
@@ -44,6 +44,8 @@ Firecracker.registerElement('grid-particles', {
                 clone[0].set('z', coordinates['z'][i] * @get('column_spacing') + @get('x'))
 
                 $(@).append(clone)
+
+            $(particle).remove()
         )
 
 })

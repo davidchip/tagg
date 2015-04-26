@@ -7,7 +7,6 @@ Firecracker.registerElement('arrow-down', {
     
     template: """
         <div>Scroll</div>
-
         </div>
     """
 

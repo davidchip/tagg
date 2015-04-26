@@ -96,9 +96,9 @@ Firecracker.registerElement('element-core', {
     get: (attribute) ->
         attr = @model[attribute]
 
-        parsedInt = parseInt(attr)
-        if "#{attr}" is "#{parsedInt}"
-            return parsedInt
+        parsedFloat = parseFloat(attr)
+        if "#{attr}" is "#{parsedFloat}"
+            return parsedFloat
         else
             return attr
 
