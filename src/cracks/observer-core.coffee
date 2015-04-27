@@ -9,7 +9,7 @@
 
 Firecracker.registerParticle('observer-core', {
 
-    model: {
+    properties: {
         oculus: false
         stereo: false
         turny: .5

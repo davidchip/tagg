@@ -1,6 +1,6 @@
 Firecracker.registerParticle('basic-wall', {
     
-    model: {
+    properties: {
         color: undefined
         height: undefined
         width: undefined

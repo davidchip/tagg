@@ -1,11 +1,9 @@
 Firecracker.registerElement('grid-particles', {
 
-    model: {
+    properties: {
         x: 0
         y: 0
         z: 0
-
-        ## OR
 
         rows: 3
         columns: 3
@@ -13,9 +11,6 @@ Firecracker.registerElement('grid-particles', {
         row_spacing: 180
         column_spacing: 180  
     }
-
-    update: () ->
-        @set('y', @get('y') + 1)
 
     create: () ->
         particle = $(@innerHTML).first()
@@ -30,22 +25,25 @@ Firecracker.registerElement('grid-particles', {
             coordinates = {}
             coordinates['x'] = []
             coordinates['z'] = []
+            coordinates['y'] = []
 
             columns = @get('columns')
             rows = @get('rows')
 
             for i in [0..(rows*columns - 1)]
+                coordinates['y'].push(0)
                 coordinates['x'].push(Math.floor(i / rows))
                 coordinates['z'].push(i % rows)
 
             for i in [0..(coordinates['x'].length - 1)]
                 clone = particle.clone()
+                clone[0].set('y', coordinates['y'][i] + @get('y'))
                 clone[0].set('x', coordinates['x'][i] * @get('column_spacing') + @get('x'))
-                clone[0].set('z', coordinates['z'][i] * @get('column_spacing') + @get('x'))
+                clone[0].set('z', coordinates['z'][i] * @get('column_spacing') + @get('z'))
 
                 $(@).append(clone)
 
-            $(particle).remove()
+            $(@children[0]).remove()
         )
 
 })

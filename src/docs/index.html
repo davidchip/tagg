@@ -8,14 +8,17 @@
     <link  href="docs.css" rel="stylesheet">
 </head>
 <body>
-    <canvas id="demo-scene">
-    </canvas>
+    <scene-core z="500">
+        <movie-screen src="/cracks/media/oceans.mp4" width="960" height="400">
 
-    <scene-core target="demo-scene">
-        <movie-screen src="/cracks/media/oceans.mp4" y="200" x="200"></movie-screen>
-        <grid-particles>
-        	<model-3d src="/cracks/models/seats/theater_seat.js" turny=".5" z="-100" scale="28"></model-3d>
-        </grid-particles>
+            <grid-particles y="1000" x="-5000" z="-5000" rows="20" row_spacing="500" columns="20" column_spacing="500">
+                <cube-3d height="20" width="20" depth="20"></cube-3d>
+            </grid-particles>
+        </movie-screen>
+
+<!--         <grid-particles columns="5" rows="3" column_spacing="125" row_spacing="200">
+            <model-3d src="/cracks/models/seats/theater_seat.js" scale="25"></model-3d>
+        </grid-particles> -->
     </scene-core>
 </body>
 </html>

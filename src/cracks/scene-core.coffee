@@ -7,11 +7,14 @@ window.world_started = $.Deferred()
 Firecracker.registerElement('scene-core', {
 
     template: """
-        <observer-core z="840" y="200" x="500">
+        <observer-core z="{{z}}" y="{{y}}" x="{{x}}">
         </observer-core>
     """
 
-    model: {
+    properties: {
+        x: 0
+        y: 0
+        z: 0
         target: undefined
     }
 

@@ -10,7 +10,7 @@
 
 Firecracker.registerElement('particle-core', {
 
-    model: {
+    properties: {
         ghost: false
 
         x: 0

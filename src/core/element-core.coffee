@@ -11,7 +11,8 @@
 
 Firecracker.registerElement('element-core', {
 
-    model: {}
+    helix: {}
+    properties: {}
 
     _template: (str) ->
         regex = {
@@ -50,7 +51,8 @@ Firecracker.registerElement('element-core', {
         # alert 'created'
 
     attachedCallback: () ->
-        ## set non generic attributes to the model
+        ## set non generic attributes as properties
+
         for attr, attrMap of @attributes
             if attr not in ['id', 'class', 'style']
                 if attrMap.name? and attrMap.value?
@@ -60,7 +62,7 @@ Firecracker.registerElement('element-core', {
             currentClass = @getAttribute('class')
             @setAttribute('class', if currentClass? then (currentClass + " #{@class}") else @class)
 
-        for key, value of @model
+        for key, value of @properties
             @set(key, value)
 
         # for key, value of @model
@@ -94,7 +96,10 @@ Firecracker.registerElement('element-core', {
         return
 
     get: (attribute) ->
-        attr = @model[attribute]
+        if @helix[attribute]?
+            attr = @helix[attribute]
+        else if @properties[attribute]?
+            attr = @properties[attribute]
 
         parsedFloat = parseFloat(attr)
         if "#{attr}" is "#{parsedFloat}"
@@ -103,7 +108,10 @@ Firecracker.registerElement('element-core', {
             return attr
 
     set: (attribute, value) ->
-        @model[attribute] = value
+        if @helix[attribute]?
+            @helix[attribute] = value
+        else if @properties[attribute]? or typeof @properties[attribute] is 'undefined'
+            @properties[attribute] = value
         
         if typeof value in ['string', 'number']
             @setAttribute(attribute, value)

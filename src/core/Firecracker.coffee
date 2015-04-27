@@ -564,7 +564,7 @@ Firecracker.Controls = {
 window.elements = []
 
 
-Firecracker.startUpdatingModels = () ->
+Firecracker.startUpdatingHelix = () ->
     update = () ->
         if window.stop is true
             return
@@ -575,16 +575,16 @@ Firecracker.startUpdatingModels = () ->
         for element in window.elements
             element._update()
 
-        constructHelix = (el, inheritedModel={}) ->
-            if el.model? and $.isPlainObject(el.model)
-                for name, value of el.model
-                    if inheritedModel[name]?
-                        el.set(name, inheritedModel[name])
+        constructHelix = (el, inheritedHelix={}) ->
+            if el.helix? and $.isPlainObject(el.helix)
+                for name, value of el.helix
+                    if inheritedHelix[name]?
+                        el.set(name, inheritedHelix[name])
                     else
-                        inheritedModel[name] = value
+                        inheritedHelix[name] = value
 
             for child in el.children
-                constructHelix(child, inheritedModel)
+                constructHelix(child, inheritedHelix)
 
         constructHelix(document.body)
 
@@ -699,11 +699,11 @@ Firecracker.registerElement = (tag, declaration) ->
     dependencyNodes.push(parentNode)
     tags.push(_extends)
 
-    _template = declaration.template
-    templateNodes = if _template? then $.parseHTML(_template) else []
-    for element in templateNodes
-        if element.tagName?
-            dependencyNodes.push(Firecracker.loadElement(element.tagName))
+    # _template = declaration.template
+    # templateNodes = if _template? then $.parseHTML(_template) else []
+    # for element in templateNodes
+    #     if element.tagName?
+    #         dependencyNodes.push(Firecracker.loadElement(element.tagName))
 
     ## DECLARE CUSTOM ELEMENT
     $.when.apply($, dependencyNodes).then(() =>
@@ -718,10 +718,18 @@ Firecracker.registerElement = (tag, declaration) ->
         for key, value of declaration
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
-            else if key in ['model', 'template', 'class']
-                if key is 'model' and elPrototype.model?
-                    value = $.extend({}, elPrototype.model, declaration.model)
+            else if key in ['properties', 'helix', 'template', 'class']
+                if key is 'properties' and elPrototype.properties?
+                    extendedProperties = $.extend({}, elPrototype.properties)
+
+                    ## extend parent properties
+                    for k, v of value
+                        if v? or typeof v is 'undefined'
+                            extendedProperties[k] = v
+
+                    value = extendedProperties
                 
+                # console.log value
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true
@@ -824,7 +832,7 @@ $('body').append('<div id="loadedScripts">')
 
 window.stop = false
 Firecracker.loadElement(document.body, true)
-Firecracker.startUpdatingModels()
+Firecracker.startUpdatingHelix()
 window.pause = () ->
     window.stop = true
 

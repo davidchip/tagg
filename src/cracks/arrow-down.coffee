@@ -1,6 +1,6 @@
 Firecracker.registerElement('arrow-down', {
 
-    model: {
+    properties: {
         height: 36    
         width: 36
     }

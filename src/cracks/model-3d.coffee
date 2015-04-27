@@ -1,6 +1,6 @@
 Firecracker.registerParticle('model-3d', {
 
-    model: {
+    properties: {
         scale: 1  
         src: undefined
     }

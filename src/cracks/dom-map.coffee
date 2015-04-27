@@ -2,7 +2,7 @@ Firecracker.registerElement('node-ref', {
 
     class: 'circle'
 
-    model: {
+    properties: {
         color_index: undefined
         move: undefined
         top: undefined
@@ -29,7 +29,7 @@ Firecracker.registerElement('dom-map', {
 
     class: 'site-dom-map'
 
-    model: {
+    properties: {
         move: 0
         top: 20
     }

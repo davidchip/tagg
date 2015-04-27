@@ -2,7 +2,7 @@ Firecracker.registerParticle('screen-brightness', {
 
     extends: 'point-light'
 
-    model: {
+    helix: {
         luminance: 0
     }
 
@@ -14,9 +14,11 @@ Firecracker.registerParticle('screen-brightness', {
 
 Firecracker.registerParticle('movie-screen', {
 
-    model: {
+    helix: {
         luminance: 0
+    }
 
+    properties: {
         src: undefined
         height: 320
         muted: true
