@@ -4,10 +4,6 @@ Firecracker.registerParticle('model-3d', {
         scale: 1  
         src: undefined
     }
-
-    template: """
-        <cube-3d x="{{x}}" x="{{y}}" z="{{z}}"></cube-3d>
-    """
     
     create: () ->
         if not @get('src')?

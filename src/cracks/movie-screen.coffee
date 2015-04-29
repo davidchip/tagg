@@ -1,10 +1,10 @@
 Firecracker.registerParticle('screen-brightness', {
 
-    extends: 'point-light'
-
     helix: {
-        luminance: 0
+        luminance: 1
     }
+
+    extends: 'point-light'
 
     update: () ->
         @object.intensity = @get('luminance')
@@ -15,7 +15,7 @@ Firecracker.registerParticle('screen-brightness', {
 Firecracker.registerParticle('movie-screen', {
 
     helix: {
-        luminance: 0
+        luminance: 1
     }
 
     properties: {
@@ -27,7 +27,7 @@ Firecracker.registerParticle('movie-screen', {
 
     template: """
         <!-- Adjust the brightness of the room -->
-        <screen-brightness y="50" z="400">
+        <screen-brightness z="400">
         </screen-brightness>
     """
 

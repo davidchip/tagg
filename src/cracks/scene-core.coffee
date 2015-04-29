@@ -7,14 +7,16 @@ window.world_started = $.Deferred()
 Firecracker.registerElement('scene-core', {
 
     template: """
-        <observer-core z="{{z}}" y="{{y}}" x="{{x}}">
+        <observer-core z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}">
         </observer-core>
     """
 
     properties: {
+        color: 'black'
         x: 0
-        y: 0
+        y: 130
         z: 0
+        turny: .5
         target: undefined
     }
 
@@ -35,7 +37,7 @@ Firecracker.registerElement('scene-core', {
             document.body.appendChild( renderer.domElement )
 
         renderer.setSize(window.innerWidth, window.innerHeight)
-        renderer.setClearColor(0x000000)
+        renderer.setClearColor(@get('color'))
         
         window.renderer = renderer
         # window.renderer.domElement.style.position = 'absolute'

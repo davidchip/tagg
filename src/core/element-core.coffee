@@ -52,9 +52,8 @@ Firecracker.registerElement('element-core', {
 
     attachedCallback: () ->
         ## set non generic attributes as properties
-
         for attr, attrMap of @attributes
-            if attr not in ['id', 'class', 'style']
+            if attrMap.name not in ['id', 'class', 'style']
                 if attrMap.name? and attrMap.value?
                     @set(attrMap.name, attrMap.value)
 
@@ -64,22 +63,6 @@ Firecracker.registerElement('element-core', {
 
         for key, value of @properties
             @set(key, value)
-
-        # for key, value of @model
-        #     if key is 'id' ## use current ID if defined
-        #         currentId = @getAttribute('id')
-        #         @setAttribute('id', if currentId? then currentId else value)
-            
-        #     else if key is 'class' ## append to on any defined class
-        #         currentClass = @getAttribute('class')
-        #         @setAttribute('class', if currentClass? then (currentClass + " #{value}") else value)
-            
-        #     else if @getAttribute(key)? ## update model based on any declaredAttributes
-        #         @set(key, @getAttribute(key))
-
-        #     ## 
-        #     else if not @get(key)? and value?
-        #         @set(key, value)
 
         @_beforeCreate()
 

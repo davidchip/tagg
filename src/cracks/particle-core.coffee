@@ -11,8 +11,6 @@
 Firecracker.registerElement('particle-core', {
 
     properties: {
-        ghost: false
-
         x: 0
         y: 0
         z: 0
@@ -28,10 +26,6 @@ Firecracker.registerElement('particle-core', {
         turnx: 0
         turny: 0
         turnz: 0
-
-        rpmx: 0
-        rpmy: 0
-        rpmz: 0
     }
 
     afterCreate: () ->
@@ -53,9 +47,9 @@ Firecracker.registerElement('particle-core', {
             return
 
         object.position.set(@get('x'),@get('y'),@get('z'))
-        # object.rotation.set(@get('turnx') * (Math.PI * 2), 
-        #                     @get('turny') * (Math.PI * 2), 
-        #                     @get('turnz') * (Math.PI * 2))
+        object.rotation.set(@get('turnx') * (Math.PI * 2), 
+                            @get('turny') * (Math.PI * 2), 
+                            @get('turnz') * (Math.PI * 2))
 
     # _update: () ->
         """Updatable attributes. Can be accessed through dom, and updated
