@@ -1,4 +1,4 @@
-Firecracker.registerParticle('basic-wall', {
+Helix.registerParticle('basic-wall', {
     
     properties: {
         color: undefined
@@ -19,7 +19,7 @@ Firecracker.registerParticle('basic-wall', {
 
 })
 
-Firecracker.registerElement('basic-room', {
+Helix.registerElement('basic-room', {
 
     model: {
         depth: 600

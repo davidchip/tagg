@@ -1,4 +1,4 @@
-Firecracker.registerParticle('point-light', {
+Helix.registerParticle('point-light', {
 
     properties: {
         hex: 0xffffff

@@ -1,6 +1,6 @@
 
 
-Firecracker.registerElement('audio-filter', {
+Helix.registerElement('audio-filter', {
 
     src: undefined
 

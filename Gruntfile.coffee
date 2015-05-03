@@ -20,6 +20,9 @@ module.exports = ->
         "coffee:compile"
         "coffee:cmd"
         "less:compile"
+
+        ## minimize our files
+        "uglify"
     ])
 
 

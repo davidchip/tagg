@@ -7,7 +7,7 @@
 """
 
 
-Firecracker.registerParticle('observer-core', {
+Helix.registerParticle('observer-core', {
 
     properties: {
         oculus: false
@@ -16,20 +16,19 @@ Firecracker.registerParticle('observer-core', {
         y: 5 
     }
 
-
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
         
-        if Firecracker.isMobile()
-            @controls = Firecracker.Controls.MobileHeadTracking( camera )
+        if Helix.isMobile()
+            @controls = Helix.Controls.MobileHeadTracking( camera )
         else
-            @controls = Firecracker.Controls.SimpleKeyboardControls( camera )
+            @controls = Helix.Controls.SimpleKeyboardControls( camera )
 
         if @get('oculus') is true
-            @controls = Firecracker.Controls.OculusControls( camera )
+            @controls = Helix.Controls.OculusControls( camera )
 
         if @get('stereo') is true
-            @stereo_effect = Firecracker.ObserverUtils.stereoCameras( window.renderer )
+            @stereo_effect = Helix.ObserverUtils.stereoCameras( window.renderer )
             @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
             ## uncomment for CSS renderering

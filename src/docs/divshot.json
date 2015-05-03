@@ -1,6 +1,0 @@
-{
-  "name": "firecracker-docs",
-  "root": "./target/",
-  "clean_urls": true,
-  "error_page": "error.html"
-}

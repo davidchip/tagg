@@ -7,10 +7,13 @@
 #                                                        #           
 ##########################################################
 
-class Firecracker
+class Helix
 
 
-Firecracker = {}
+Helix = {}
+
+load = $("<div id='loading'>")
+load.html("<div id='loader'></div>").appendTo('body')
 
 
 # Prevent Screen Dimming on iOS
@@ -22,13 +25,13 @@ Firecracker = {}
 # , 30000)
 
 
-Firecracker.getScriptURL = (elementName) ->
+Helix.getScriptURL = (elementName) ->
 
 
 window.loadedScripts = {}
 
 
-Firecracker.getAllChildren = (element, deep=false) ->
+Helix.getAllChildren = (element, deep=false) ->
     if element.children?
         children = [].slice.call(element.children)
     else
@@ -46,7 +49,7 @@ Firecracker.getAllChildren = (element, deep=false) ->
 
     if deep is true
         for child in allChildren
-            allDescendants = Firecracker.getAllChildren(child, true)
+            allDescendants = Helix.getAllChildren(child, true)
             allChildren = allChildren.concat(allDescendants)
 
     return allChildren
@@ -55,7 +58,7 @@ window.registrations = {}
 
 
 
-Firecracker.isMobile = () =>
+Helix.isMobile = () =>
     Android = () => return navigator.userAgent.match(/Android/i) 
     BlackBerry = () => return navigator.userAgent.match(/BlackBerry/i)
     iOS = () => return navigator.userAgent.match(/iPhone|iPad|iPod/i)
@@ -65,84 +68,9 @@ Firecracker.isMobile = () =>
     return (Android() or BlackBerry() or iOS() or Opera() or Windows())
 
 
-## World Objects/Particles ##
-Firecracker.ObjectUtils = {
-
-    load3DModel: (model_json, materials, mesh = new THREE.Mesh()) =>
-        loader = new THREE.JSONLoader() 
-
-        loader.load( model_json, (geometry, _materials) =>
-            geometry.computeVertexNormals() # Smoothing
-            mesh.geometry = geometry
-
-            if materials.length? and (typeof materials isnt "string")
-                mesh.material = new THREE.MeshFaceMaterial(materials)
-                
-            else if (typeof materials is "string")
-                mesh.material = new THREE.MeshLambertMaterial({
-                    map: THREE.ImageUtils.loadTexture(materials)
-                })
-
-            else if materials is 0
-                mesh.material = new THREE.MeshFaceMaterial(_materials)
-
-            else
-                mesh.material = materials
-        )
-        return mesh
-
-
-    combineMaterials: (_materials) =>
-        material_array = []
-        for _material in _materials
-              material_array.push(new THREE.MeshLambertMaterial({
-                    map: THREE.ImageUtils.loadTexture(_material)
-              }))
-        return material_array
-
-
-    skyDome: ( texture = false ) =>
-        geometry = new THREE.SphereGeometry( 5000, 60, 40 )
-        geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) )
-
-        if texture isnt false
-            material = new THREE.MeshBasicMaterial( {
-                map: THREE.ImageUtils.loadTexture( texture )
-            } )
-        else
-            material = new THREE.MeshBasicMaterial( {
-                color: 0x001100
-                wireframe: true
-            } )
-
-        mesh = new THREE.Mesh( geometry, material )
-
-        return mesh
-
-
-    basicFloor: ( floor_attributes ) =>
-        length  = floor_attributes.length
-        width   = floor_attributes.width
-        texture = floor_attributes.texture
-        repeat  = floor_attributes.repeat
-
-        floorGeometry = new THREE.PlaneBufferGeometry( length, width )
-        floorTexture = THREE.ImageUtils.loadTexture( texture )
-        floorTexture.wrapS = THREE.RepeatWrapping
-        floorTexture.wrapT = THREE.RepeatWrapping
-        floorTexture.repeat.set( repeat, repeat )
-        floorMaterial = new THREE.MeshPhongMaterial({map: floorTexture})
-
-        floor = new THREE.Mesh(floorGeometry, floorMaterial)
-        floor.rotation.x = -Math.PI / 2
-        floor.position.y -= 10
-        
-        return floor
-}
-
 
 ## World Observers ##
-Firecracker.ObserverUtils = {
+Helix.ObserverUtils = {
 
     getCameraStream: () =>
 
@@ -275,7 +203,7 @@ Firecracker.ObserverUtils = {
 }
 
 ## Controls and Input ##
-Firecracker.Controls = {
+Helix.Controls = {
 
     ###########################################################
     #                                                         #
@@ -564,7 +492,7 @@ Firecracker.Controls = {
 window.elements = []
 
 
-Firecracker.startUpdatingHelix = () ->
+Helix.startUpdatingHelix = () ->
     update = () ->
         if window.stop is true
             return
@@ -591,7 +519,7 @@ Firecracker.startUpdatingHelix = () ->
     update()
 
 
-Firecracker.loadScript = (path) ->
+Helix.loadScript = (path) ->
     # http://stackoverflow.com/a/21637141/1959392
     result = $.Deferred()
     script = document.createElement("script")
@@ -614,8 +542,20 @@ Firecracker.loadScript = (path) ->
 
 
 window.registeredElements = {}
+window.loaded = new $.Deferred()
+window._loadCount = 0
+window.loadCount = {
+    inc: () ->
+        return window._loadCount++
 
-Firecracker.loadElement = (el, traverse=false) ->
+    dec: () ->
+        count = window._loadCount--
+        if count <= 1
+            window.loaded.resolve()
+}
+
+
+Helix.loadElement = (el, traverse=false) ->
     """Returns the promise of the specified element OR tagname
 
        The promise will be resolved if:
@@ -623,6 +563,8 @@ Firecracker.loadElement = (el, traverse=false) ->
          - a registration is found
          - a script is successfully loaded
     """
+    window.loadCount.inc()
+
     if el.tagName?
         tagName = el.tagName
     else if typeof el is "string"
@@ -635,7 +577,6 @@ Firecracker.loadElement = (el, traverse=false) ->
 
     if not window.registeredElements[tagName]?
         window.registeredElements[tagName] = new $.Deferred()
-    
         if not hyphenated
             window.registeredElements[tagName].resolve()
         else ## if its a custom element
@@ -646,29 +587,28 @@ Firecracker.loadElement = (el, traverse=false) ->
                     http.send()
                     return http.status != 404
 
-                imports_url = "../cracks/#{tagName}.js"
+                imports_url = "../elements/#{tagName}.js"
                 if tagName isnt 'element-core' and checkURLExists(imports_url) is true
                     url = imports_url
-
-                if not url?
-                    core_url = "../core/#{tagName}.js"
-                    if checkURLExists(core_url) is true
-                        url = core_url
+                else if tagName is 'element-core'
+                    url = "../core/#{tagName}.js"
      
-                window.loadedScripts[tagName] = Firecracker.loadScript(url)
+                window.loadedScripts[tagName] = Helix.loadScript(url)
             else ## can't find any registration
                 console.log "no definition for #{tagName}"
 
-    if traverse is true
-        $.when(window.registeredElements[tagName]).then(() =>
+    
+    $.when(window.registeredElements[tagName]).then(() =>
+        if traverse is true
             for child in el.children
-                Firecracker.loadElement(child, true)
-        )
+                Helix.loadElement(child, true)
+
+        window.loadCount.dec())
 
     return window.registeredElements[tagName]
 
 
-Firecracker.createElement = (tag, elOptions={}) ->
+Helix.createElement = (tag, elOptions={}) ->
     element = document.createElement("#{tag}")
     for key, value of elOptions
         if value?
@@ -677,14 +617,14 @@ Firecracker.createElement = (tag, elOptions={}) ->
     return element
 
 
-Firecracker.registerParticle = (tag, declaration) ->
+Helix.registerParticle = (tag, declaration) ->
     if not declaration.extends?
         declaration.extends = 'particle-core'
 
-    Firecracker.registerElement(tag, declaration)
+    Helix.registerElement(tag, declaration)
 
 
-Firecracker.registerElement = (tag, declaration) ->
+Helix.registerElement = (tag, declaration) ->
     if not window.registeredElements["#{tag}"]?
         window.registeredElements["#{tag}"] = new $.Deferred()
 
@@ -695,17 +635,16 @@ Firecracker.registerElement = (tag, declaration) ->
     tags = []
     ## load the parent of this element (if it's declared)
     _extends = declaration.extends
-    parentNode = if _extends? then Firecracker.loadElement("#{_extends}") else ''
+    parentNode = if _extends? then Helix.loadElement("#{_extends}") else ''
     dependencyNodes.push(parentNode)
     tags.push(_extends)
 
-    # _template = declaration.template
-    # templateNodes = if _template? then $.parseHTML(_template) else []
-    # for element in templateNodes
-    #     if element.tagName?
-    #         dependencyNodes.push(Firecracker.loadElement(element.tagName))
+    libs = declaration.libs
+    libNodes = if libs? then libs else []
+    for lib in libNodes
+        dependencyNodes.push(Helix.loadScript(lib))
 
-    ## DECLARE CUSTOM ELEMENT
+    ## declare element after depencies are loaded
     $.when.apply($, dependencyNodes).then(() =>
         parentConstructor = window.registrations["#{_extends}"]
         
@@ -823,16 +762,26 @@ Firecracker.registerElement = (tag, declaration) ->
     # )
 
 
-@Firecracker = Firecracker
+@Helix = Helix
 
 ## load our registrations
 # window.addEventListener('polymer-ready', (e) ->
-$('body').append('<div id="definitions">')
 $('body').append('<div id="loadedScripts">')
 
 window.stop = false
-Firecracker.loadElement(document.body, true)
-Firecracker.startUpdatingHelix()
+Helix.loadElement(document.body, true)
+Helix.startUpdatingHelix()
+$.when(window.loaded).then(() =>
+    $("#loader").addClass('loaded')
+
+    setTimeout (() =>
+        $("#loading").css({opacity:0})
+    ), 800
+
+    setTimeout (() =>
+        $("#loading").remove()
+    ), 1600
+)
 window.pause = () ->
     window.stop = true
 

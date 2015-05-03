@@ -23,10 +23,25 @@
     -o-transform: scale(@x, @y);
 }
 
+.rotate (@degrees:90) {
+    transform:rotate(@degrees);
+    -ms-transform:rotate(@degrees);
+    -moz-transform:rotate(@degrees);
+    -webkit-transform:rotate(@degrees);
+    -o-transform:rotate(@degrees);
+}
+
 .border-box {
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;
   box-sizing:border-box;
+}
+
+.fill {
+  bottom:0;
+  left: 0;
+  right:0; 
+  top: 0;
 }
 
 .thin                                  {font-weight:100;}

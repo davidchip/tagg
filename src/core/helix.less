@@ -1,0 +1,28 @@
+@import (reference) 'mixins.less';
+
+#loading {
+    ._transition(opacity .8s); 
+    .fill; 
+    background: #fff; 
+    position: fixed; 
+    z-index: 1000000;
+
+    @loaderWidth:10px;
+
+    #loader {
+        .transition(.8s);
+        .xscale(1, 1);
+        background: #fff;
+        bottom: 0;
+        left: 50%; 
+        margin-left: -1*@loaderWidth/2;
+        position: absolute;
+        top: 0;
+        width: @loaderWidth;
+    }
+
+    #loader.loaded {
+        .xscale(150, 30);
+        background: #000;
+    }
+}

@@ -2,7 +2,7 @@
 """
 
 
-Firecracker.registerElement('code-snippet', {
+Helix.registerElement('code-snippet', {
 
     light: undefined
 

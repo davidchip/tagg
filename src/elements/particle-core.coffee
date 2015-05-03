@@ -8,7 +8,7 @@
 """
 
 
-Firecracker.registerElement('particle-core', {
+Helix.registerElement('particle-core', {
 
     properties: {
         x: 0

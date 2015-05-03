@@ -1,4 +1,4 @@
-Firecracker.registerElement('node-ref', {
+Helix.registerElement('node-ref', {
 
     class: 'circle'
 
@@ -25,9 +25,12 @@ Firecracker.registerElement('node-ref', {
 })
 
 
-Firecracker.registerElement('dom-map', {
+Helix.registerElement('dom-map', {
 
     class: 'site-dom-map'
+
+    libs: ["/bower_components/interact/interact.min.js",
+           "/bower_components/jquery.kinetic/jquery.kinetic.min.js"]
 
     properties: {
         move: 0
@@ -138,7 +141,7 @@ Firecracker.registerElement('dom-map', {
             css = {}
             node_circle = $("#map").find(".circle[data-ref=#{hash}]")
             if not node_circle.length > 0
-                node_circle = Firecracker.createElement('node-ref', {
+                node_circle = Helix.createElement('node-ref', {
                     color_index: color_index
                     reference: hash })
 
@@ -162,7 +165,7 @@ Firecracker.registerElement('dom-map', {
 
     maxDepth: (node) ->
         max = 0
-        for child in Firecracker.getAllChildren(node)
+        for child in Helix.getAllChildren(node)
             @max = @maxDepth(child)
             if(max < @max)
                 max = @max

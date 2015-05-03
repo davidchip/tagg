@@ -1,4 +1,4 @@
-Firecracker.registerParticle('screen-brightness', {
+Helix.registerParticle('screen-brightness', {
 
     helix: {
         luminance: 1
@@ -12,7 +12,7 @@ Firecracker.registerParticle('screen-brightness', {
 })
 
 
-Firecracker.registerParticle('movie-screen', {
+Helix.registerParticle('movie-screen', {
 
     helix: {
         luminance: 1
@@ -21,7 +21,7 @@ Firecracker.registerParticle('movie-screen', {
     properties: {
         src: undefined
         height: 320
-        muted: true
+        muted: false
         width: 960
     }
 

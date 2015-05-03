@@ -1,4 +1,4 @@
-Firecracker.registerElement('arrow-down', {
+Helix.registerElement('arrow-down', {
 
     properties: {
         height: 36    

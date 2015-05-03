@@ -1,5 +1,4 @@
-@import (reference) "mixins.less";
-@import (reference) "docs.less";
+@import (reference) "core/mixins.less";
 
 // Globals
 body                                   {.font-m; font-family:Proxima Nova; margin:0; padding:0;}
@@ -42,7 +41,7 @@ h1, h2, h3                             {line-height:1.4em;}
     .circle-inner                      {._transition(background-color .2s, height .2s, line-height .2s, width .2s); .semibold; border-radius:50%; font-size:10px; height:@circle_default; line-height:@circle_default; text-align:center; width:@circle_default;}
 }
 .circle.drop                           {margin:0;
-    .circle-inner                      {background-color:@dark_blue; height:@circle_maximized; line-height:@circle_maximized; width:@circle_maximized;}
+    .circle-inner                      {background-color:@color2; height:@circle_maximized; line-height:@circle_maximized; width:@circle_maximized;}
 }
 
 section                                {margin-bottom:80px;}

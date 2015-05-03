@@ -1,21 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <script src="/bower_components/webcomponentsjs/webcomponents.js" type="text/javascript">
+    <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js" type="text/javascript">
     </script>
-    <link rel="import" href="/core/firecracker.html">
+    <link rel="import" href="/core/helix.html">
 </head>
 <body>
 
-<scene-core>
-    <observer-core z="190" y="80"></observer-core>
-    <basic-room height="560" width="960">
-        <movie-screen src="/cracks/media/oceans.mp4" y="200" height="320" width="920" z="599" muted></movie-screen>
+<scene-core y="220">
+	<movie-screen src="/elements/media/oceans.mp4" y="300" z="500"></movie-screen>
 
-        <grid-particles rows="4" row_spacing="100" columns="5" column_spacing="97" x="-194" z="100">
-            <model-3d src="/cracks/models/seats/theater_seat.js" scale="15" ghost></model-3d>
-        </grid-particles>
-    </basic-room>
+    <grid-particles rows="20" row_spacing="1000"
+                    columns="20" column_spacing="1000" y="2000">
+        <cube-3d color="white" width="40" height="40" depth="40"></cube-3d>
+    </grid-particles>
+
+    <point-light></point-light>
+
+    <grid-particles rows="3" row_spacing="200"
+                    columns="5" column_spacing="159" y="0">
+    	<model-3d src="/elements/models/seats/theater_seat.js" scale="25"></model-3d>
+    </grid-particles>
 </scene-core>
 
 </body>

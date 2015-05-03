@@ -1,17 +1,10 @@
-""" An element that represents a group of DOM elements that are nested
-    within it. nest them in its template or innerHTML
-
-    Example (innerHTML):
-        <group-core>
-            <cube-3d></cube-3d>
-            <cube-3d></cube-3d>
-        </group-core>
-"""
+## built by @davidchippendale
 
 
-Firecracker.registerElement('element-core', {
+Helix.registerElement('element-core', {
 
     helix: {}
+    libs: []
     properties: {}
 
     _template: (str) ->
@@ -55,7 +48,12 @@ Firecracker.registerElement('element-core', {
         for attr, attrMap of @attributes
             if attrMap.name not in ['id', 'class', 'style']
                 if attrMap.name? and attrMap.value?
-                    @set(attrMap.name, attrMap.value)
+                    if attrMap.value is ''  ## if an attribute exists, but has no value, consider it true
+                        value = true
+                    else
+                        value = attrMap.value
+
+                    @set(attrMap.name, value)
 
         if @class?
             currentClass = @getAttribute('class')
@@ -108,7 +106,7 @@ Firecracker.registerElement('element-core', {
         """ Returns an array of objects corresponding with each child tag.
         """
         objects = []
-        for dom_child in Firecracker.getAllChildren(@, true)
+        for dom_child in Helix.getAllChildren(@, true)
             if dom_child.object?
                 objects.push(dom_child.object)
 
@@ -121,7 +119,7 @@ Firecracker.registerElement('element-core', {
         """Remove dom elements of group, which will in turn destroy
            our objects.
         """
-        for child in Firecracker.getAllChildren(@, true)
+        for child in Helix.getAllChildren(@, true)
             child.remove()
         
         $(@).remove()

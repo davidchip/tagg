@@ -1,8 +1,8 @@
-Firecracker.registerParticle('cube-3d', {
+Helix.registerParticle('cube-3d', {
 
-    helix: {
-        luminance: 0
-    }
+    # helix: {
+    #     luminance: 1
+    # }
 
     properties: {
         color: 'black'
@@ -17,14 +17,13 @@ Firecracker.registerParticle('cube-3d', {
         geometry = new THREE.BoxGeometry(@get('width'), @get('height'), @get('depth'))
         material = new THREE.MeshBasicMaterial({
             color: @get('color'), 
-            wireframe: @get('wireframe')
-        })
+            wireframe: @get('wireframe') })
         
         instance = new THREE.Mesh( geometry, material )
         
         return instance
 
-    update: () ->
-        @object.material.color.setHSL(0, 0, @get('luminance'))
+    # update: () ->
+        # @object.material.color.setHSL(0, 0, @get('luminance'))
 
 })

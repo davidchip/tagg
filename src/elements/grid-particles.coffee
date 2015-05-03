@@ -1,4 +1,4 @@
-Firecracker.registerElement('grid-particles', {
+Helix.registerElement('grid-particles', {
 
     properties: {
         x: 0
@@ -23,16 +23,20 @@ Firecracker.registerElement('grid-particles', {
             console.log "#{@tagName} needs a model to grid"
 
         ## layout 3 dimensional matrix of grid based on columns, rows, and levels
+        x_offset = @get('column_spacing') * @get('columns') / 2
+        z_offset = @get('row_spacing') * @get('rows') / 2
+
+
         coordinateMatrix = {x: [], y: [], z: []}
-        for level in [0..@get('levels') - 1]
-            for column in [0..@get('columns') - 1]
-                for row in [0..@get('rows') - 1]
+        for level in [1..@get('levels')]
+            for column in [1..@get('columns')]
+                for row in [1..@get('rows')]
                     coordinateMatrix['y'].push(level * @get('level_spacing') + @get('y'))
-                    coordinateMatrix['x'].push(column * @get('column_spacing') + @get('x'))
-                    coordinateMatrix['z'].push(row * @get('row_spacing') + @get('z'))
+                    coordinateMatrix['x'].push(column * @get('column_spacing') + @get('x') - @get('column_spacing') / 2 - x_offset)
+                    coordinateMatrix['z'].push(row * @get('row_spacing') + @get('z') - @get('row_spacing') / 2 - z_offset)
 
         ## wait for clone to load
-        cloneLoaded = Firecracker.loadElement(tagName)
+        cloneLoaded = Helix.loadElement(tagName)
         $.when(cloneLoaded).then(() =>
             for i in [0..(coordinateMatrix['x'].length - 1)]
                 clone = particle.clone()

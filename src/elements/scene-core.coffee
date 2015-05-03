@@ -4,7 +4,9 @@ window.world_created = $.Deferred()
 window.world_started = $.Deferred()
 
 
-Firecracker.registerElement('scene-core', {
+Helix.registerElement('scene-core', {
+
+    libs: ["/bower_components/three.js/three.min.js"]
 
     template: """
         <observer-core z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}">
@@ -21,7 +23,7 @@ Firecracker.registerElement('scene-core', {
     }
 
     create: () ->
-        # window.data = new Firebase("https://firecracker.firebaseIO.com")
+        # window.data = new Firebase("https://Helix.firebaseIO.com")
         window.particles = []
         window.world = new THREE.Scene()
 
