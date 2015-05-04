@@ -1,4 +1,4 @@
-firecracker
+helix
 ========
 
 
@@ -7,7 +7,7 @@ a fast way to start making VR environments
 _created by david and alex chippendale_
 
 
-Installation Guide (_from firecracker/ folder_):
+Installation Guide (_from helix/ folder_):
 --------
     
     ## make sure brew is installed
@@ -86,7 +86,7 @@ Beta: Concrete To-Dos
 DC
 --------
 - <s>Build out support for returning array of meshes from a particle's create func</s>
-- Have world-core extend particle-core (define grouping paradigm). Scene should just be a particle.
+- <s>Have world-core extend particle-core (define grouping paradigm). Scene should just be a particle.</s>
 - <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
 - <s>Particle: add basic 2d browser plane (window)</s>
 - <s>Particle: Add basic sound element</s>
@@ -112,7 +112,7 @@ AC:
 Beta: Needs Some Time
 --------
 - Collision detection between families of particles, and or groups of particles
-- Movement of particles
+<s>- Movement of particles</s>
     - movement could represent basic physics (gravity)
 - Environmental construction (tango) 
 - Basic ambient effects (lens flare, fog, space, glowing, etc.)

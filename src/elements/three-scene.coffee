@@ -4,7 +4,7 @@ window.world_created = $.Deferred()
 window.world_started = $.Deferred()
 
 
-Helix.registerElement('scene-core', {
+Helix.registerElement('three-scene', {
 
     libs: ["/bower_components/three.js/three.min.js"]
 

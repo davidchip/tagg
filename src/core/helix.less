@@ -1,5 +1,25 @@
 @import (reference) 'mixins.less';
 
+.keyframes(rotate-clockwise; {
+    0%   { .rotate(0deg); }
+    100% { .rotate(360deg); }
+});
+
+.keyframes(fade-in; {
+    0%   { opacity:0; }
+    100% { opacity:1; } 
+});
+
+.keyframes(fade-out; {
+    0%   {opacity:1; }
+    100% {opacity:0; }
+});
+
+.keyframes(shrink; {
+    0%   { .xscale(1, 1); }
+    100% { .xscale(.01, .01); }
+});
+
 #loading {
     ._transition(opacity .8s); 
     .fill; 
@@ -8,21 +28,26 @@
     z-index: 1000000;
 
     @loaderWidth:10px;
+    @loaderHeight:60px;
 
     #loader {
-        .transition(.8s);
-        .xscale(1, 1);
-        background: #fff;
-        bottom: 0;
-        left: 50%; 
-        margin-left: -1*@loaderWidth/2;
-        position: absolute;
-        top: 0;
+        .animate(rotate-clockwise 1s ease-out infinite, fade-in 2s ease-in 1);
+        ._transition(opacity .4s);
+        background-color:#FF9800;
+        height: @loaderHeight;
         width: @loaderWidth;
+        left: 50%; 
+        top: 50%;
+        margin-left: -1*@loaderWidth/2;
+        margin-top: -1*@loaderHeight/2;
+        position: absolute;
     }
+}
 
-    #loader.loaded {
-        .xscale(150, 30);
-        background: #000;
+#loading.loaded {
+    opacity:0;
+
+    #loader {
+        opacity:0;
     }
 }

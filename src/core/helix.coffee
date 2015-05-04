@@ -550,6 +550,7 @@ window.loadCount = {
 
     dec: () ->
         count = window._loadCount--
+        console.log count
         if count <= 1
             window.loaded.resolve()
 }
@@ -772,15 +773,11 @@ window.stop = false
 Helix.loadElement(document.body, true)
 Helix.startUpdatingHelix()
 $.when(window.loaded).then(() =>
-    $("#loader").addClass('loaded')
-
-    setTimeout (() =>
-        $("#loading").css({opacity:0})
-    ), 800
+    $("#loading").addClass('loaded')
 
     setTimeout (() =>
         $("#loading").remove()
-    ), 1600
+    ), 1000
 )
 window.pause = () ->
     window.stop = true
