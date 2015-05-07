@@ -3,7 +3,7 @@ Helix.registerParticle('point-light', {
     properties: {
         hex: 0xffffff
         intensity: 1
-        distance: 20
+        distance: 100
     }
 
     create: () ->

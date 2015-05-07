@@ -1,22 +1,11 @@
 Helix.registerParticle('screen-brightness', {
 
-    helix: {
-        luminance: 1
-    }
-
     extends: 'point-light'
-
-    update: () ->
-        @object.intensity = @get('luminance')
 
 })
 
 
 Helix.registerParticle('movie-screen', {
-
-    helix: {
-        luminance: 1
-    }
 
     properties: {
         src: undefined

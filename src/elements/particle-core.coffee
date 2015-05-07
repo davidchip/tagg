@@ -28,11 +28,24 @@ Helix.registerElement('particle-core', {
         turnz: 0
     }
 
-    afterCreate: () ->
-        $.when(window.world_created).then(() =>
-            @_place(@object)
+    _preCreate: () ->
+        @created = new $.Deferred()
+        @autoCreate = true
+
+        @preCreate()
+
+    _create: () ->
+        @object = @create()
+        @_place(@object)
+
+        if @autoCreate is true
+            @created.resolve()
+
+    _afterCreate: () ->
+        $.when(window.world_created, @created).then(() =>
             window.world.add(@object)
             window.particles.push(@)
+            @afterCreate()
         )
 
     create: () ->

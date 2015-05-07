@@ -30,8 +30,10 @@ Helix.registerElement('three-scene', {
     preCreate: () ->
         if Helix.isMobile()
             @set('mode', 'native')
+            @set('stereo', true)
         else
             @set('mode', 'mouse')
+            @set('stereo', false)
 
     create: () ->
         # window.data = new Firebase("https://Helix.firebaseIO.com")

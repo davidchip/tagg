@@ -34,12 +34,6 @@ Helix.registerElement('element-core', {
 
         return str
 
-    _preCreate: () ->
-        @preCreate()
-
-    preCreate: () ->
-        return
-
     createdCallback: () ->
         # alert 'created'
 
@@ -76,13 +70,30 @@ Helix.registerElement('element-core', {
         @innerHTML += template
         @innerHTML = @_template(@innerHTML)
 
-        @object = @create()
+        @_create()
+
         window.elements.push(@)
 
+        @_afterCreate()
+
+    _preCreate: () ->
+        @preCreate()
+
+    preCreate: () ->
+        return
+
+    _create: () ->
+        @create()
+
+    create: () ->
+        return
+
+    _afterCreate: () ->
         @afterCreate()
 
     afterCreate: () ->
         return
+
 
     get: (attribute) ->
         if @properties[attribute]?
@@ -103,8 +114,7 @@ Helix.registerElement('element-core', {
 
         return @get(attribute)
 
-    create: () ->
-        return
+
 
     get_objects: () ->
         """ Returns an array of objects corresponding with each child tag.
