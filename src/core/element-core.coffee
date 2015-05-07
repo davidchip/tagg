@@ -3,9 +3,9 @@
 
 Helix.registerElement('element-core', {
 
-    helix: {}
     libs: []
     properties: {}
+    template: ''
 
     _template: (str) ->
         regex = {
@@ -34,10 +34,10 @@ Helix.registerElement('element-core', {
 
         return str
 
-    _beforeCreate: () ->
-        @beforeCreate()
+    _preCreate: () ->
+        @preCreate()
 
-    beforeCreate: () ->
+    preCreate: () ->
         return
 
     createdCallback: () ->
@@ -46,14 +46,22 @@ Helix.registerElement('element-core', {
     attachedCallback: () ->
         ## set non generic attributes as properties
         for attr, attrMap of @attributes
-            if attrMap.name not in ['id', 'class', 'style']
-                if attrMap.name? and attrMap.value?
-                    if attrMap.value is ''  ## if an attribute exists, but has no value, consider it true
+            name = attrMap.name
+            value = attrMap.value
+            if name not in ['id', 'class', 'style', 'connections']
+                if value?
+                    if value in ['', 'true', 'True']   ## if an attribute exists, but has no value, consider it true
                         value = true
-                    else
-                        value = attrMap.value
+                    else if value in ['false', 'False']
+                        value = false
 
                     @set(attrMap.name, value)
+            
+            else if name is 'connections'
+                for id in value.split(',')
+                    connect_el = $("##{id}")
+                    if connect_el.length > 0
+                        @connections.push(connect_el[0])
 
         if @class?
             currentClass = @getAttribute('class')
@@ -62,7 +70,7 @@ Helix.registerElement('element-core', {
         for key, value of @properties
             @set(key, value)
 
-        @_beforeCreate()
+        @_preCreate()
 
         template = if @template? then $.trim(@template) else ''
         @innerHTML += template
@@ -77,9 +85,7 @@ Helix.registerElement('element-core', {
         return
 
     get: (attribute) ->
-        if @helix[attribute]?
-            attr = @helix[attribute]
-        else if @properties[attribute]?
+        if @properties[attribute]?
             attr = @properties[attribute]
 
         parsedFloat = parseFloat(attr)
@@ -89,9 +95,7 @@ Helix.registerElement('element-core', {
             return attr
 
     set: (attribute, value) ->
-        if @helix[attribute]?
-            @helix[attribute] = value
-        else if @properties[attribute]? or typeof @properties[attribute] is 'undefined'
+        if @properties[attribute]? or typeof @properties[attribute] is 'undefined'
             @properties[attribute] = value
         
         if typeof value in ['string', 'number']

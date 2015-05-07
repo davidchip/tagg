@@ -25,7 +25,7 @@ Helix.registerElement('node-ref', {
 })
 
 
-Helix.registerElement('dom-map', {
+Helix.registerElement('html-map', {
 
     class: 'site-dom-map'
 

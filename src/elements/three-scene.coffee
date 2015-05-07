@@ -9,8 +9,11 @@ Helix.registerElement('three-scene', {
     libs: ["/bower_components/three.js/three.min.js"]
 
     template: """
-        <observer-core z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}">
+        <observer-core connections="rotate" z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}" stereo="{{stereo}}">
         </observer-core>
+
+        <rotation-{{mode}} id="rotate">
+        </rotation-{{mode}}>
     """
 
     properties: {
@@ -18,9 +21,17 @@ Helix.registerElement('three-scene', {
         x: 0
         y: 130
         z: 0
+        stereo: false
         turny: .5
         target: undefined
+        mode: undefined
     }
+
+    preCreate: () ->
+        if Helix.isMobile()
+            @set('mode', 'native')
+        else
+            @set('mode', 'mouse')
 
     create: () ->
         # window.data = new Firebase("https://Helix.firebaseIO.com")

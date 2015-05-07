@@ -7,10 +7,9 @@
 #                                                        #           
 ##########################################################
 
-class Helix
-
 
 Helix = {}
+
 
 load = $("<div id='loading'>")
 load.html("<div id='loader'></div>").appendTo('body')
@@ -119,87 +118,6 @@ Helix.ObserverUtils = {
 
                 $('video').css('position', 'absoulte')
             )
-
-    stereoCameras: ( renderer ) =>
-
-        ##  Based on http://threejs.org/examples/js/effects/StereoEffect.js by
-        #
-        #      @author alteredq / http://alteredqualia.com/
-        #      @authod mrdoob / http://mrdoob.com/
-        #      @authod arodic / http://aleksandarrodic.com/
-        #
-        ##  Modified by Alex Chippendale
-        
-        StereoEffect = ( renderer ) =>
-
-            this.separation = 0.10
-
-            _width = null
-            _height = null
-
-            _position = new THREE.Vector3()
-            _quaternion = new THREE.Quaternion()
-            _scale = new THREE.Vector3()
-
-            _cameraL = new THREE.PerspectiveCamera()
-            _cameraR = new THREE.PerspectiveCamera()
-
-            renderer.autoClear = false
-
-            getCameraL: () =>
-                return _cameraL
-
-            getCameraR: () =>
-                return _cameraR
-
-            setSize: ( width, height ) =>
-
-                _width = width / 2
-                _height = height
-
-                renderer.setSize( width, height )
-
-            render: ( scene, camera ) =>
-
-                scene.updateMatrixWorld()
-
-                if ( camera.parent is undefined ) 
-                    camera.updateMatrixWorld()
-            
-                camera.matrixWorld.decompose( _position, _quaternion, _scale )
-
-                # Left Eye
-                _cameraL.fov = camera.fov
-                _cameraL.aspect = 0.5 * camera.aspect
-                _cameraL.near = camera.near
-                _cameraL.far = camera.far
-                _cameraL.updateProjectionMatrix()
-
-                _cameraL.position.copy( _position )
-                _cameraL.quaternion.copy( _quaternion )
-                _cameraL.translateX( - this.separation )
-
-                # Right Eye
-                _cameraR.near = camera.near
-                _cameraR.far = camera.far
-                _cameraR.projectionMatrix = _cameraL.projectionMatrix
-
-                _cameraR.position.copy( _position )
-                _cameraR.quaternion.copy( _quaternion )
-                _cameraR.translateX( this.separation )
-
-                # Viewports
-                renderer.setViewport( 0, 0, _width * 2, _height )
-                renderer.clear()
-
-                renderer.setViewport( 0, 0, _width, _height )
-                renderer.render( scene, _cameraL )
-
-                renderer.setViewport( _width, 0, _width, _height )
-                renderer.render( scene, _cameraR )
-
-        
-        return ( new StereoEffect( renderer ) )
 }
 
 ## Controls and Input ##
@@ -210,22 +128,6 @@ Helix.Controls = {
     #                    Mobile VR Controls                   #  
     #                                                         #
     ###########################################################
-
-    accelerometerControls: ( camera ) =>
-        controls = 
-            if (window.DeviceMotionEvent != undefined) 
-                window.ondevicemotion = (e) =>
-                    # camera.rotation.z += e.accelerationIncludingGravity.z / 1000
-                    camera.rotation.x += e.rotationRate.beta / 25
-                    camera.rotation.y -= e.rotationRate.alpha / 25
-                    camera.rotation.z += e.rotationRate.gamma / 25
-
-                    if ( e.rotationRate ) 
-                        e.rotationRate.alpha
-                        e.rotationRate.beta
-                        e.rotationRate.gamma
-
-        return controls
 
     MobileHeadTracking: ( object ) =>
 
@@ -288,9 +190,7 @@ Helix.Controls = {
             if ( scope.freeze ) 
                 return
 
-            if window.nativeTracking?
-                scope.object.quaternion.fromArray(window.nativeTracking)
-            else if scope.deviceOrientation?
+            if scope.deviceOrientation?
                 q = {}
                 for axis in ['alpha', 'beta', 'gamma']
                     q[axis] = THREE.Math.degToRad(scope.deviceOrientation[axis])
@@ -402,90 +302,6 @@ Helix.Controls = {
 
         return controls
 
-    ###########################################################
-    #                                                         #
-    #               Non VR Controls (non-mobile)              #  
-    #                                                         #
-    ###########################################################
-
-    SimpleKeyboardControls: ( camera, y_height=null ) =>
-
-        camera.rotation.order = "YXZ"
-
-        controls = {
-            
-            KeyPressed: ( event ) =>
-                if event.keyCode is 87 
-                    @move_forward = true
-                else if event.keyCode is 83
-                    @move_backward = true
-                else if event.keyCode is 65
-                    @move_left = true
-                else if event.keyCode is 68
-                    @move_right = true
-                else if event.keyCode is 37
-                    @turn_left = true
-                else if event.keyCode is 39
-                    @turn_right = true
-
-            KeyUp: ( event ) =>
-                if event.keyCode is 87 
-                    @move_forward = false
-                else if event.keyCode is 83
-                    @move_backward = false
-                else if event.keyCode is 65
-                    @move_left = false
-                else if event.keyCode is 68
-                    @move_right = false
-                else if event.keyCode is 37
-                    @turn_left = false
-                else if event.keyCode is 39
-                    @turn_right = false
-
-            MouseMove: ( event ) =>
-                PI_2 = Math.PI / 2
-
-                @movementX = event.movementX or event.mozMovementX or event.webkitMovementX or 0
-                @movementY = event.movementY or event.mozMovementY or event.webkitMovementY or 0
-
-                camera.rotation.y -= @movementX * 0.002 
-                camera.rotation.x -= @movementY * 0.002 
-                camera.rotation.x = Math.max( - PI_2, Math.min( PI_2, camera.rotation.x ) )
-
-            update: () =>
-                if @move_forward
-                    camera.translateZ(-4)
-                if @move_backward
-                    camera.translateZ(4)
-                if @move_left
-                    camera.translateX(-4)
-                if @move_right
-                    camera.translateX(4)
-                if @turn_left
-                    camera.rotation.y += 10 * 0.002 
-                if @turn_right
-                    camera.rotation.y -= 10 * 0.002 
-
-                if y_height?
-                    camera.position.y = y_height  
-        }
-
-        canvas = $("canvas")[0]
-        
-        canvas.requestPointerLock = canvas.requestPointerLock or canvas.mozRequestPointerLock or canvas.webkitRequestPointerLock
-
-        canvas.addEventListener('dblclick', ( () =>
-            canvas.requestPointerLock()
-            ), 
-            false
-        )
-
-        document.addEventListener( 'mousemove', controls.MouseMove, false )
-        document.addEventListener( 'keydown', controls.KeyPressed, false )
-        document.addEventListener( 'keyup', controls.KeyUp, false )
-
-        return controls
-
 }
 
 
@@ -503,18 +319,18 @@ Helix.startUpdatingHelix = () ->
         for element in window.elements
             element._update()
 
-        constructHelix = (el, inheritedHelix={}) ->
-            if el.helix? and $.isPlainObject(el.helix)
-                for name, value of el.helix
-                    if inheritedHelix[name]?
-                        el.set(name, inheritedHelix[name])
-                    else
-                        inheritedHelix[name] = value
+        # constructHelix = (el, inheritedHelix={}) ->
+        #     if el.helix? and $.isPlainObject(el.helix)
+        #         for name, value of el.helix
+        #             if inheritedHelix[name]?
+        #                 el.set(name, inheritedHelix[name])
+        #             else
+        #                 inheritedHelix[name] = value
 
-            for child in el.children
-                constructHelix(child, inheritedHelix)
+        #     for child in el.children
+        #         constructHelix(child, inheritedHelix)
 
-        constructHelix(document.body)
+        # constructHelix(document.body)
 
     update()
 
@@ -550,7 +366,6 @@ window.loadCount = {
 
     dec: () ->
         count = window._loadCount--
-        console.log count
         if count <= 1
             window.loaded.resolve()
 }
@@ -645,6 +460,9 @@ Helix.registerElement = (tag, declaration) ->
     for lib in libNodes
         dependencyNodes.push(Helix.loadScript(lib))
 
+    if not declaration.connections?
+        declaration.connections = []
+
     ## declare element after depencies are loaded
     $.when.apply($, dependencyNodes).then(() =>
         parentConstructor = window.registrations["#{_extends}"]
@@ -658,7 +476,7 @@ Helix.registerElement = (tag, declaration) ->
         for key, value of declaration
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
-            else if key in ['properties', 'helix', 'template', 'class']
+            else if key in ['properties', 'template', 'class', 'connections']
                 if key is 'properties' and elPrototype.properties?
                     extendedProperties = $.extend({}, elPrototype.properties)
 
@@ -668,8 +486,7 @@ Helix.registerElement = (tag, declaration) ->
                             extendedProperties[k] = v
 
                     value = extendedProperties
-                
-                # console.log value
+
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true
@@ -785,7 +602,23 @@ window.pause = () ->
 # )
 
 
-## extends jquery search to search in shadowRoots
-@f = (searchString) ->
-    return $("body /deep/ #{searchString}")
-
+Helix.toggleFullScreen = () ->
+  if !document.fullscreenElement and !document.mozFullScreenElement and !document.webkitFullscreenElement and !document.msFullscreenElement
+    if document.documentElement.requestFullscreen
+      document.documentElement.requestFullscreen()
+    else if document.documentElement.msRequestFullscreen
+      document.documentElement.msRequestFullscreen()
+    else if document.documentElement.mozRequestFullScreen
+      document.documentElement.mozRequestFullScreen()
+    else if document.documentElement.webkitRequestFullscreen
+      document.documentElement.webkitRequestFullscreen Element.ALLOW_KEYBOARD_INPUT
+  else
+    if document.exitFullscreen
+      document.exitFullscreen()
+    else if document.msExitFullscreen
+      document.msExitFullscreen()
+    else if document.mozCancelFullScreen
+      document.mozCancelFullScreen()
+    else if document.webkitExitFullscreen
+      document.webkitExitFullscreen()
+  return
