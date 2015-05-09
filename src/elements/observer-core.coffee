@@ -1,13 +1,6 @@
-""" A representation of a viewport into the world. Works alongside some sort
-    of scene-core, to facilitate rendering.
-
-    Example:
-        <observer-core>
-        </observer-core>
-"""
-
-
 Helix.registerParticle('observer-core', {
+
+    # libs: ["https://cdn.firebase.com/js/client/2.2.1/firebase.js"]
 
     properties: {
         oculus: false
@@ -19,6 +12,8 @@ Helix.registerParticle('observer-core', {
 
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
+
+        # @firebase = new Firebase('https://firecracker.firebaseio.com/')
         
         # if Helix.isMobile()
             # @controls = Helix.Controls.MobileHeadTracking( camera )
@@ -48,27 +43,40 @@ Helix.registerParticle('observer-core', {
 
         window.addEventListener('resize', onWindowResize, false )
 
-        
-        if @connections.length > 0
-            connection = @connections[0]
-            type = @set('type', connection.get('type'))
-            camera[type]['order'] = connection.get('order')
+        rotation = @bridges.rotation
+        if rotation?
+            type = @set('type', rotation.get('type'))
+            camera[type]['order'] = rotation.get('order')
+
+            # if @connections.length < 2
+            #     @firebase.on('child_changed', (snapshot) =>
+            #         @object.position = snapshot.val())
 
         return camera
 
     update: () ->
-        if @connections.length > 0
-            connection = @connections[0]
+        rotation = @bridges.rotation
+        if rotation?
             type = @get('type')
         
             if type is 'quaternion'
-                quaternion = connection.get('quaternion')
+                quaternion = rotation.get('quaternion')
                 if quaternion?
                     @object.quaternion.fromArray(quaternion)
             else if type is 'rotation'
                 for axis in ['x', 'y', 'z']
-                    @object.rotation[axis] = connection.get(axis)
-            
+                    @object.rotation[axis] += rotation.get(axis, 0)
+
+        position = @bridges.position
+        if position? 
+            for axis in ['x', 'y', 'z']
+                @object.position[axis] += position.get(axis, 0)
+
+            # @firebase.set({position: @object.position})
+
+                # @firebase.set(axis, position.get(axis))
+
+
         # @controls.update()
 
         # currentURL = window.location.href

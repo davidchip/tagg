@@ -379,14 +379,14 @@ Helix.loadElement = (el, traverse=false) ->
          - a registration is found
          - a script is successfully loaded
     """
-    window.loadCount.inc()
-
     if el.tagName?
         tagName = el.tagName
     else if typeof el is "string"
         tagName = el
     else
-        return console.log "loadElement can only accept strings, and HTMLElements"
+        return
+
+    window.loadCount.inc()
 
     tagName = tagName.toLowerCase()
     hyphenated = tagName.split('-').length > 1
@@ -460,8 +460,14 @@ Helix.registerElement = (tag, declaration) ->
     for lib in libNodes
         dependencyNodes.push(Helix.loadScript(lib))
 
-    if not declaration.connections?
-        declaration.connections = []
+    _template = declaration.template
+    templateNodes = if _template? then $.parseHTML(_template) else ''
+    if templateNodes?
+        for node in templateNodes
+            dependencyNodes.push(Helix.loadElement(node, true))
+
+    if not declaration.bridges?
+        declaration.bridges = {}
 
     ## declare element after depencies are loaded
     $.when.apply($, dependencyNodes).then(() =>
@@ -476,7 +482,7 @@ Helix.registerElement = (tag, declaration) ->
         for key, value of declaration
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
-            else if key in ['properties', 'template', 'class', 'connections']
+            else if key in ['properties', 'template', 'class', 'bridges']
                 if key is 'properties' and elPrototype.properties?
                     extendedProperties = $.extend({}, elPrototype.properties)
 

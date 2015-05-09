@@ -9,11 +9,18 @@ Helix.registerElement('three-scene', {
     libs: ["/bower_components/three.js/three.min.js"]
 
     template: """
-        <observer-core connections="rotate" z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}" stereo="{{stereo}}">
+        <observer-core bridges="rotation,position" z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}" stereo="{{stereo}}">
         </observer-core>
 
-        <rotation-{{mode}} id="rotate">
-        </rotation-{{mode}}>
+        <if-false var="native">
+            <rotation-native id="rotation">
+            </rotation-native>
+        </if-true>
+
+        <if-true var="native">
+            <rotation-mouse id="rotation"></rotation-mouse>
+            <position-keyboard id="position"></position-keyboard>
+        </if-false>
     """
 
     properties: {
@@ -24,15 +31,15 @@ Helix.registerElement('three-scene', {
         stereo: false
         turny: .5
         target: undefined
-        mode: undefined
+        native: undefined
     }
 
     preCreate: () ->
         if Helix.isMobile()
-            @set('mode', 'native')
+            @set('native', true)
             @set('stereo', true)
         else
-            @set('mode', 'mouse')
+            @set('native', false)
             @set('stereo', false)
 
     create: () ->

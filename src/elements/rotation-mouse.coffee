@@ -16,20 +16,20 @@ Helix.registerElement('rotation-mouse', {
             movementX = event.movementX or event.mozMovementX or event.webkitMovementX or 0
             movementY = event.movementY or event.mozMovementY or event.webkitMovementY or 0
 
-            _x = @get('x') - movementY * 0.002
+            _x = -1 * movementY * 0.002
             _x = Math.max(-PI_2, Math.min(PI_2, _x))
-            _y = @get('y') - movementX * 0.002
+            _y = -1 * movementX * 0.002
             
             @set('x', _x)
             @set('y', _y)
-        , false )
+        , false)
 
         ## allow pointer lock
         lock_el = document.body
         lock_el.requestPointerLock = lock_el.requestPointerLock or lock_el.mozRequestPointerLock or lock_el.webkitRequestPointerLock
         lock_el.addEventListener('dblclick', () =>
             lock_el.requestPointerLock()
-        ,  false )
+        ,  false)
 
 
 })
