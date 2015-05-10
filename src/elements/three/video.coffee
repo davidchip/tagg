@@ -1,11 +1,4 @@
-Helix.registerParticle('screen-brightness', {
-
-    extends: 'point-light'
-
-})
-
-
-Helix.registerParticle('movie-screen', {
+helix.define("three-video", {
 
     properties: {
         src: undefined
@@ -14,11 +7,11 @@ Helix.registerParticle('movie-screen', {
         width: 960
     }
 
-    template: """
-        <!-- Adjust the brightness of the room -->
-        <screen-brightness z="400">
-        </screen-brightness>
-    """
+    # template: """
+    #     <!-- Adjust the brightness of the room -->
+    #     <screen-brightness z="400">
+    #     </screen-brightness>
+    # """
 
     create: () ->
         if not @get('src')?

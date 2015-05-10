@@ -1,46 +1,16 @@
-## Used to ensure particles aren't created until
-## they world is created. Should be cleaned up.
-window.world_created = $.Deferred()
-window.world_started = $.Deferred()
-
-
-Helix.registerElement('three-scene', {
-
-    libs: ["/bower_components/three.js/three.min.js"]
+helix.define("three-scene", {
 
     template: """
-        <observer-core bridges="rotation,position" z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}" stereo="{{stereo}}">
-        </observer-core>
-
-        <if-false var="native">
-            <rotation-native id="rotation">
-            </rotation-native>
-        </if-true>
-
-        <if-true var="native">
-            <rotation-mouse id="rotation"></rotation-mouse>
-            <position-keyboard id="position"></position-keyboard>
-        </if-false>
+        <three-camera z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}">
+        </three-camera>
     """
 
     properties: {
         color: 'black'
-        x: 0
         y: 130
-        z: 0
-        stereo: false
         turny: .5
         target: undefined
-        native: undefined
     }
-
-    preCreate: () ->
-        if Helix.isMobile()
-            @set('native', true)
-            @set('stereo', true)
-        else
-            @set('native', false)
-            @set('stereo', false)
 
     create: () ->
         # window.data = new Firebase("https://Helix.firebaseIO.com")
@@ -115,6 +85,8 @@ Helix.registerElement('three-scene', {
             document.body.appendChild(ready)
 
         window.world_created.resolve()
+
+        return window.world
 
         ## render function
         # animate = () ->

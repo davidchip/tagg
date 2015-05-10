@@ -403,11 +403,11 @@ Helix.loadElement = (el, traverse=false) ->
                     http.send()
                     return http.status != 404
 
-                imports_url = "../elements/#{tagName}.js"
-                if tagName isnt 'element-core' and checkURLExists(imports_url) is true
+                imports_url = "../elements/#{tagName.replace(/\-/g, '/')}.js"
+                if tagName isnt 'helix-base' and checkURLExists(imports_url) is true
                     url = imports_url
-                else if tagName is 'element-core'
-                    url = "../core/#{tagName}.js"
+                else if tagName is 'helix-base'
+                    url = "../elements/base.js"
      
                 window.loadedScripts[tagName] = Helix.loadScript(url)
             else ## can't find any registration
@@ -444,8 +444,9 @@ Helix.registerElement = (tag, declaration) ->
     if not window.registeredElements["#{tag}"]?
         window.registeredElements["#{tag}"] = new $.Deferred()
 
-    if tag isnt 'element-core' and not declaration.extends?
-        declaration.extends = 'element-core'
+    if tag isnt 'helix-base'
+        console.log tag
+        declaration.extends = 'helix-base'
 
     dependencyNodes = []
     tags = []
@@ -460,17 +461,18 @@ Helix.registerElement = (tag, declaration) ->
     for lib in libNodes
         dependencyNodes.push(Helix.loadScript(lib))
 
-    _template = declaration.template
-    templateNodes = if _template? then $.parseHTML(_template) else ''
-    if templateNodes?
-        for node in templateNodes
-            dependencyNodes.push(Helix.loadElement(node, true))
+    # _template = declaration.template
+    # templateNodes = if _template? then $.parseHTML(_template) else ''
+    # if templateNodes?
+    #     for node in templateNodes
+    #         dependencyNodes.push(Helix.loadElement(node, true))
 
     if not declaration.bridges?
-        declaration.bridges = {}
+        declaration.bridges = []
 
     ## declare element after depencies are loaded
     $.when.apply($, dependencyNodes).then(() =>
+        console.log tag
         parentConstructor = window.registrations["#{_extends}"]
         
         if _extends? and parentConstructor?
@@ -593,7 +595,10 @@ Helix.registerElement = (tag, declaration) ->
 $('body').append('<div id="loadedScripts">')
 
 window.stop = false
-Helix.loadElement(document.body, true)
+
+$('*').each((index, el) =>
+    Helix.loadElement(el))
+
 Helix.startUpdatingHelix()
 $.when(window.loaded).then(() =>
     $("#loading").addClass('loaded')
@@ -628,3 +633,36 @@ Helix.toggleFullScreen = () ->
     else if document.webkitExitFullscreen
       document.webkitExitFullscreen()
   return
+
+
+@helix = {}
+@helix.define = (pointer, declaration) ->
+    console.log pointer
+    Helix.registerElement(pointer, declaration)
+
+    return
+
+_helix.defined
+
+
+_helix.loadCount = 0
+
+
+_helix.loadElement = (el) ->
+
+
+
+_helix.define = (tag, declaration) ->
+
+
+_helix.create = ("three-light") ->
+    """Creates a
+    """
+    extends: "three-base" > "helix-base"
+
+    extends = "helix-" + tag
+
+    for i, index in extends.split('-')
+        
+
+

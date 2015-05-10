@@ -8,7 +8,7 @@ Helix.registerParticle('model-3d', {
         src: undefined
     }
 
-    preCreate: () ->
+    preTemplate: () ->
         @autoCreate = false
     
     create: () ->

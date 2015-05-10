@@ -8,7 +8,9 @@
 """
 
 
-Helix.registerElement('particle-core', {
+helix.define("three-base", {
+
+    libs: ["/bower_components/three.js/three.min.js"]
 
     properties: {
         x: 0
@@ -28,11 +30,11 @@ Helix.registerElement('particle-core', {
         turnz: 0
     }
 
-    _preCreate: () ->
+    _preTemplate: () ->
         @created = new $.Deferred()
         @autoCreate = true
 
-        @preCreate()
+        @preTemplate()
 
     _create: () ->
         @object = @create()

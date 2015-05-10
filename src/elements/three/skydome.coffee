@@ -1,4 +1,4 @@
-Helix.registerParticle('sky-dome', {
+helix.define("three-skydome", {
 
     src: undefined
 

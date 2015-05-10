@@ -1,4 +1,4 @@
-Helix.registerElement('grid-particles', {
+helix.define("three-grid", {
 
     properties: {
         x: 0

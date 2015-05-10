@@ -1,16 +1,39 @@
-Helix.registerParticle('observer-core', {
+helix.define("three-camera", {
 
     # libs: ["https://cdn.firebase.com/js/client/2.2.1/firebase.js"]
 
+    bridges: ["rotation", "position"]
+
     properties: {
+        native: false
         oculus: false
         stereo: false
         turny: .5
         type: 'rotation'
-        y: 5 
+        y: 5
     }
 
+    # template: """
+    #     <if-true var="native">
+    #         <rotation-native id="rotation"></rotation-native>
+    #     </if-true>
+
+    #     <if-false var="native">
+    #         <rotation-mouse id="rotation"></rotation-mouse>
+    #         <position-keyboard id="position"></position-keyboard>
+    #     </if-false>
+    # """
+
+    preTemplate: () ->
+        if Helix.isMobile()
+            @set('native', true)
+            @set('stereo', true)
+        else
+            @set('native', false)
+            @set('stereo', false)
+
     create: () ->
+        console.log @bridges
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
 
         # @firebase = new Firebase('https://firecracker.firebaseio.com/')
@@ -41,7 +64,7 @@ Helix.registerParticle('observer-core', {
             if @get('stereo') is true
                 @stereo_effect.setSize( window.innerWidth, window.innerHeight )
 
-        window.addEventListener('resize', onWindowResize, false )
+        # window.addEventListener('resize', onWindowResize, false )
 
         rotation = @bridges.rotation
         if rotation?

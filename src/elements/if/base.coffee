@@ -5,7 +5,7 @@ Helix.registerElement('if-core', {
         var: undefined
     }
 
-    create: () ->
+    preTemplate: () ->
         if not @get('var')?
             return
 

@@ -1,4 +1,4 @@
-Helix.registerParticle('cube-3d', {
+helix.define("three-cube", {
 
     # helix: {
     #     luminance: 1

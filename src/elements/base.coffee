@@ -1,7 +1,7 @@
 ## built by @davidchippendale
 
 
-Helix.registerElement('element-core', {
+helix.define("base", {
 
     libs: []
     properties: {}
@@ -39,6 +39,7 @@ Helix.registerElement('element-core', {
 
     attachedCallback: () ->
         ## set non generic attributes as properties
+        bridges = []
         for attr, attrMap of @attributes
             name = attrMap.name
             value = attrMap.value
@@ -50,12 +51,10 @@ Helix.registerElement('element-core', {
                         value = false
 
                     @set(attrMap.name, value)
-            
+
             else if name is 'bridges'
-                for id in value.split(',')
-                    connect_el = $("##{id}")
-                    if connect_el.length > 0
-                        @bridges[id] = connect_el[0]
+                for bridgeID in value.split(',')
+                    @bridges.push(bridgeID)
 
         if @class?
             currentClass = @getAttribute('class')
@@ -65,25 +64,42 @@ Helix.registerElement('element-core', {
             @set(key, value)
 
         bridgesLoaded = []
-        for bridgeName, bridgeEl of @bridges
-            bridgesLoaded.push(Helix.loadElement(bridgeEl))
+        # for bridgeName, bridgeEl of @bridges
+        #     bridgesLoaded.push(Helix.loadElement(bridgeEl))
 
-        @_preCreate()
-        $.when.apply($, bridgesLoaded).then(() =>
-            template = if @template? then $.trim(@template) else ''
-            @innerHTML += template
-            @innerHTML = @_template(@innerHTML)
+        @_preTemplate()
 
-            @_create()
+        template = if @template? then $.trim(@template) else ''
+        @innerHTML += template
+        @innerHTML = @_template(@innerHTML)
 
-            window.elements.push(@))
+        childrenLoaded = []
+        for child in @children
+            childrenLoaded.push(Helix.loadElement(child))
 
-        @_afterCreate()
+        $.when.apply($, childrenLoaded).then(() =>
+            bridgesLoaded = []
 
-    _preCreate: () ->
-        @preCreate()
+            _bridges = {}
+            for bridgeID in @bridges
+                bridgeEl = $("##{bridgeID}")
+                # console.log bridgeEl
+                if bridgeEl.length > 0
+                    bridgesLoaded.push(Helix.loadElement(bridgeEl[0]))
+                    _bridges[bridgeID] = bridgeEl[0]
 
-    preCreate: () ->
+            @bridges = _bridges
+            $.when.apply($, bridgesLoaded).then(() =>
+                @_create()
+                @_afterCreate()
+                window.elements.push(@)
+            )
+        )
+
+    _preTemplate: () ->
+        @preTemplate()
+
+    preTemplate: () ->
         return
 
     _create: () ->
