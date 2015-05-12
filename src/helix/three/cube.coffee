@@ -1,8 +1,4 @@
-helix.define("three-cube", {
-
-    # helix: {
-    #     luminance: 1
-    # }
+helix.defineBase("three-cube", {
 
     properties: {
         color: 'black'

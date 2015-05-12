@@ -1,4 +1,4 @@
-helix.define("three-grid", {
+helix.defineBase("three-grid", {
 
     properties: {
         x: 0
@@ -36,7 +36,7 @@ helix.define("three-grid", {
                     coordinateMatrix['z'].push(row * @get('row_spacing') + @get('z') - @get('row_spacing') / 2 - z_offset)
 
         ## wait for clone to load
-        cloneLoaded = Helix.loadElement(tagName)
+        cloneLoaded = helix.loadElement(tagName)
         $.when(cloneLoaded).then(() =>
             for i in [0..(coordinateMatrix['x'].length - 1)]
                 clone = particle.clone()

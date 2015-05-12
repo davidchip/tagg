@@ -1,4 +1,4 @@
-helix.define("three-video", {
+helix.defineBase("three-video", {
 
     properties: {
         src: undefined

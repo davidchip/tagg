@@ -1,7 +1,7 @@
 ## built by @davidchippendale
 
 
-helix.define("base", {
+helix.defineBase("helix-base", {
 
     libs: []
     properties: {}
@@ -64,8 +64,8 @@ helix.define("base", {
             @set(key, value)
 
         bridgesLoaded = []
-        # for bridgeName, bridgeEl of @bridges
-        #     bridgesLoaded.push(Helix.loadElement(bridgeEl))
+        for bridgeName, bridgeEl of @bridges
+            bridgesLoaded.push(helix.loadElement(bridgeEl))
 
         @_preTemplate()
 
@@ -75,7 +75,7 @@ helix.define("base", {
 
         childrenLoaded = []
         for child in @children
-            childrenLoaded.push(Helix.loadElement(child))
+            childrenLoaded.push(helix.loadElement(child))
 
         $.when.apply($, childrenLoaded).then(() =>
             bridgesLoaded = []
@@ -85,14 +85,14 @@ helix.define("base", {
                 bridgeEl = $("##{bridgeID}")
                 # console.log bridgeEl
                 if bridgeEl.length > 0
-                    bridgesLoaded.push(Helix.loadElement(bridgeEl[0]))
+                    bridgesLoaded.push(helix.loadElement(bridgeEl[0]))
                     _bridges[bridgeID] = bridgeEl[0]
 
             @bridges = _bridges
             $.when.apply($, bridgesLoaded).then(() =>
                 @_create()
                 @_afterCreate()
-                window.elements.push(@)
+                helix.activeBases.push(@)
             )
         )
 
@@ -142,7 +142,7 @@ helix.define("base", {
         """ Returns an array of objects corresponding with each child tag.
         """
         objects = []
-        for dom_child in Helix.getAllChildren(@, true)
+        for dom_child in helix.getAllChildren(@, true)
             if dom_child.object?
                 objects.push(dom_child.object)
 
@@ -155,7 +155,7 @@ helix.define("base", {
         """Remove dom elements of group, which will in turn destroy
            our objects.
         """
-        for child in Helix.getAllChildren(@, true)
+        for child in helix.getAllChildren(@, true)
             child.remove()
         
         $(@).remove()

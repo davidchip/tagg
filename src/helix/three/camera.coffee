@@ -1,4 +1,4 @@
-helix.define("three-camera", {
+helix.defineBase("three-camera", {
 
     # libs: ["https://cdn.firebase.com/js/client/2.2.1/firebase.js"]
 
@@ -9,28 +9,20 @@ helix.define("three-camera", {
         oculus: false
         stereo: false
         turny: .5
-        type: 'rotation'
         y: 5
     }
 
-    # template: """
-    #     <if-true var="native">
-    #         <rotation-native id="rotation"></rotation-native>
-    #     </if-true>
-
-    #     <if-false var="native">
-    #         <rotation-mouse id="rotation"></rotation-mouse>
-    #         <position-keyboard id="position"></position-keyboard>
-    #     </if-false>
-    # """
+    template: """
+        <three-rotation-mouse id="rotation"></three-rotation-mouse>
+        <three-position-keyboard id="position"></three-position-keyboard>
+    """
 
     preTemplate: () ->
-        if Helix.isMobile()
-            @set('native', true)
-            @set('stereo', true)
-        else
-            @set('native', false)
-            @set('stereo', false)
+        @set('native', false)
+        @set('stereo', false)
+        # else
+            # @set('native', false)
+            # @set('stereo', false)
 
     create: () ->
         console.log @bridges
@@ -66,7 +58,7 @@ helix.define("three-camera", {
 
         # window.addEventListener('resize', onWindowResize, false )
 
-        rotation = @bridges.rotation
+        rotation = @bridges[0]
         if rotation?
             type = @set('type', rotation.get('type'))
             camera[type]['order'] = rotation.get('order')
@@ -78,7 +70,7 @@ helix.define("three-camera", {
         return camera
 
     update: () ->
-        rotation = @bridges.rotation
+        rotation = @bridges[0]
         if rotation?
             type = @get('type')
         
@@ -86,11 +78,12 @@ helix.define("three-camera", {
                 quaternion = rotation.get('quaternion')
                 if quaternion?
                     @object.quaternion.fromArray(quaternion)
-            else if type is 'rotation'
+            else if type is 'euler'
                 for axis in ['x', 'y', 'z']
+                    console.log rotation.get(axis)
                     @object.rotation[axis] += rotation.get(axis, 0)
 
-        position = @bridges.position
+        position = @bridges[1]
         if position? 
             for axis in ['x', 'y', 'z']
                 @object.position[axis] += position.get(axis, 0)

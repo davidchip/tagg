@@ -8,7 +8,7 @@
 """
 
 
-helix.define("three-base", {
+helix.defineBase("three-base", {
 
     libs: ["/bower_components/three.js/three.min.js"]
 
@@ -17,17 +17,14 @@ helix.define("three-base", {
         y: 0
         z: 0
 
+        rw: 0
+        rx: 0
+        ry: 0
+        rz: 0
+
         width: 5
         height: 5
         depth: 5
-        
-        movex: 0
-        movey: 0
-        movez: 0
-
-        turnx: 0
-        turny: 0
-        turnz: 0
     }
 
     _preTemplate: () ->
@@ -62,9 +59,9 @@ helix.define("three-base", {
             return
 
         object.position.set(@get('x'),@get('y'),@get('z'))
-        object.rotation.set(@get('turnx') * (Math.PI * 2), 
-                            @get('turny') * (Math.PI * 2), 
-                            @get('turnz') * (Math.PI * 2))
+        object.rotation.set(@get('rx', 0) * (Math.PI * 2), 
+                            @get('ry', 0) * (Math.PI * 2), 
+                            @get('rz', 0) * (Math.PI * 2))
 
     # _update: () ->
         """Updatable attributes. Can be accessed through dom, and updated

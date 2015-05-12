@@ -1,7 +1,7 @@
 ## adapted by @davidchippendale
 ## from work by @alexchippendale
 
-Helix.registerParticle('model-3d', {
+helix.defineBase('model-3d', {
 
     properties: {
         scale: 1  

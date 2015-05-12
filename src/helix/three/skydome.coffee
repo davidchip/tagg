@@ -1,4 +1,4 @@
-helix.define("three-skydome", {
+helix.defineBase("three-skydome", {
 
     src: undefined
 

@@ -5,7 +5,7 @@
 #         A Virtual Reality library for the Web          #                                      
 #      Required libraries: threeJS, jQuery, Polymer      #
 #                                                        #           
-##########################################################
+################f##########################################
 
 
 Helix = {}
@@ -308,31 +308,31 @@ Helix.Controls = {
 window.elements = []
 
 
-Helix.startUpdatingHelix = () ->
-    update = () ->
-        if window.stop is true
-            return
+# Helix.startUpdatingHelix = () ->
+#     update = () ->
+#         if window.stop is true
+#             return
 
-        requestAnimationFrame(update)
+#         requestAnimationFrame(update)
 
-        # particles to update
-        for element in window.elements
-            element._update()
+#         # particles to update
+#         for element in window.elements
+#             element._update()
 
-        # constructHelix = (el, inheritedHelix={}) ->
-        #     if el.helix? and $.isPlainObject(el.helix)
-        #         for name, value of el.helix
-        #             if inheritedHelix[name]?
-        #                 el.set(name, inheritedHelix[name])
-        #             else
-        #                 inheritedHelix[name] = value
+#         # constructHelix = (el, inheritedHelix={}) ->
+#         #     if el.helix? and $.isPlainObject(el.helix)
+#         #         for name, value of el.helix
+#         #             if inheritedHelix[name]?
+#         #                 el.set(name, inheritedHelix[name])
+#         #             else
+#         #                 inheritedHelix[name] = value
 
-        #     for child in el.children
-        #         constructHelix(child, inheritedHelix)
+#         #     for child in el.children
+#         #         constructHelix(child, inheritedHelix)
 
-        # constructHelix(document.body)
+#         # constructHelix(document.body)
 
-    update()
+#     update()
 
 
 Helix.loadScript = (path) ->
@@ -359,69 +359,61 @@ Helix.loadScript = (path) ->
 
 window.registeredElements = {}
 window.loaded = new $.Deferred()
-window._loadCount = 0
-window.loadCount = {
-    inc: () ->
-        return window._loadCount++
-
-    dec: () ->
-        count = window._loadCount--
-        if count <= 1
-            window.loaded.resolve()
-}
 
 
-Helix.loadElement = (el, traverse=false) ->
-    """Returns the promise of the specified element OR tagname
 
-       The promise will be resolved if:
-         - the element is native (has no hyphen)
-         - a registration is found
-         - a script is successfully loaded
-    """
-    if el.tagName?
-        tagName = el.tagName
-    else if typeof el is "string"
-        tagName = el
-    else
-        return
+# Helix.loadElement = (el, traverse=false) ->
+#     """Returns the promise of the specified element OR tagname
 
-    window.loadCount.inc()
+#        The promise will be resolved if:
+#          - the element is native (has no hyphen)
+#          - a registration is found
+#          - a script is successfully loaded
+#     """
+#     if el.tagName?
+#         tagName = el.tagName
+#     else if typeof el is "string"
+#         tagName = el
+#     else
+#         return
 
-    tagName = tagName.toLowerCase()
-    hyphenated = tagName.split('-').length > 1
+#     window.loadCount.inc()
 
-    if not window.registeredElements[tagName]?
-        window.registeredElements[tagName] = new $.Deferred()
-        if not hyphenated
-            window.registeredElements[tagName].resolve()
-        else ## if its a custom element
-            if not window.loadedScripts[tagName]? ## load the corresponding script
-                checkURLExists = (url) ->
-                    http = new XMLHttpRequest()
-                    http.open('HEAD', url, false)
-                    http.send()
-                    return http.status != 404
+#     tagName = tagName.toLowerCase()
+#     hyphenated = tagName.split('-').length > 1
 
-                imports_url = "../elements/#{tagName.replace(/\-/g, '/')}.js"
-                if tagName isnt 'helix-base' and checkURLExists(imports_url) is true
-                    url = imports_url
-                else if tagName is 'helix-base'
-                    url = "../elements/base.js"
+#     if not window.registeredElements[tagName]?
+#         window.registeredElements[tagName] = new $.Deferred()
+#         if not hyphenated
+#             window.registeredElements[tagName].resolve()
+#         else ## if its a custom element
+#             console.log tagName
+#             if not window.loadedScripts[tagName]? ## load the corresponding script
+#                 checkURLExists = (url) ->
+#                     http = new XMLHttpRequest()
+#                     http.open('HEAD', url, false)
+#                     http.send()
+#                     return http.status != 404
+
+#                 imports_url = "../elements/#{tagName.replace(/\-/g, '/')}.js"
+#                 if tagName isnt 'helix-base' and checkURLExists(imports_url) is true
+#                     url = imports_url
+#                 else if tagName is 'helix-base'
+#                     url = "../elements/base.js"
      
-                window.loadedScripts[tagName] = Helix.loadScript(url)
-            else ## can't find any registration
-                console.log "no definition for #{tagName}"
+#                 window.loadedScripts[tagName] = Helix.loadScript(url)
+#             else ## can't find any registration
+#                 console.log "no definition for #{tagName}"
 
     
-    $.when(window.registeredElements[tagName]).then(() =>
-        if traverse is true
-            for child in el.children
-                Helix.loadElement(child, true)
+#     $.when(window.registeredElements[tagName]).then(() =>
+#         if traverse is true
+#             for child in el.children
+#                 Helix.loadElement(child, true)
 
-        window.loadCount.dec())
+#         window.loadCount.dec())
 
-    return window.registeredElements[tagName]
+#     return window.registeredElements[tagName]
 
 
 Helix.createElement = (tag, elOptions={}) ->
@@ -440,72 +432,72 @@ Helix.registerParticle = (tag, declaration) ->
     Helix.registerElement(tag, declaration)
 
 
-Helix.registerElement = (tag, declaration) ->
-    if not window.registeredElements["#{tag}"]?
-        window.registeredElements["#{tag}"] = new $.Deferred()
+# Helix.registerElement = (tag, declaration) ->
+#     if not window.registeredElements["#{tag}"]?
+#         window.registeredElements["#{tag}"] = new $.Deferred()
 
-    if tag isnt 'helix-base'
-        console.log tag
-        declaration.extends = 'helix-base'
+#     if tag isnt 'helix-base'
+#         console.log tag
+#         declaration.extends = 'helix-base'
 
-    dependencyNodes = []
-    tags = []
-    ## load the parent of this element (if it's declared)
-    _extends = declaration.extends
-    parentNode = if _extends? then Helix.loadElement("#{_extends}") else ''
-    dependencyNodes.push(parentNode)
-    tags.push(_extends)
+#     dependencyNodes = []
+#     tags = []
+#     ## load the parent of this element (if it's declared)
+#     _extends = declaration.extends
+#     parentNode = if _extends? then Helix.loadElement("#{_extends}") else ''
+#     dependencyNodes.push(parentNode)
+#     tags.push(_extends)
 
-    libs = declaration.libs
-    libNodes = if libs? then libs else []
-    for lib in libNodes
-        dependencyNodes.push(Helix.loadScript(lib))
+#     libs = declaration.libs
+#     libNodes = if libs? then libs else []
+#     for lib in libNodes
+#         dependencyNodes.push(Helix.loadScript(lib))
 
-    # _template = declaration.template
-    # templateNodes = if _template? then $.parseHTML(_template) else ''
-    # if templateNodes?
-    #     for node in templateNodes
-    #         dependencyNodes.push(Helix.loadElement(node, true))
+#     # _template = declaration.template
+#     # templateNodes = if _template? then $.parseHTML(_template) else ''
+#     # if templateNodes?
+#     #     for node in templateNodes
+#     #         dependencyNodes.push(Helix.loadElement(node, true))
 
-    if not declaration.bridges?
-        declaration.bridges = []
+#     if not declaration.bridges?
+#         declaration.bridges = []
 
-    ## declare element after depencies are loaded
-    $.when.apply($, dependencyNodes).then(() =>
-        console.log tag
-        parentConstructor = window.registrations["#{_extends}"]
+#     ## declare element after depencies are loaded
+#     $.when.apply($, dependencyNodes).then(() =>
+#         console.log tag
+#         parentConstructor = window.registrations["#{_extends}"]
         
-        if _extends? and parentConstructor?
-            elPrototype = Object.create(parentConstructor.prototype)
-        else
-            elPrototype = Object.create(HTMLElement.prototype)
+#         if _extends? and parentConstructor?
+#             elPrototype = Object.create(parentConstructor.prototype)
+#         else
+#             elPrototype = Object.create()
 
-        ## tease apart our custom functions/attributes from its declaration
-        for key, value of declaration
-            if $.isFunction(value) # if key not in excludedKeys
-                elPrototype[key] = value
-            else if key in ['properties', 'template', 'class', 'bridges']
-                if key is 'properties' and elPrototype.properties?
-                    extendedProperties = $.extend({}, elPrototype.properties)
+#         ## tease apart our custom functions/attributes from its declaration
+#         for key, value of declaration
+#             if $.isFunction(value) # if key not in excludedKeys
+#                 elPrototype[key] = value
+#             else if key in ['properties', 'template', 'class', 'bridges']
+#                 if key is 'properties' and elPrototype.properties?
+#                     extendedProperties = $.extend({}, elPrototype.properties)
 
-                    ## extend parent properties
-                    for k, v of value
-                        if v? or typeof v is 'undefined'
-                            extendedProperties[k] = v
+#                     ## extend parent properties
+#                     for k, v of value
+#                         if v? or typeof v is 'undefined'
+#                             extendedProperties[k] = v
 
-                    value = extendedProperties
+#                     value = extendedProperties
 
-                Object.defineProperty(elPrototype, key, {
-                    value: value
-                    writable: true
-                })
+#                 Object.defineProperty(elPrototype, key, {
+#                     value: value
+#                     writable: true
+#                 })
 
-        CustomElement = document.registerElement("#{tag}", {
-            prototype: elPrototype })
+#         CustomElement = document.registerElement("#{tag}", {
+#             prototype: elPrototype })
 
-        window.registrations["#{tag}"] = CustomElement
-        window.registeredElements["#{tag}"].resolve()
-    )
+#         window.registrations["#{tag}"] = CustomElement
+#         window.registeredElements["#{tag}"].resolve()
+#     )
 
 
 
@@ -636,33 +628,32 @@ Helix.toggleFullScreen = () ->
 
 
 @helix = {}
-@helix.define = (pointer, declaration) ->
-    console.log pointer
+@helix.defineBase = (pointer, declaration) ->
     Helix.registerElement(pointer, declaration)
 
     return
 
-_helix.defined
+# _helix.defineBased
 
 
-_helix.loadCount = 0
+# _helix.loadCount = 0
 
 
-_helix.loadElement = (el) ->
+# _helix.loadElement = (el) ->
 
 
 
-_helix.define = (tag, declaration) ->
+# _helix.defineBase = (tag, declaration) ->
 
 
-_helix.create = ("three-light") ->
-    """Creates a
-    """
-    extends: "three-base" > "helix-base"
+# _helix.create = ("three-light") ->
+#     """Creates a
+#     """
+#     extends: "three-base" > "helix-base"
 
-    extends = "helix-" + tag
+#     extends = "helix-" + tag
 
-    for i, index in extends.split('-')
+#     for i, index in extends.split('-')
         
 
 

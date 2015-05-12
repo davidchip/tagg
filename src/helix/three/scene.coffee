@@ -1,7 +1,12 @@
-helix.define("three-scene", {
+window.world_created = new $.Deferred()
+
+
+helix.defineBase("three-scene", {
+
+    extends: 'helix-base'
 
     template: """
-        <three-camera z="{{z}}" y="{{y}}" x="{{x}}" turny="{{turny}}">
+        <three-camera y="{{y}}">
         </three-camera>
     """
 

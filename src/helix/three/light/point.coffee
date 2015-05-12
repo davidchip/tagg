@@ -1,4 +1,4 @@
-Helix.registerParticle('point-light', {
+helix.defineBase('three-light-point', {
 
     properties: {
         hex: 0xffffff

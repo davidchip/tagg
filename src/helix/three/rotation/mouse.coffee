@@ -1,11 +1,11 @@
-Helix.registerElement('rotation-mouse', {
+helix.defineBase('three-rotation-mouse', {
 
     properties: {
         order: 'YXZ'
-        type: 'rotation'
-        x: 0
-        y: 0
-        z: 0
+        type: 'euler'
+        rx: 0
+        ry: 0
+        rz: 0
     }
 
     create: () ->
