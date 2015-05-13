@@ -1,19 +1,16 @@
 ## adapted by @davidchippendale
 ## from work by @alexchippendale
 
-helix.defineBase('model-3d', {
+helix.defineBase('three-model', {
 
     properties: {
         scale: 1  
         src: undefined
     }
-
-    preTemplate: () ->
-        @autoCreate = false
     
     create: () ->
-        if not window.cachedModels?
-            window.cachedModels = {}
+        if not helix.cachedModels?
+            helix.cachedModels = {}
         if not @get('src')?
             console.log "define a src attribute pointing to your JSON obj file"
             return
@@ -21,27 +18,27 @@ helix.defineBase('model-3d', {
         src = @get('src')
         
         object = new THREE.Mesh()
-        if not window.cachedModels[src]?
-            window.cachedModels[src] = {}
-            window.cachedModels[src]['loaded'] = new $.Deferred()
+        if not helix.cachedModels[src]?
+            helix.cachedModels[src] = {}
+            helix.cachedModels[src]['loaded'] = new $.Deferred()
 
             loader = new THREE.JSONLoader()
-            window.loadCount.inc()
+            helix.loadCount.inc()
             loader.onLoadComplete = () =>
-                window.cachedModels[src]['loaded'].resolve()
-                window.loadCount.dec()
+                helix.cachedModels[src]['loaded'].resolve()
+                helix.loadCount.dec()
 
             loader.load(src, (geometry, materials) =>
                 geometry.computeVertexNormals() # Smoothing
-                window.cachedModels[src]['geometry'] = geometry
-                window.cachedModels[src]['materials'] = materials )
+                helix.cachedModels[src]['geometry'] = geometry
+                helix.cachedModels[src]['materials'] = materials )
 
         ## attach the mesh's geometry + materials
-        $.when(window.cachedModels[src]['loaded']).then(() =>
-            geometry = window.cachedModels[src].geometry
+        $.when(helix.cachedModels[src]['loaded']).then(() =>
+            geometry = helix.cachedModels[src].geometry
             object.geometry = geometry
             
-            materials = window.cachedModels[src].materials
+            materials = helix.cachedModels[src].materials
             object.material = new THREE.MeshFaceMaterial(materials)
 
             for axis in ['x', 'y', 'z']

@@ -6,18 +6,6 @@ helix.config = {}
 helix.config.rootDir = "/helix/"
 
 
-# helix._loadCount = 0
-# helix.loadCount = {
-#     inc: () ->
-#         return window._loadCount++
-
-#     dec: () ->
-#         count = window._loadCount--
-#         if count <= 1
-#             window.loaded.resolve()
-# }
-
-
 helix.loadedScripts = {}
 $('body').append('<div id="loadedScripts">')
 helix.loadScript = (url) ->
@@ -63,6 +51,8 @@ helix.loadBase = (baseName) ->
     """if this base hasn't been loaded, load it
     """
     if not helix.loadedBases[baseName]?
+        helix.loadCount.inc()
+
         helix.loadedBases[baseName] = new $.Deferred()
 
         if baseName is "helix-base"
@@ -99,12 +89,8 @@ helix.defineBase = (tagName, definition) ->
     if helix.bases[tagName]?
         return
 
-    """start gathering the depdencies of the base
-    """
     baseDependencies = []
 
-    """get the parent first as specified by 'extends' or intuited
-    """
     baseParent = ''
     if definition.extends?
         baseParent = definition.extends
@@ -123,11 +109,8 @@ helix.defineBase = (tagName, definition) ->
 
     if tagName isnt "helix-base"
         load = helix.loadBase(baseParent)
+        baseDependencies.push(load)
 
-    baseDependencies.push(load)
-
-    """load libraries associated with this family
-    """
     libs = if definition.libs? then definition.libs else []
     for lib in libs 
         baseDependencies.push(helix.loadScript(lib))
@@ -137,7 +120,6 @@ helix.defineBase = (tagName, definition) ->
 
     ## declare element after depencies are loaded
     $.when.apply($, baseDependencies).then(() =>
-        console.log 'registering ' + tagName
         parentConstructor = helix.bases["#{baseParent}"]
         
         if baseParent? and parentConstructor?
@@ -170,15 +152,16 @@ helix.defineBase = (tagName, definition) ->
 
         helix.bases["#{tagName}"] = CustomElement
         helix.loadedBases["#{tagName}"].resolve()
+        helix.loadCount.dec()
     )
 
 
 helix.activeBases = []
 
-
+helix._freeze = false
 helix.start = () ->
     update = () ->
-        if window.stop is true
+        if helix._freeze is true
             return
 
         requestAnimationFrame(update)
@@ -188,6 +171,23 @@ helix.start = () ->
 
     update()
 
+helix.loaded = new $.Deferred()
+helix._loadCount = 0
+helix.loadCount = {
+    inc: () ->
+        console.log helix._loadCount
+        return helix._loadCount++
+
+    dec: () ->
+        console.log helix._loadCount
+        count = helix._loadCount--
+        if count <= 1
+            helix.loaded.resolve()
+}
+
+
+helix.freeze = () ->
+    helix.freeze = true
 
 
 @helix = helix
@@ -195,6 +195,18 @@ helix.start = () ->
 
 """kickoff
 """
+
+load = $("<div id='loading'>")
+load.html("<div id='loader'></div>").appendTo('body')
+
+$.when(helix.loaded).then(() =>
+    $("#loading").addClass('loaded')
+
+    setTimeout (() =>
+        $("#loading").remove()
+    ), 4000
+)
+
 
 $('*').each((index, el) =>
     helix.loadElement(el))

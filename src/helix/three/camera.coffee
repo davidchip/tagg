@@ -8,7 +8,8 @@ helix.defineBase("three-camera", {
         native: false
         oculus: false
         stereo: false
-        turny: .5
+        ry: .5
+        type: undefined
         y: 5
     }
 
@@ -25,7 +26,6 @@ helix.defineBase("three-camera", {
             # @set('stereo', false)
 
     create: () ->
-        console.log @bridges
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
 
         # @firebase = new Firebase('https://firecracker.firebaseio.com/')
@@ -58,9 +58,11 @@ helix.defineBase("three-camera", {
 
         # window.addEventListener('resize', onWindowResize, false )
 
-        rotation = @bridges[0]
+        rotation = @bridges.rotation
         if rotation?
             type = @set('type', rotation.get('type'))
+            if 'euler'
+                type = 'rotation'
             camera[type]['order'] = rotation.get('order')
 
             # if @connections.length < 2
@@ -70,7 +72,7 @@ helix.defineBase("three-camera", {
         return camera
 
     update: () ->
-        rotation = @bridges[0]
+        rotation = @bridges.rotation
         if rotation?
             type = @get('type')
         
@@ -80,10 +82,9 @@ helix.defineBase("three-camera", {
                     @object.quaternion.fromArray(quaternion)
             else if type is 'euler'
                 for axis in ['x', 'y', 'z']
-                    console.log rotation.get(axis)
                     @object.rotation[axis] += rotation.get(axis, 0)
 
-        position = @bridges[1]
+        position = @bridges.position
         if position? 
             for axis in ['x', 'y', 'z']
                 @object.position[axis] += position.get(axis, 0)

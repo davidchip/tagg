@@ -10,7 +10,7 @@ module.exports = ->
       files: [{
         expand: true,
         cwd: 'target/',
-        src: ['elements/*.js', 'core/*.js'],
+        src: ['helix/**/*.js', 'core/*.js'],
         dest: 'target/',
         ext: '.js',
         extDot: 'first'
