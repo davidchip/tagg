@@ -10,9 +10,9 @@ helix.defineBase('three-rotation-ios', {
         _native = window.nativeTracking
 
         if _native?
-            @set('rw', _native.w)
-            @set('rx', _native.x)
-            @set('ry', _native.y)
-            @set('rz', _native.z)
+            @set('rx', _native[0])
+            @set('ry', _native[1])
+            @set('rz', _native[2])
+            @set('rw', _native[3])
 
 })
