@@ -1,4 +1,3 @@
-class helix
 helix = {}
 
 
@@ -8,7 +7,23 @@ helix.config.rootDir = "/helix/"
 
 helix.loadedScripts = {}
 $('body').append('<div id="loadedScripts">')
+
+
+helix.logError = (message, debugObj={}) ->
+    """generic error logger
+    """
+    formattedObj = ""
+    for key, value of debugObj
+        formattedObj += "#{key}: #{value}\n"
+
+    console.log "#{message}\n#{formattedObj}"
+
+
 helix.loadScript = (url) ->
+    """attempt to load and cache a script
+
+       returns the promise of the load
+    """
     if not helix.loadedScripts[url]?
         helix.loadedScripts[url] = new $.Deferred()
         http = new XMLHttpRequest()
@@ -32,89 +47,94 @@ helix.loadScript = (url) ->
                 helix.loadedScripts[url].reject()
 
             $("#loadedScripts")[0].appendChild(script)
-    
+
     return helix.loadedScripts[url]
 
 
 helix.loadedBases = {}
-helix.loadBase = (baseName) ->
+helix.loadBase = (base) ->
     """attempts a load of the specified base
+
+       accepts: HTML elements, strings
 
        ignores: native elements, 
                 bases that have been loaded
     """
-    if typeof baseName isnt "string"
+    if not base?
         return ''
-    else
-        tagName = baseName.toLowerCase()
 
-    """if this base hasn't been loaded, load it
-    """
+    if typeof base is "string"
+        baseName = base
+    else
+        baseName = base.tagName
+        if not baseName?
+            return ''
+
+    baseName = baseName.toLowerCase()
+    splitTag = baseName.split('-')
+
+    if splitTag.length <= 1
+        return ''
+
     if not helix.loadedBases[baseName]?
+        helix.loadedBases[baseName] = new $.Deferred()
         helix.loadCount.inc()
 
-        helix.loadedBases[baseName] = new $.Deferred()
-
-        if baseName is "helix-base"
-            basePath = "base"
-        else
-            basePath = baseName.replace(/\-/g, '/')
+        ## all helix bases are at the root 
+        if splitTag[0] is "helix"
+            splitTag.shift()
+        
+        basePath = splitTag.join().replace(/\,/g, '/')
 
         url = helix.config.rootDir + basePath + ".js"
-        helix.loadScript(url)
+        load = helix.loadScript(url)
+        load.fail(() =>
+            helix.logError("couldn't find a base definition", {
+                base: baseName,
+                url: url }))
 
     return helix.loadedBases[baseName]
 
 
-helix.loadElement = (element) ->
-    """accepts any generic element, and figures out if it can load an element
-    """
-    if not element?
-        return ''
-
-    tagName = element.tagName
-    if not tagName?
-        return ''
-
-    tagName = tagName.toLowerCase()
-    splitTag = tagName.split('-')
-    if splitTag.length > 1
-        return helix.loadBase(tagName)
-
-
 helix.bases = {}
 helix.defineBase = (tagName, definition) ->
-    """if the base hase been defined, you can't redefine it
+    """attempt to define a new base
     """
     if helix.bases[tagName]?
         return
 
     baseDependencies = []
 
-    baseParent = ''
     if definition.extends?
         baseParent = definition.extends
-    else
+    else if tagName isnt 'helix-base'
         splitTag = tagName.split('-')
         baseName = splitTag.pop()
+
+        ## extend from the next base family up
         if baseName is 'base'
             splitTag.pop()
 
+        ## intuited parents should always be bases
         splitTag.push('base')
 
-        if splitTag[0] is "base"
-            baseParent = "helix-base"
-        else
-            baseParent = splitTag.join().replace(/\,/g, '-')
+        ## extend helix base if nothing else is available
+        if splitTag.length is 1
+            splitTag.unshift("helix")
+        
+        baseParent = splitTag.join().replace(/\,/g, '-')
 
-    if tagName isnt "helix-base"
-        load = helix.loadBase(baseParent)
-        baseDependencies.push(load)
+    baseDependencies.push(helix.loadBase(baseParent))
 
+    ## load libraries
     libs = if definition.libs? then definition.libs else []
-    for lib in libs 
-        baseDependencies.push(helix.loadScript(lib))
+    for lib in libs
+        libLoad = helix.loadScript(lib)
+        baseDependencies.push(libLoad)
+        libLoad.fail(() =>
+            helix.logError("couldn't load base's library", {tag:tagName, lib:lib}))
 
+    ## set up bridges for later
     if not definition.bridges?
         definition.bridges = []
 
@@ -140,7 +160,7 @@ helix.defineBase = (tagName, definition) ->
                         if v?
                             extendedProperties[k] = v
 
-                    value = extendedProperties
+                    value = $.extend({}, extendedProperties)
 
                 Object.defineProperty(elPrototype, key, {
                     value: value
@@ -175,11 +195,9 @@ helix.loaded = new $.Deferred()
 helix._loadCount = 0
 helix.loadCount = {
     inc: () ->
-        console.log helix._loadCount
         return helix._loadCount++
 
     dec: () ->
-        console.log helix._loadCount
         count = helix._loadCount--
         if count <= 1
             helix.loaded.resolve()
@@ -187,7 +205,7 @@ helix.loadCount = {
 
 
 helix.freeze = () ->
-    helix.freeze = true
+    helix._freeze = not helix._freeze
 
 
 @helix = helix
@@ -209,6 +227,6 @@ $.when(helix.loaded).then(() =>
 
 
 $('*').each((index, el) =>
-    helix.loadElement(el))
+    helix.loadBase(el))
 
 helix.start()

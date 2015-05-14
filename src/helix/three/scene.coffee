@@ -1,4 +1,4 @@
-window.world_created = new $.Deferred()
+helix.sceneCreated = new $.Deferred()
 
 
 helix.defineBase("three-scene", {
@@ -20,7 +20,7 @@ helix.defineBase("three-scene", {
     create: () ->
         # window.data = new Firebase("https://Helix.firebaseIO.com")
         window.particles = []
-        window.world = new THREE.Scene()
+        helix.scene = new THREE.Scene()
 
         ## setup WebGL renderer
         if @get('target')?
@@ -46,16 +46,15 @@ helix.defineBase("three-scene", {
         # document.body.appendChild(cssRendererL.domElement)
         # $(cssRendererL.domElement).addClass('left')
         # window.rendererCSSL = cssRendererL
-        # window.worldCSSL = new THREE.Scene()
+        # helix.sceneCSSL = new THREE.Scene()
 
         # cssRendererR = new THREE.CSS3DRenderer()
         # document.body.appendChild(cssRendererR.domElement)
         # $(cssRendererR.domElement).addClass('right')
         # window.rendererCSSR = cssRendererR
-        # window.worldCSSR = new THREE.Scene()
+        # helix.sceneCSSR = new THREE.Scene()
 
         ## add start button / event handler
-        ## extract me once Polymer templates are working properly
         ready = document.createElement('div')
         ready.id = 'ready'
         ready.style.position = 'absolute'
@@ -81,7 +80,7 @@ helix.defineBase("three-scene", {
         """
         ready.onclick = () ->
             $('#ready').fadeOut()
-            window.world_started.resolve()
+            helix.scene_started.resolve()
 
         for position in ['top', 'right', 'bottom', 'left']
             ready.style[position] = '0'
@@ -89,9 +88,11 @@ helix.defineBase("three-scene", {
         if @start is true
             document.body.appendChild(ready)
 
-        window.world_created.resolve()
+        helix.sceneCreated.resolve()
 
-        return window.world
+        return helix.scene
+        
+})
 
         ## render function
         # animate = () ->
@@ -132,5 +133,3 @@ helix.defineBase("three-scene", {
         #     alert 'error'
         #     console.log error
         # )
-        
-})

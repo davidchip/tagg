@@ -1,4 +1,4 @@
-Helix.registerElement('arrow-down', {
+helix.defineBase('arrow-down', {
 
     properties: {
         height: 36    

@@ -20,8 +20,8 @@ helix.defineBase('three-rotation-mouse', {
             _x = Math.max(-PI_2, Math.min(PI_2, _x))
             _y = -1 * movementX * 0.002
             
-            @set('x', _x)
-            @set('y', _y)
+            @set('rx', _x)
+            @set('ry', _y)
         , false)
 
         ## allow pointer lock

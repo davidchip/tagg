@@ -1,11 +1,11 @@
-Helix.registerElement('if-core', {
+helix.defineBase('if-base', {
 
     properties: {
         _state: undefined
         var: undefined
     }
 
-    preTemplate: () ->
+    preCreate: () ->
         if not @get('var')?
             return
 

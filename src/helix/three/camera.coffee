@@ -1,7 +1,5 @@
 helix.defineBase("three-camera", {
 
-    # libs: ["https://cdn.firebase.com/js/client/2.2.1/firebase.js"]
-
     bridges: ["rotation", "position"]
 
     properties: {
@@ -14,60 +12,51 @@ helix.defineBase("three-camera", {
     }
 
     template: """
-        <three-rotation-mouse id="rotation"></three-rotation-mouse>
-        <three-position-keyboard id="position"></three-position-keyboard>
+        <if-true var="native">
+            <three-rotation-ios id="rotation"></three-rotation-ios>
+        </if-true>
+
+        <if-false var="native">
+            <three-rotation-mouse id="rotation"></three-rotation-mouse>
+            <three-position-keyboard id="position"></three-position-keyboard>
+        </if-false
     """
 
-    preTemplate: () ->
-        @set('native', false)
-        @set('stereo', false)
-        # else
-            # @set('native', false)
-            # @set('stereo', false)
+    preCreate: () ->
+        if navigator.userAgent.match(/iPhone|iPad|iPod/i)?
+            @set('native', true)
+            @set('stereo', true)
+        else
+            @set('native', false)
+            @set('stereo', false)
 
     create: () ->
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
-
-        # @firebase = new Firebase('https://firecracker.firebaseio.com/')
-        
-        # if Helix.isMobile()
-            # @controls = Helix.Controls.MobileHeadTracking( camera )
-        # else
-            # @controls = Helix.Controls.SimpleKeyboardControls( camera )
-
-        # if @get('oculus') is true
-            # @controls = Helix.Controls.OculusControls( camera )
 
         if @get('stereo') is true
             @stereo_effect = @stereoCameras(window.renderer)
             @stereo_effect.setSize(window.innerWidth, window.innerHeight)
 
-            ## uncomment for CSS renderering
-            # for renderer in [window.rendererCSSL, window.rendererCSSR]
-            #     renderer.setSize(window.innerWidth / 2, window.innerHeight)
-            #     renderer.domElement.style.position = 'absolute'
+        ## uncomment for CSS renderering
+        # for renderer in [window.rendererCSSL, window.rendererCSSR]
+        #     renderer.setSize(window.innerWidth / 2, window.innerHeight)
+        #     renderer.domElement.style.position = 'absolute'
 
-            # window.rendererCSSR.domElement.style.left = window.innerWidth / 2 + 'px';
+        # window.rendererCSSR.domElement.style.left = window.innerWidth / 2 + 'px'
 
-        onWindowResize = () =>
-            @aspect = window.innerWidth / window.innerHeight
-            @updateProjectionMatrix()
-
-            if @get('stereo') is true
-                @stereo_effect.setSize( window.innerWidth, window.innerHeight )
-
-        # window.addEventListener('resize', onWindowResize, false )
+        # window.addEventListener('resize', () =>
+        # @aspect = window.innerWidth / window.innerHeight
+        # @updateProjectionMatrix()
+        #     if @get('stereo') is true
+        #         @stereo_effect.setSize( window.innerWidth, window.innerHeight )
+        # , false )
 
         rotation = @bridges.rotation
         if rotation?
-            type = @set('type', rotation.get('type'))
-            if 'euler'
-                type = 'rotation'
-            camera[type]['order'] = rotation.get('order')
-
-            # if @connections.length < 2
-            #     @firebase.on('child_changed', (snapshot) =>
-            #         @object.position = snapshot.val())
+            @set('type', rotation.get('type'))
+            rotationOrder = rotation.get('order')
+            if rotationOrder?
+                camera.rotation.order = rotationOrder
 
         return camera
 
@@ -77,38 +66,23 @@ helix.defineBase("three-camera", {
             type = @get('type')
         
             if type is 'quaternion'
-                quaternion = rotation.get('quaternion')
-                if quaternion?
-                    @object.quaternion.fromArray(quaternion)
+                @object.quaternion.set(rotation.get("rx", 0), 
+                                       rotation.get("ry", 0), 
+                                       rotation.get("rz", 0), 
+                                       rotation.get("rw", 0))
             else if type is 'euler'
                 for axis in ['x', 'y', 'z']
-                    @object.rotation[axis] += rotation.get(axis, 0)
+                    @object.rotation[axis] += rotation.get("r" + axis)
 
         position = @bridges.position
         if position? 
             for axis in ['x', 'y', 'z']
                 @object.position[axis] += position.get(axis, 0)
 
-            # @firebase.set({position: @object.position})
-
-                # @firebase.set(axis, position.get(axis))
-
-
-        # @controls.update()
-
-        # currentURL = window.location.href
-        # if currentURL.split('?').length is 1
-        #     window.data.set({
-        #         x: @object.quaternion.x
-        #         y: @object.quaternion.y
-        #         z: @object.quaternion.z
-        #         w: @object.quaternion.w
-        #     })
-
         if @get('stereo') is true
-            @stereo_effect.render( window.world, @object )
+            @stereo_effect.render( helix.scene, @object )
         else
-            window.renderer.render( window.world, @object )
+            window.renderer.render( helix.scene, @object )
 
     stereoCameras: ( renderer ) =>
 
@@ -192,9 +166,41 @@ helix.defineBase("three-camera", {
 
         ## uncomment for CSS renderering
         # if @stereo is true
-        #     window.rendererCSSL.render( window.worldCSSL, @stereo_effect.getCameraL() )
-        #     window.rendererCSSR.render( window.worldCSSR, @stereo_effect.getCameraL() )
+        #     window.rendererCSSL.render( helix.sceneCSSL, @stereo_effect.getCameraL() )
+        #     window.rendererCSSR.render( helix.sceneCSSR, @stereo_effect.getCameraL() )
         # else
-        #     window.rendererCSSL.render( window.worldCSSL, @objects[0] )
+        #     window.rendererCSSL.render( helix.sceneCSSL, @objects[0] )
 
 })
+
+# @firebase = new Firebase('https://firecracker.firebaseio.com/')
+
+# if Helix.isMobile()
+    # @controls = Helix.Controls.MobileHeadTracking( camera )
+# else
+    # @controls = Helix.Controls.SimpleKeyboardControls( camera )
+
+# if @get('oculus') is true
+    # @controls = Helix.Controls.OculusControls( camera )
+
+
+
+    # if @connections.length < 2
+    #     @firebase.on('child_changed', (snapshot) =>
+    #         @object.position = snapshot.val())
+
+    # @firebase.set({position: @object.position})
+
+        # @firebase.set(axis, position.get(axis))
+
+
+# @controls.update()
+
+# currentURL = window.location.href
+# if currentURL.split('?').length is 1
+#     window.data.set({
+#         x: @object.quaternion.x
+#         y: @object.quaternion.y
+#         z: @object.quaternion.z
+#         w: @object.quaternion.w
+#     })

@@ -2,7 +2,7 @@
 """
 
 
-Helix.registerElement('code-snippet', {
+helix.defineBase('code-snippet', {
 
     light: undefined
 

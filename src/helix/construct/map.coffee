@@ -1,6 +1,8 @@
-Helix.registerElement('node-ref', {
+helix.defineBase('construct-node', {
 
     class: 'circle'
+
+    extends: 'helix-base'
 
     properties: {
         color_index: undefined
@@ -25,9 +27,11 @@ Helix.registerElement('node-ref', {
 })
 
 
-Helix.registerElement('html-map', {
+helix.defineBase('construct-map', {
 
     class: 'site-dom-map'
+
+    extends: 'helix-base'
 
     libs: ["/bower_components/interact/interact.min.js",
            "/bower_components/jquery.kinetic/jquery.kinetic.min.js"]
@@ -141,7 +145,7 @@ Helix.registerElement('html-map', {
             css = {}
             node_circle = $("#map").find(".circle[data-ref=#{hash}]")
             if not node_circle.length > 0
-                node_circle = Helix.createElement('node-ref', {
+                node_circle = helix.createBase('construct-node', {
                     color_index: color_index
                     reference: hash })
 
@@ -165,7 +169,7 @@ Helix.registerElement('html-map', {
 
     maxDepth: (node) ->
         max = 0
-        for child in Helix.getAllChildren(node)
+        for child in @children
             @max = @maxDepth(child)
             if(max < @max)
                 max = @max

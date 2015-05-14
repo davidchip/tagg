@@ -639,7 +639,7 @@ Helix.toggleFullScreen = () ->
 # _helix.loadCount = 0
 
 
-# _helix.loadElement = (el) ->
+# _helix.loadBase = (el) ->
 
 
 

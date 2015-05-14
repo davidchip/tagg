@@ -1,6 +1,6 @@
 
 
-Helix.registerElement('audio-filter', {
+helix.defineBase('audio-filter', {
 
     src: undefined
 
@@ -34,7 +34,7 @@ Helix.registerElement('audio-filter', {
         @audioContext.decodeAudioData(audioData, (buffer) =>
             @buffer = buffer
 
-            $.when(window.world_started).then(() =>
+            $.when(helix.scene_started).then(() =>
                 @affect_world()
             )
         )

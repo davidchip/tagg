@@ -1,13 +1,3 @@
-""" A representation of a 3d object in the world. Most things should
-    extend this as it adds handling of position and some basic attributes
-    that allows particles to move/rotate.
-
-    Example:
-        <cube-3d>
-        </cube-3d>
-"""
-
-
 helix.defineBase("three-base", {
 
     libs: ["/bower_components/three.js/three.min.js"]
@@ -27,11 +17,11 @@ helix.defineBase("three-base", {
         depth: 5
     }
 
-    _preTemplate: () ->
+    _preCreate: () ->
         @created = new $.Deferred()
         @autoCreate = true
 
-        @preTemplate()
+        @preCreate()
 
     _create: () ->
         @object = @create()
@@ -40,18 +30,24 @@ helix.defineBase("three-base", {
         if @autoCreate is true
             @created.resolve()
 
-    _afterCreate: () ->
-        $.when(window.world_created, @created).then(() =>
-            window.world.add(@object)
-            window.particles.push(@)
-            @afterCreate()
-        )
-
     create: () ->
         """Create should return the THREE.Object3D 
            representation of the particle.
         """
         return new THREE.Object3D()
+
+    _postCreate: () ->
+        $.when(helix.sceneCreated, @created).then(() =>
+            helix.scene.add(@object)
+
+            @postCreate())
+
+    _remove: () ->
+        """Polymer func fired when DOM element is removed
+        """
+        $.when(helix.sceneCreated).then(() =>
+            helix.scene.remove(@object)
+            @remove())
 
     _place: (object) ->
         if not object?
@@ -63,30 +59,27 @@ helix.defineBase("three-base", {
                             @get('ry', 0) * (Math.PI * 2), 
                             @get('rz', 0) * (Math.PI * 2))
 
-    # _update: () ->
-        """Updatable attributes. Can be accessed through dom, and updated
-           whenever.
-        """
-        # @object.position.y = @get('y')
-
-        # @object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
-        # @object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
-        # @object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
-
-        # @update()
-
-
-    detachedCallback: () ->
-        """Polymer func fired when DOM element is removed
-        """
-        $.when(window.world_created).then(() =>
-            window.world.remove(@object)
-
-            particle_index = window.particles.indexOf(@)
-            if particle_index > -1
-                window.particles.splice(particle_index, 1)
-
-            $(@).remove()
-        )
-
 })
+
+# _update: () ->
+    # """Updatable attributes. Can be accessed through dom, and updated
+    #    whenever.
+    # """
+    # @object.position.y = @get('y')
+
+    # @object.rotation.x += (Math.PI / 60) * (@rpmx / 60)
+    # @object.rotation.y += (Math.PI / 60) * (@rpmy / 60)
+    # @object.rotation.z += (Math.PI / 60) * (@rpmz / 60)
+
+    # @update()
+
+    # get_objects: () ->
+    #     """ Returns an array of objects corresponding with each child tag.
+    #     """
+    #     objects = []
+    #     for dom_child in helix.getAllChildren(@, true)
+    #         if dom_child.object?
+    #             objects.push(dom_child.object)
+
+    #     return objects
+    

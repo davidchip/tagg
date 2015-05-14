@@ -7,113 +7,24 @@ helix.defineBase("helix-base", {
     properties: {}
     template: ''
 
-    _template: (str) ->
-        regex = {
-            brackets: /\{\{(.*?)\}\}/
-            attributes: /(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/
-        }
+    ## base functions
 
-        # replace mustache variables
-        str = str.replace(/\{\{(.*?)\}\}/g, (surroundedAttribute) =>
-            attribute = surroundedAttribute.slice(2, -2)
-            value = @get(attribute)
-            if value?
-                return value
-        )
-
-        # bind attributes
-        # slice = 0
-        # while slice < str.length
-        #     sliced = str.slice(slice, str.length)
-        #     split = sliced.match(regex.attributes)
-
-        #     if not split?
-        #         break
-
-        #     slice += split.index + split[0].length
-
-        return str
-
-    createdCallback: () ->
-        # alert 'created'
-
-    attachedCallback: () ->
-        ## set non generic attributes as properties
-        bridges = []
-        for attr, attrMap of @attributes
-            name = attrMap.name
-            value = attrMap.value
-            if name not in ['id', 'class', 'style', 'bridges']
-                if value?
-                    if value in ['', 'true', 'True']   ## if an attribute exists, but has no value, consider it true
-                        value = true
-                    else if value in ['false', 'False']
-                        value = false
-
-                    @set(attrMap.name, value)
-
-            else if name is 'bridges'
-                for bridgeID in value.split(',')
-                    @bridges.push(bridgeID)
-
-        if @class?
-            currentClass = @getAttribute('class')
-            @setAttribute('class', if currentClass? then (currentClass + " #{@class}") else @class)
-
-        for key, value of @properties
-            @set(key, value)
-
-        bridgesLoaded = []
-        for bridgeName, bridgeEl of @bridges
-            bridgesLoaded.push(helix.loadElement(bridgeEl))
-
-        @_preTemplate()
-
-        template = if @template? then $.trim(@template) else ''
-        @innerHTML += template
-        @innerHTML = @_template(@innerHTML)
-
-        childrenLoaded = []
-        for child in @children
-            childrenLoaded.push(helix.loadElement(child))
-
-        $.when.apply($, childrenLoaded).then(() =>
-            bridgesLoaded = []
-
-            _bridges = {}
-            for bridgeID in @bridges
-                bridgeEl = $("##{bridgeID}")
-                # console.log bridgeEl
-                if bridgeEl.length > 0
-                    bridgesLoaded.push(helix.loadElement(bridgeEl[0]))
-                    _bridges[bridgeID] = bridgeEl[0]
-
-            @bridges = _bridges
-            $.when.apply($, bridgesLoaded).then(() =>
-                @_create()
-                @_afterCreate()
-                helix.activeBases.push(@)
-            )
-        )
-
-    _preTemplate: () ->
-        @preTemplate()
-
-    preTemplate: () ->
+    preCreate: () ->
         return
-
-    _create: () ->
-        @create()
 
     create: () ->
         return
 
-    _afterCreate: () ->
-        @afterCreate()
-
-    afterCreate: () ->
+    postCreate: () ->
         return
 
+    update: () ->
+        return
+
+    remove: () ->
+        return
+
+    ## built ins
 
     get: (attribute, _default) ->
         if @properties[attribute]?
@@ -137,35 +48,132 @@ helix.defineBase("helix-base", {
 
         return @get(attribute)
 
+        # bind attributes
+        # slice = 0
+        # while slice < str.length
+        #     sliced = str.slice(slice, str.length)
+        #     split = sliced.match(regex.attributes)
 
-    get_objects: () ->
-        """ Returns an array of objects corresponding with each child tag.
-        """
-        objects = []
-        for dom_child in helix.getAllChildren(@, true)
-            if dom_child.object?
-                objects.push(dom_child.object)
+        #     if not split?
+        #         break
 
-        return objects
+        #     slice += split.index + split[0].length
 
-    detached: () ->
-        @remove()
+        return str
 
-    remove: () ->
-        """Remove dom elements of group, which will in turn destroy
-           our objects.
-        """
-        for child in helix.getAllChildren(@, true)
-            child.remove()
+    ## DOM CALLBACKs
+
+    createdCallback: () ->
+        # alert 'created'
+
+    attachedCallback: () ->
+        ## separate this instance from its prototype properties
+        @properties = $.extend({}, @properties)
+
+        ## set non generic attributes as properties
+        @_setAttributes()            
+
+        @_preCreate()
+
+        template = if @template? then $.trim(@template) else ''
+        @innerHTML += template
+        @innerHTML = @_template(@innerHTML)
+
+        childrenLoaded = []
+        for child in @children
+            childrenLoaded.push(helix.loadBase(child))
+
+        $.when.apply($, childrenLoaded).then(() =>
+            bridgesLoaded = []
+            _bridges = {}
+            for bridgeID in @bridges
+                bridgeEl = $("##{bridgeID}")
+                if bridgeEl.length > 0
+                    bridgesLoaded.push(helix.loadBase(bridgeEl[0]))
+                    _bridges[bridgeID] = bridgeEl[0]
+
+            @bridges = _bridges
+            $.when.apply($, bridgesLoaded).then(() =>
+                @_create()
+                @_postCreate()
+                helix.activeBases.push(@)))
+
+    detachedCallback: () ->
+        baseIndex = helix.activeBases.indexOf(@)
+        if baseIndex > -1
+            helix.activeBases.splice(baseIndex, 1)
         
+        @_remove()
         $(@).remove()
 
-    update: () ->
-        return
+    ## hooks
+
+    _preCreate: () ->
+        @preCreate()
+
+    _create: () ->
+        @create()
+
+    _postCreate: () ->
+        @postCreate()
 
     _update: () ->
         @update()
-        return
+
+    _remove: () ->
+        @remove()
+
+    # helpers
+
+    _setAttributes: () ->
+        """iterate over bases attributes
+                append any specified base class
+                push the ids of any specified bridges
+                set all other attributes
+        """
+        for attr, attrMap of @attributes
+            name = attrMap.name
+            attrValue = attrMap.value
+
+            if attrValue?
+                if name is 'class'
+                    if @class?
+                        @setAttribute('class', "#{@class} #{attrValue}")
+
+                else if name in 'id'
+                    """this"""
+
+                else if name is 'style'
+                    """this"""
+                
+                else if name is 'bridges'
+                    for bridgeID in value.split(',')
+                        @bridges.push(bridgeID)
+
+                else
+                    if attrValue in ['', 'true', 'True']
+                        value = true
+                    else if attrValue in ['false', 'False']
+                        value = false
+                    else
+                        value = attrValue
+
+                    @set(name, value)
+
+    _template: (str) ->
+        regex = {
+            brackets: /\{\{(.*?)\}\}/
+            attributes: /(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/
+        }
+
+        # replace mustache variables
+        str = str.replace(/\{\{(.*?)\}\}/g, (surroundedAttribute) =>
+            attribute = surroundedAttribute.slice(2, -2)
+            value = @get(attribute)
+            if value?
+                return value
+        )
+
 
 
 })

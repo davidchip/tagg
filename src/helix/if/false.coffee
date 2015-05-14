@@ -1,6 +1,4 @@
-Helix.registerElement('if-true', {
-
-    extends: 'if-core'
+helix.defineBase('if-true', {
 
     properties: {
         _state: true

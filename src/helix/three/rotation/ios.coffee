@@ -1,21 +1,18 @@
 helix.defineBase('three-rotation-ios', {
 
     properties: {
-        order: 'WXYZ'
         type: 'quaternion'
+        order: undefined
         rw: 0
-        rx: 0
-        ry: 0
-        rz: 0
     }
 
     update: () ->
         _native = window.nativeTracking
 
         if _native?
-            @set('rw', _native.rw, 0)
-            @set('rw', _native.rw, 0)
-            @set('rw', _native.rw, 0)
-            @set('rw', _native.rw, 0)
+            @set('rw', _native.w)
+            @set('rx', _native.x)
+            @set('ry', _native.y)
+            @set('rz', _native.z)
 
 })

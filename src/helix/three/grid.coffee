@@ -29,9 +29,13 @@ helix.defineBase("three-grid", {
         z_offset = @get('row_spacing') * @get('rows') / 2
 
         coordinateMatrix = {x: [], y: [], z: []}
-        for level in [1..@get('levels')]
-            for column in [1..@get('columns')]
-                for row in [1..@get('rows')]
+        levels = @get('levels')
+
+        columns = @get('columns')
+        rows = @get('rows')
+        for level in [1..levels]
+            for column in [1..columns]
+                for row in [1..rows]
                     coordinateMatrix['y'].push(level * @get('level_spacing') + @get('y'))
                     coordinateMatrix['x'].push(column * @get('column_spacing') + @get('x') - @get('column_spacing') / 2 - x_offset)
                     coordinateMatrix['z'].push(row * @get('row_spacing') + @get('z') - @get('row_spacing') / 2 - z_offset)
