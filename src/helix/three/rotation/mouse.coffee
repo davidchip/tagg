@@ -1,6 +1,7 @@
 helix.defineBase('three-rotation-mouse', {
 
     properties: {
+        lazy: false
         order: 'YXZ'
         type: 'euler'
         rx: 0
@@ -20,7 +21,7 @@ helix.defineBase('three-rotation-mouse', {
             _x = Math.max(-PI_2, Math.min(PI_2, _x))
             _y = -1 * movementX * 0.002
             
-            @set('rx', _x)
+            @set('rx', -_x)
             @set('ry', _y)
         , false)
 
@@ -30,6 +31,11 @@ helix.defineBase('three-rotation-mouse', {
         lock_el.addEventListener('dblclick', () =>
             lock_el.requestPointerLock()
         ,  false)
+
+    update: () ->
+        if @get('lazy') is false
+            for axis in ['rx', 'ry', 'rz']
+                @set(axis, @get(axis) / 1.1)
 
 
 })

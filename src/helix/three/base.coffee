@@ -7,7 +7,6 @@ helix.defineBase("three-base", {
         y: 0
         z: 0
 
-        rw: 0
         rx: 0
         ry: 0
         rz: 0
@@ -54,10 +53,14 @@ helix.defineBase("three-base", {
             console.log "no object returned from create function in #{@.tagName.toLowerCase()}"
             return
 
-        object.position.set(@get('x'),@get('y'),@get('z'))
-        object.rotation.set(@get('rx', 0) * (Math.PI * 2), 
-                            @get('ry', 0) * (Math.PI * 2), 
-                            @get('rz', 0) * (Math.PI * 2))
+        rx = @get('rx', 0) * Math.PI * 2
+        ry = @get('rz', 0) * Math.PI * 2
+        rz = @get('ry', 0) * Math.PI * 2
+
+        object.rotation.set(rx, ry, rz)
+        object.position.set(@get('x', 0),
+                            @get('y', 0),
+                            @get('z', 0))
 
 })
 

@@ -160,6 +160,9 @@ helix.defineBase("helix-base", {
 
                     @set(name, value)
 
+        for key, value of @properties
+            @set(key, value)
+
     _template: (str) ->
         regex = {
             brackets: /\{\{(.*?)\}\}/

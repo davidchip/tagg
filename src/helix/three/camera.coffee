@@ -3,12 +3,11 @@ helix.defineBase("three-camera", {
     bridges: ["rotation", "position"]
 
     properties: {
+        lazy: false
         native: false
         oculus: false
         stereo: false
-        ry: .5
         type: undefined
-        y: 5
     }
 
     template: """
@@ -18,7 +17,7 @@ helix.defineBase("three-camera", {
 
         <if-false var="native">
             <three-rotation-mouse id="rotation"></three-rotation-mouse>
-            <three-position-keyboard id="position"></three-position-keyboard>
+            <three-position-keyboard id="position" lazy></three-position-keyboard>
         </if-false
     """
 
@@ -31,7 +30,7 @@ helix.defineBase("three-camera", {
             @set('stereo', false)
 
     create: () ->
-        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 )
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000)
 
         if @get('stereo') is true
             @stereo_effect = @stereoCameras(window.renderer)
@@ -54,9 +53,9 @@ helix.defineBase("three-camera", {
         rotation = @bridges.rotation
         if rotation?
             @set('type', rotation.get('type'))
-            rotationOrder = rotation.get('order')
-            if rotationOrder?
-                camera.rotation.order = rotationOrder
+            # rotationOrder = rotation.get('order')
+            # if rotationOrder?
+                # camera.rotation.order = rotationOrder
 
         return camera
 
@@ -77,7 +76,8 @@ helix.defineBase("three-camera", {
         position = @bridges.position
         if position? 
             for axis in ['x', 'y', 'z']
-                @object.position[axis] += position.get(axis, 0)
+                _pos = position.get(axis, 0)
+                @object.position[axis] += _pos
 
         if @get('stereo') is true
             @stereo_effect.render( helix.scene, @object )
