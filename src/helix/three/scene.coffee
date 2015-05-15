@@ -6,12 +6,13 @@ helix.defineBase("three-scene", {
     extends: 'helix-base'
 
     template: """
-        <three-camera ry="{{ry}}" rz="{{rz}}" z="{{z}}">
+        <three-camera ry="{{ry}}" rz="{{rz}}" y="{{y}}" z="{{z}}">
         </three-camera>
     """
 
     properties: {
         color: 'black'
+        y: 0
         z: 0
         ry: 0
         rz: .5

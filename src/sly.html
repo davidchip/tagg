@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js" type="text/javascript">
+    </script>
+    <link rel="import" href="/core/helix.html">
+</head>
+<body style="background-color:#000;">
+
+<three-scene color="black" z="-1000">
+	<!-- <three-video src="/assets/oceans.mp4" y="300" z="499" muted></three-video> -->
+
+    <three-grid rows="20, 500" columns="20, 1000" y="2000">
+        <three-cube color="yellow" width="40" height="40" depth="40"></three-cube>
+    </three-grid>
+
+    <three-light-point y="200" z="200"></three-light-point>
+
+    <three-model phong src="/assets/models/TestiveLogo.js" z="1000" rx=".25" ry=".5" rz="0" scale="100"></three-model>
+
+    <three-grid rows="50, 1000"
+                columns="2, 1000"
+                levels="1, 1000" y="0" x="-3000" z="1000">
+        <three-cube color="grey" wireframe width="1000" height="1000" depth="1000"></three-cube>
+    </three-grid>
+
+    <three-grid rows="50, 1000"
+                columns="2, 1000"
+                levels="1, 1000" y="0" x="3000" z="1000">
+        <three-cube color="grey" wireframe width="1000" height="1000" depth="1000"></three-cube>
+    </three-grid>
+</three-scene>
+
+</body>
+</html>

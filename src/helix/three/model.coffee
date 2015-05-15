@@ -39,8 +39,12 @@ helix.defineBase('three-model', {
             object.geometry = geometry
             
             materials = helix.cachedModels[src].materials
-            object.material = new THREE.MeshPhongMaterial()
-            # object.material = new THREE.MeshFaceMaterial(materials)
+            if @get('phong') is true
+                material = new THREE.MeshPhongMaterial()
+            else
+                material = new THREE.MeshFaceMaterial(materials)
+
+            object.material = material
 
             for axis in ['x', 'y', 'z']
                 object.scale[axis] = @get('scale')
