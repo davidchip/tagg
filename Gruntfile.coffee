@@ -17,12 +17,14 @@ module.exports = ->
         "copy:html"
         "copy:js"
         "copy:media"
-        "coffee:compile"
-        "coffee:cmd"
+        "coffee:core"
+        "coffee:bases"
         "less:compile"
 
         ## minimize our files
-        "uglify"
+        "uglify:core"
+        "uglify:bases"
+
     ])
 
 

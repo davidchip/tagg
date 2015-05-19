@@ -6,26 +6,37 @@ module.exports = ->
 
   @config "coffee", {
 
-    compile: {
+    bases: {
       files: [{
         expand: true,
-        cwd: 'src/',
+        cwd: 'src/helix/',
         src: ['**/*.coffee'],
-        dest: 'target/',
+        dest: 'target/helix/',
         ext: '.js',
         extDot: 'first'
       }]
     }
 
-    cmd: {
+    core: {
       files: [{
         expand: true,
-        cwd: '.',
-        src: ['crack.coffee'],
-        dest: '.',
+        cwd: 'src/core/',
+        src: ['**/*.coffee'],
+        dest: 'target/core/',
         ext: '.js',
         extDot: 'first'
       }]
     }
+
+    # cmd: {
+    #   files: [{
+    #     expand: true,
+    #     cwd: '.',
+    #     src: ['crack.coffee'],
+    #     dest: '.',
+    #     ext: '.js',
+    #     extDot: 'first'
+    #   }]
+    # }
 
   }

@@ -1,12 +1,10 @@
 helix = {}
 
-
 helix.config = {}
-helix.config.rootDir = "/helix/"
-
+helix.config.localStream = "/helix/"
+helix.config.remoteStream = "http://firecracker.divshot.io/helix/"
 
 helix.loadedScripts = {}
-$('body').append('<div id="loadedScripts">')
 
 
 helix.logError = (message, debugObj={}) ->
@@ -86,12 +84,15 @@ helix.loadBase = (base) ->
         
         basePath = splitTag.join().replace(/\,/g, '/')
 
-        url = helix.config.rootDir + basePath + ".js"
-        load = helix.loadScript(url)
+        localURL = helix.config.localStream + basePath + ".js"
+        load = helix.loadScript(localURL)
         load.fail(() =>
-            helix.logError("couldn't find a base definition", {
-                base: baseName,
-                url: url }))
+            remoteURL = helix.config.remoteStream + basePath + ".js"
+            secondLoad = helix.loadScript(remoteURL)
+            secondLoad.fail(
+                helix.logError("couldn't find a base definition", {
+                    base: baseName,
+                    url: url })))
 
     return helix.loadedBases[baseName]
 
@@ -171,6 +172,9 @@ helix.defineBase = (tagName, definition) ->
             prototype: elPrototype })
 
         helix.bases["#{tagName}"] = CustomElement
+        if not helix.loadedBases["#{tagName}"]?
+            helix.loadedBases["#{tagName}"] = new $.Deferred()    
+        
         helix.loadedBases["#{tagName}"].resolve()
         helix.loadCount.dec()
     )
@@ -214,19 +218,21 @@ helix.freeze = () ->
 """kickoff
 """
 
-load = $("<div id='loading'>")
-load.html("<div id='loader'></div>").appendTo('body')
+setTimeout (() =>
+    $('*').each((index, el) =>
+        helix.loadBase(el))
 
-$.when(helix.loaded).then(() =>
-    $("#loading").addClass('loaded')
+    helix.start()
 
-    setTimeout (() =>
-        $("#loading").remove()
-    ), 4000
-)
+    $.when(helix.loaded).then(() =>
+        setTimeout (() =>
+            $("#loading").addClass('loaded')
+        ), 1000
+
+        setTimeout (() =>
+            $("#loading").remove()
+        ), 4000
+    )
+), 100
 
 
-$('*').each((index, el) =>
-    helix.loadBase(el))
-
-helix.start()

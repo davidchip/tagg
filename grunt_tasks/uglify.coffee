@@ -6,15 +6,25 @@ module.exports = ->
 
   @config "uglify", {
 
-    compile: {
+    bases: {
       files: [{
         expand: true,
-        cwd: 'target/',
-        src: ['helix/**/*.js', 'core/*.js'],
-        dest: 'target/',
+        cwd: 'target/helix/',
+        src: ['**/*.js'],
+        dest: 'target/helix/',
         ext: '.js',
         extDot: 'first'
       }]
+    }
+
+    core: {
+      files: {
+        'target/go.js': [
+          'target/core/loader.js'
+          'libs/zepto.min.js',
+          'target/core/helix.js'
+        ]
+      }
     }
 
   }

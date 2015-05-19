@@ -15,6 +15,9 @@ module.exports = ->
         ext: '.css',
         extDot: 'first'
       }]
+      options: {
+        compress: true
+      }
     }
 
   }

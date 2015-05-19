@@ -8,35 +8,42 @@ module.exports = ->
 
     html: {
       options: {
-        title: 'html recompiled'
-        message: 'better rev here we come!'
+        title: '.html copied'
+        message: 'check it out!'
       }
     }
 
-    coffee: {
+    bases: {
       options: {
-        title: 'great success!'
-        message: 'coffee compiled successfully'
+        title: 'base recompiled!'
+        message: 'take it for a spin!'
       }
     }
 
-    cmd: {
+    core: {
       options: {
-        title: 'bammm!'
-        message: 'command line recompiled'
+        title: 'core compiled + combined'
+        message: 'includes libs'
       }
     }
+
+    # cmd: {
+    #   options: {
+    #     title: 'bammm!'
+    #     message: 'command line recompiled'
+    #   }
+    # }
 
     less: {
       options: {
-        title: 'naileddd it'
+        title: '.less compiled'
         message: 'less compiled successfully'
       }
     }
 
     js: {
       options: {
-        title: 'plain JS updated'
+        title: '.js copied'
         message: 'don\'t forget to take a break'
       }
     }

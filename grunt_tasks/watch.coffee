@@ -11,15 +11,20 @@ module.exports = ->
       tasks: ['newer:copy:html', 'notify:html']
     }
 
-    coffee: {
-      files: 'src/**/*.coffee',
-      tasks: ['newer:coffee:compile', 'notify:coffee']
+    bases: {
+      files: ['src/helix/**/*.coffee'],
+      tasks: ['newer:coffee:bases', 'notify:bases']
     }
 
-    cmd: {
-      files: 'crack.coffee',
-      tasks: ['newer:coffee:cmd', 'notify:cmd']
+    core: {
+      files: ['src/core/**/*.coffee']
+      tasks: ['newer:coffee:core', 'uglify:core', 'notify:core']
     }
+
+    # cmd: {
+    #   files: 'crack.coffee',
+    #   tasks: ['newer:coffee:cmd', 'notify:cmd']
+    # }
 
     less: {
       files: 'src/**/*.less',
