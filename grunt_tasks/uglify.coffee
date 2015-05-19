@@ -22,7 +22,7 @@ module.exports = ->
         'target/go.js': [
           'target/core/loader.js'
           'libs/zepto.min.js',
-          'target/core/stream.js'
+          'target/core/helix.js'
         ]
       }
     }
