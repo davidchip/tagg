@@ -4,7 +4,7 @@
   "clean_urls": true,
   "error_page": "error.html",
   "headers": {
-    "/helix/**": {
+    "/stream/**": {
       "Access-Control-Allow-Origin": "*"
     },
     "/bower_components/**": {

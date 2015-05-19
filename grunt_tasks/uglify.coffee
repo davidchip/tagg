@@ -9,9 +9,9 @@ module.exports = ->
     bases: {
       files: [{
         expand: true,
-        cwd: 'target/helix/',
+        cwd: 'target/stream/',
         src: ['**/*.js'],
-        dest: 'target/helix/',
+        dest: 'target/stream/',
         ext: '.js',
         extDot: 'first'
       }]
@@ -22,7 +22,7 @@ module.exports = ->
         'target/go.js': [
           'target/core/loader.js'
           'libs/zepto.min.js',
-          'target/core/helix.js'
+          'target/core/stream.js'
         ]
       }
     }

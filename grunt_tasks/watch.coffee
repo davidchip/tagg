@@ -12,7 +12,7 @@ module.exports = ->
     }
 
     bases: {
-      files: ['src/helix/**/*.coffee'],
+      files: ['src/stream/**/*.coffee'],
       tasks: ['newer:coffee:bases', 'notify:bases']
     }
 

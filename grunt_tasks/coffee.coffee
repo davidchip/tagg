@@ -9,9 +9,9 @@ module.exports = ->
     bases: {
       files: [{
         expand: true,
-        cwd: 'src/helix/',
+        cwd: 'src/stream/',
         src: ['**/*.coffee'],
-        dest: 'target/helix/',
+        dest: 'target/stream/',
         ext: '.js',
         extDot: 'first'
       }]

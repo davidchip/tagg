@@ -1,8 +1,8 @@
 helix = {}
 
 helix.config = {}
-helix.config.localStream = "/helix/"
-helix.config.remoteStream = "http://www.helix.to/helix/"
+helix.config.localStream = "/stream/"
+helix.config.remoteStream = "http://www.helix.to/stream/"
 
 helix.loadedScripts = {}
 
@@ -55,32 +55,13 @@ helix.loadScript = (url) ->
                 $("#loadedScripts")[0].appendChild(script)
                 helix.loadedScripts[url].resolve()
 
-            return
-
         xhr.onerror = ->
             helix.loadedScripts[url].reject()
-            return
 
         try
             xhr.send()
         catch error
             helix.loadedScripts[url].reject()
-
-            # script = document.createElement("script")
-            # script.async = "async"
-            # script.type = "text/javascript"
-            # script.src = url
-            # script.onload = script.onreadystatechange = (_, isAbort) =>
-            #   if not script.readyState or /loaded|complete/.test(script.readyState)
-            #      if (isAbort)
-                    
-            #      else
-                    
-
-            # script.onerror = () ->
-                # helix.loadedScripts[url].reject()
-
-            # $("#loadedScripts")[0].appendChild(script)
 
     return helix.loadedScripts[url]
 
