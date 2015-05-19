@@ -2,7 +2,7 @@ helix = {}
 
 helix.config = {}
 helix.config.localStream = "/helix/"
-helix.config.remoteStream = "http://firecracker.divshot.io/helix/"
+helix.config.remoteStream = "http://www.helix.to/helix/"
 
 helix.loadedScripts = {}
 
@@ -17,6 +17,21 @@ helix.logError = (message, debugObj={}) ->
     console.log "#{message}\n#{formattedObj}"
 
 
+createRequest = (method, url) ->
+  xhr = new XMLHttpRequest
+  if 'withCredentials' of xhr
+    # XHR for Chrome/Firefox/Opera/Safari.
+    xhr.open method, url, true
+  else if typeof XDomainRequest != 'undefined'
+    # XDomainRequest for IE.
+    xhr = new XDomainRequest
+    xhr.open method, url
+  else
+    # CORS not supported.
+    xhr = null
+  xhr
+
+
 helix.loadScript = (url) ->
     """attempt to load and cache a script
 
@@ -24,27 +39,48 @@ helix.loadScript = (url) ->
     """
     if not helix.loadedScripts[url]?
         helix.loadedScripts[url] = new $.Deferred()
-        http = new XMLHttpRequest()
-        http.open('HEAD', url, false)
-        http.send()
-        if http.status == 404
-            helix.loadedScripts[url].reject()
-        else
-            script = document.createElement("script")
-            script.async = "async"
-            script.type = "text/javascript"
-            script.src = url
-            script.onload = script.onreadystatechange = (_, isAbort) =>
-              if not script.readyState or /loaded|complete/.test(script.readyState)
-                 if (isAbort)
-                    helix.loadedScripts[url].reject()
-                 else
-                    helix.loadedScripts[url].resolve()
 
-            script.onerror = () ->
+        xhr = createRequest('GET', url)
+        if !xhr
+            alert "helix loading isn't supported on this browser"
+            return
+
+        xhr.onload = ->
+            if xhr.status is 404
                 helix.loadedScripts[url].reject()
+            else
+                script = document.createElement("script")
+                script.type = "text/javascript"
+                script.text = xhr.response
+                $("#loadedScripts")[0].appendChild(script)
+                helix.loadedScripts[url].resolve()
 
-            $("#loadedScripts")[0].appendChild(script)
+            return
+
+        xhr.onerror = ->
+            helix.loadedScripts[url].reject()
+            return
+
+        try
+            xhr.send()
+        catch error
+            helix.loadedScripts[url].reject()
+
+            # script = document.createElement("script")
+            # script.async = "async"
+            # script.type = "text/javascript"
+            # script.src = url
+            # script.onload = script.onreadystatechange = (_, isAbort) =>
+            #   if not script.readyState or /loaded|complete/.test(script.readyState)
+            #      if (isAbort)
+                    
+            #      else
+                    
+
+            # script.onerror = () ->
+                # helix.loadedScripts[url].reject()
+
+            # $("#loadedScripts")[0].appendChild(script)
 
     return helix.loadedScripts[url]
 
@@ -92,7 +128,7 @@ helix.loadBase = (base) ->
             secondLoad.fail(
                 helix.logError("couldn't find a base definition", {
                     base: baseName,
-                    url: url })))
+                    url: localURL })))
 
     return helix.loadedBases[baseName]
 

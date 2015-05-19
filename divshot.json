@@ -2,5 +2,13 @@
   "name": "firecracker",
   "root": "./target/",
   "clean_urls": true,
-  "error_page": "error.html"
+  "error_page": "error.html",
+  "headers": {
+    "/helix/**": {
+      "Access-Control-Allow-Origin": "*"
+    },
+    "/bower_components/**": {
+      "Access-Control-Allow-Origin": "*"
+    }
+  }
 }

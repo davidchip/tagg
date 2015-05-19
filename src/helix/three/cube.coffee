@@ -1,7 +1,7 @@
 helix.defineBase("three-cube", {
 
     properties: {
-        color: 'black'
+        color: 'white'
         index: 0
         width: 40
         height: 40
