@@ -17,3 +17,8 @@ window.onload = () ->
     scripts = document.createElement("div")
     scripts.id = "loadedScripts"
     document.body.appendChild(scripts)
+
+    ## autocomplete >helix-short<
+    document.body.innerHTML = document.body.innerHTML.replace(/&gt;([a-z]+)-([a-z]+)&lt;/g, (short) ->
+        tagName = short.substring(4, short.length - 4)
+        return "<#{tagName}></#{tagName}>" )

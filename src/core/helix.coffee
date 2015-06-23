@@ -197,6 +197,7 @@ helix.defineBase = (tagName, definition) ->
     )
 
 
+
 helix.activeBases = []
 
 helix._freeze = false
