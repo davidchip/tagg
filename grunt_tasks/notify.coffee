@@ -6,33 +6,12 @@ module.exports = ->
 
   @config "notify", {
 
-    html: {
+    coffee: {
       options: {
-        title: '.html copied'
-        message: 'check it out!'
+        title: 'coffee compiled + cocatenated'
+        message: 'hurrah'
       }
     }
-
-    bases: {
-      options: {
-        title: 'base recompiled!'
-        message: 'take it for a spin!'
-      }
-    }
-
-    core: {
-      options: {
-        title: 'core compiled + combined'
-        message: 'includes libs'
-      }
-    }
-
-    # cmd: {
-    #   options: {
-    #     title: 'bammm!'
-    #     message: 'command line recompiled'
-    #   }
-    # }
 
     less: {
       options: {
@@ -41,10 +20,10 @@ module.exports = ->
       }
     }
 
-    js: {
+    libs: {
       options: {
-        title: '.js copied'
-        message: 'don\'t forget to take a break'
+        title: 'lib .js copied'
+        message: 'don\'t forget to bring a towel!'
       }
     }
     

@@ -13,33 +13,4 @@ module.exports = ->
       }]
     }
 
-    html: {
-      files: [{
-        expand: true,
-        cwd: 'src/',
-        src: ['**/*.html'],
-        dest: 'target/'
-      }]
-    }
-
-    media: {
-      files: [{
-        expand: true
-        cwd: 'src/'
-        src: ['**/*.png', '**/*.jpg', '**/*.bmp', '**/*.mp3', '**/*.m4a', '**/*.ogg', '**/*.mp4', '**/*.mtl']
-        dest: 'target/'
-      }]
-    }
-
-    js: {
-      files: [{
-        expand: true
-        cwd: 'src/'
-        src: ['**/*.js']
-        dest: 'target/'
-      }]
-    }
-
   }
-
-

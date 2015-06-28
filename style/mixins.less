@@ -1,0 +1,94 @@
+.transition(@property:all, @duration:0.125s, @ease:ease-out) {
+  -webkit-transition: @property @duration @ease;
+  -moz-transition: @property @duration @ease;
+  -o-transition: @property @duration @ease;
+  transition: @property @duration @ease;
+}
+
+._transition (@value1,@value2:X,...) {
+    @value: ~`"@{arguments}".replace(/[\[\]]|\,\sX/g, '')`;
+
+    -webkit-transition: @value;
+    -moz-transition: @value;
+    -ms-transition: @value;
+    -o-transition: @value;
+    transition: @value;
+}
+
+.xscale (@x:1, @y:1) {
+    transform: scale(@x, @y);
+    -moz-transform: scale(@x, @y);
+    -ms-transform: scale(@x, @y);
+    -webkit-transform: scale(@x, @y);
+    -o-transform: scale(@x, @y);
+}
+
+.rotate (@degrees:90) {
+    transform:rotate(@degrees);
+    -ms-transform:rotate(@degrees);
+    -moz-transform:rotate(@degrees);
+    -webkit-transform:rotate(@degrees);
+    -o-transform:rotate(@degrees);
+}
+
+.border-box {
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  box-sizing:border-box;
+}
+
+.fill {
+  bottom:0;
+  left: 0;
+  right:0; 
+  top: 0;
+}
+
+.thin                                  {font-weight:100;}
+.light                                 {font-weight:300;}
+.regular                               {font-weight:400;}
+.semibold                              {font-weight:600;}
+.bold, b                               {font-weight:700;}
+.italic                                {font-style:italic;}
+
+.font-xs                               {font-size:6px;}
+.font-s                                {font-size:12px;}
+.font-sm                               {font-size:14px;}
+.font-m                                {font-size:16px;}
+.font-ml, h3                           {font-size:20px;}
+.font-l, h2                            {font-size:32px;}
+.font-xl, h1                           {font-size:44px;}
+h1, h2, h3                             {line-height:1.4em;}
+
+
+.keyframes(@name; @arguments) {
+  @-moz-keyframes @name { @arguments(); }
+  @-webkit-keyframes @name { @arguments(); }
+  @keyframes @name { @arguments(); }
+}
+
+.animate(@value1,@value2:X,...) {
+  @value: ~`"@{arguments}".replace(/[\[\]]|\,\sX/g, '')`;
+
+  -webkit-animation: @value;
+  -moz-animation: @value;
+  animation: @value;
+}
+
+.iteration-count(@count) {
+  -webkit-animation-iteration-count: @count;
+  -moz-animation-iteration-count: @count;
+  animation-iteration-count: @count;
+}
+
+.play-state(@state) {
+  -webkit-animation-play-state: @state;
+  -moz-animation-play-state: @state;
+  animation-play-state: @state;
+}
+
+.fill-mode(@mode) {
+  -webkit-animation-fill-mode: @mode;
+  -moz-animation-fill-mode: @mode;
+  animation-fill-mode: @mode;
+}

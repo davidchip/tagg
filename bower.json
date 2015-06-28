@@ -1,13 +1,6 @@
 {
-  "name": "firecracker",
+  "name": "helix",
   "dependencies": {
-    "jquery": "~2.1.1",
-    "three.js": "*",
-    "webcomponentsjs": "#0.5.1",
-    "interact": "~1.2.4",
-    "jquery.kinetic": "~2.0.5"
-  },
-  "devDependencies": {
-    "firebase": "~2.2.0"
+    "webcomponentsjs": "#0.5.1"
   }
 }

@@ -9,34 +9,23 @@ module.exports = ->
     @registerTask("compile", [
         ## remove our target/ directory
         "clean:everything"
+        "less:compile"        
+        "copy:libs" ## bower_components/ + libs/
+        "coffee:compile"  
+        "concat:coffee"
+    ])
 
-        ## copy our external libraries
-        "copy:libs"
 
-        ## copy our html, any js, compile our coffeescript/less
-        "copy:html"
-        "copy:js"
-        "copy:media"
-        "coffee:core"
-        "coffee:bases"
-        "less:compile"
-
-        ## minimize our files
-        "uglify:core"
-        "uglify:bases"
-
+    ## Compile for production
+    @registerTask("release", [
+        "compile"
+        "uglify:coffee"
     ])
 
 
     ## Used locally to compile our src, provide source maps, etc.
     ## remove our target/ directory
-    @registerTask("serve", [
+    @registerTask("listen", [
         "compile"
-
-        ## start our server
-        "connect:server"
-
-        ## keep a listener running for updates to .coffee/*.less files,
-        ## and new images
         "watch"
     ])

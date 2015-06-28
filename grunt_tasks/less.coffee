@@ -9,9 +9,9 @@ module.exports = ->
     compile: {
       files: [{
         expand: true,
-        cwd: 'src/',
+        cwd: 'style/',
         src: ['**/*.less'],
-        dest: 'target/',
+        dest: 'target/style/',
         ext: '.css',
         extDot: 'first'
       }]

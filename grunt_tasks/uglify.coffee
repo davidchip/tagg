@@ -6,25 +6,15 @@ module.exports = ->
 
   @config "uglify", {
 
-    bases: {
+    coffee: {
       files: [{
-        expand: true,
-        cwd: 'target/stream/',
-        src: ['**/*.js'],
-        dest: 'target/stream/',
-        ext: '.js',
-        extDot: 'first'
+        src: [ 'libs/zepto.min.js', 
+            './bower_components/webcomponentsjs/webcomponents-lite.min.js',
+            'target/script/loader.js',
+            'target/script/helix.js',
+            'target/script/base.js' ]
+        dest: 'target/helix.js',
       }]
-    }
-
-    core: {
-      files: {
-        'target/go.js': [
-          'target/core/loader.js'
-          'libs/zepto.min.js',
-          'target/core/helix.js'
-        ]
-      }
     }
 
   }

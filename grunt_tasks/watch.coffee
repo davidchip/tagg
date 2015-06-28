@@ -6,34 +6,19 @@ module.exports = ->
 
   @config "watch", {
 
-    html: {
-      files: 'src/**/*.html',
-      tasks: ['newer:copy:html', 'notify:html']
+    coffee: {
+      files: ['**/*.coffee']
+      tasks: ['newer:coffee:compile', 'concat:coffee', 'notify:coffee']
     }
-
-    bases: {
-      files: ['src/stream/**/*.coffee'],
-      tasks: ['newer:coffee:bases', 'notify:bases']
-    }
-
-    core: {
-      files: ['src/core/**/*.coffee']
-      tasks: ['newer:coffee:core', 'uglify:core', 'notify:core']
-    }
-
-    # cmd: {
-    #   files: 'crack.coffee',
-    #   tasks: ['newer:coffee:cmd', 'notify:cmd']
-    # }
 
     less: {
-      files: 'src/**/*.less',
+      files: 'style/**/*.less',
       tasks: ['newer:less:compile', 'notify:less']
     }
 
     js: {
-      files: 'src/**/*.js'
-      tasks: ['newer:copy:js', 'notify:js']
+      files: ['bower_components/**/*.js', 'libs/**/*.js']
+      tasks: ['newer:copy:libs', 'notify:libs']
     }
     
   }

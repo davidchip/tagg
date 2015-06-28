@@ -1,14 +1,9 @@
 {
-  "name": "firecracker",
+  "name": "helix-lib",
   "root": "./target/",
   "clean_urls": true,
   "error_page": "error.html",
-  "headers": {
-    "/stream/**": {
-      "Access-Control-Allow-Origin": "*"
-    },
-    "/bower_components/**": {
-      "Access-Control-Allow-Origin": "*"
-    }
+  "routes": {
+  	"/*": "/helix.js"
   }
 }
