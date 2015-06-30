@@ -8,7 +8,7 @@ module.exports = ->
 
     coffee: {
       files: ['**/*.coffee']
-      tasks: ['newer:coffee:compile', 'concat:coffee', 'notify:coffee']
+      tasks: ['newer:coffee:compile', 'concat:coffee', 'copy:go', 'notify:coffee']
     }
 
     less: {

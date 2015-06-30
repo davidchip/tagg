@@ -13,4 +13,11 @@ module.exports = ->
       }]
     }
 
+    go: {
+    	files: [{
+    		src: "target/helix.js"
+    		dest: "../www/go.js"
+    	}]
+    }
+
   }

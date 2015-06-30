@@ -25,6 +25,11 @@ helix.defineBase("helix-base", {
 
     ## built ins
 
+    mapName: (tagName) ->
+        splitTag = tagName.split('-')
+        fileName = splitTag.join().replace(/\,/g, '/') + ".js"
+        return fileName
+
     get: (attribute, _default) ->
         if @properties[attribute]?
             attr = @properties[attribute]

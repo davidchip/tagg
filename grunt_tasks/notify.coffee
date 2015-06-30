@@ -8,21 +8,21 @@ module.exports = ->
 
     coffee: {
       options: {
-        title: 'coffee compiled + cocatenated'
+        title: 'lib - coffee compiled + cocatenated'
         message: 'hurrah'
       }
     }
 
     less: {
       options: {
-        title: '.less compiled'
+        title: 'lib - .less compiled'
         message: 'less compiled successfully'
       }
     }
 
     libs: {
       options: {
-        title: 'lib .js copied'
+        title: 'lib - .js copied'
         message: 'don\'t forget to bring a towel!'
       }
     }

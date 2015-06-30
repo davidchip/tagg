@@ -13,6 +13,7 @@ module.exports = ->
         "copy:libs" ## bower_components/ + libs/
         "coffee:compile"  
         "concat:coffee"
+        "copy:go"
     ])
 
 

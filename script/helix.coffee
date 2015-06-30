@@ -1,14 +1,14 @@
 helix = {}
 
 helix.config = {}
-helix.config.localStream = "/stream/"
-helix.config.remoteStream = "http://stream.helix.to/stream/"
+helix.config.localStream = "/"
+helix.config.remoteStream = "//stream.helix.to/"
 
 
 helix.loadedScripts = {}
 
 
-helix.logError = (message, debugObj={}) ->
+helix.log = (message, debugObj={}) ->
     """generic error logger
     """
     formattedObj = ""
@@ -31,41 +31,73 @@ createRequest = (method, url) ->
   return xhr
 
 
-helix.loadScript = (url) ->
-    """attempt to load and cache a script
+helix._attemptLoad = (url) ->
+    """attempt to load and cache a script or HTML file
 
        returns the promise of the load
     """
-    if not helix.loadedScripts[url]?
-        helix.loadedScripts[url] = new $.Deferred()
+    load = new $.Deferred()
+    
+    xhr = createRequest('GET', url)
+    if not xhr
+        helix.log "helix: load attempt failed"
+        return
 
-        xhr = createRequest('GET', url)
-        if !xhr
-            alert "helix loading isn't supported on this browser"
-            return
+    xhr.onload = ->
+        if xhr.status is 404
+            load.reject()
+        else
+            splitURL = url.split('.')
+            if splitURL.length > 1
+                extension = splitURL[splitURL.length - 1]
+                
+                if extension is "js"
+                    script = document.createElement("script")
+                    script.type = "text/javascript"
+                    script.text = xhr.response
+                    $("#loadedScripts")[0].appendChild(script)
+                
+                else if extension is "html"
+                    loadedHTML = $("#loadedHTML")
+                    loadedHTML.append(xhr.response)
+                    helix.loadBase(loadedHTML)
+            
+            load.resolve()
 
-        xhr.onload = ->
-            if xhr.status is 404
-                helix.loadedScripts[url].reject()
-            else
-                script = document.createElement("script")
-                script.type = "text/javascript"
-                script.text = xhr.response
-                $("#loadedScripts")[0].appendChild(script)
-                helix.loadedScripts[url].resolve()
+    xhr.onerror = ->
+        load.reject()
 
-        xhr.onerror = ->
-            helix.loadedScripts[url].reject()
+    try
+        xhr.send()
+    catch error
+        load.reject()
 
-        try
-            xhr.send()
-        catch error
-            helix.loadedScripts[url].reject()
+    return load
 
-    return helix.loadedScripts[url]
+
+helix.loadedURLs = {}
+helix.loadURL = (url) ->
+    if not helix.loadedURLs[url]?
+        helix.loadedURLs[url] = new $.Deferred()
+
+        localLoad = helix._attemptLoad(helix.config.localStream + url)
+
+        $.when(localLoad).then(() =>
+            helix.loadedURLs[url].resolve())
+
+        localLoad.fail(() ->
+            remoteLoad = helix._attemptLoad(helix.config.remoteStream + url)
+            $.when(remoteLoad).then(() =>
+                helix.loadedURLs[url].resolve())
+
+            remoteLoad.fail(() =>
+                helix.loadedURLs[url].reject()))
+
+    return helix.loadedURLs[url]
 
 
 helix.loadedBases = {}
+helix.loadedFamilies = {}
 helix.loadBase = (base) ->
     """attempts a load of the specified base
 
@@ -83,6 +115,9 @@ helix.loadBase = (base) ->
         baseName = base.tagName
         if not baseName?
             return ''
+        else
+            for child in base.children
+                helix.loadBase(child)
 
     baseName = baseName.toLowerCase()
     splitTag = baseName.split('-')
@@ -92,23 +127,28 @@ helix.loadBase = (base) ->
 
     if not helix.loadedBases[baseName]?
         helix.loadedBases[baseName] = new $.Deferred()
-        helix.loadCount.inc()
+        if baseName isnt 'helix-base'
+            helix.loadCount.inc()
 
-        ## all helix bases are at the root 
-        if splitTag[0] is "helix"
-            splitTag.shift()
-        
-        basePath = splitTag.join().replace(/\,/g, '/')
+        ## base of family should be a base.js or base.html file
+        baseFamily = splitTag[0] + "-base"
+        if baseName is baseFamily
+            baseURL = baseFamily.replace(/\-/g, '/')
+            familyLoad = helix.loadURL(baseURL + ".js")
+            familyLoad.fail(() ->
+                helix.loadURL(baseURL + ".html"))
 
-        localURL = helix.config.localStream + basePath + ".js"
-        load = helix.loadScript(localURL)
-        load.fail(() =>
-            remoteURL = helix.config.remoteStream + basePath + ".js"
-            secondLoad = helix.loadScript(remoteURL)
-            secondLoad.fail(
-                helix.logError("couldn't find a base definition", {
-                    base: baseName,
-                    url: localURL })))
+        ## everything else gets passed throuugh the mapName
+        ## function of that baseFamily
+        else
+            familyLoaded = helix.loadBase(baseFamily)
+            helix.loadCount.inc()
+            $.when(familyLoaded).then(() =>
+                helix.loadCount.dec()
+                mappedName = helix.bases[baseFamily].prototype.mapName(baseName)
+                if mappedName isnt false and typeof mappedName is 'string'
+                    $.when(helix.loadURL(mappedName)).then(() =>
+                        helix.loadedBases[baseName].resolve()))
 
     return helix.loadedBases[baseName]
 
@@ -132,7 +172,7 @@ helix.defineBase = (tagName, definition) ->
         if baseName is 'base'
             splitTag.pop()
 
-        ## intuited parents should always be bases
+        ## if not a -base.js file, inherit from a base.js
         splitTag.push('base')
 
         ## extend helix base if nothing else is available
@@ -145,22 +185,19 @@ helix.defineBase = (tagName, definition) ->
 
     ## load libraries
     libs = if definition.libs? then definition.libs else []
-    parentDir = tagName.split('-')[0]
+    if typeof libs is 'string'
+        libs = [libs]
+        
+    parentDir = tagName.split('-')[0] + "/"
     for lib in libs
-        libLoad = helix.loadScript("#{helix.config.localStream}#{parentDir}/#{lib}")
+        libLoad = helix.loadURL(parentDir + lib)
         baseDependencies.push(libLoad)
-        # libLoad.fail(() =>
-            # remoteLoad = helix.loadScript("#{helix.config.remoteStream}#{parentDir}/#{lib}")
-            # baseDependencies.push(remoteLoad)
-            # libLoad.resolve()
-            # remoteLoad.fail(() =>
-                # helix.logError("couldn't load base's library", {tag:tagName, lib:lib})))
 
     ## set up bridges for later
     if not definition.bridges?
         definition.bridges = []
 
-    ## declare element after depencies are loaded
+    ## declare element after dependencies are loaded
     $.when.apply($, baseDependencies).then(() =>
         parentConstructor = helix.bases["#{baseParent}"]
         
@@ -197,7 +234,8 @@ helix.defineBase = (tagName, definition) ->
             helix.loadedBases["#{tagName}"] = new $.Deferred()    
         
         helix.loadedBases["#{tagName}"].resolve()
-        helix.loadCount.dec()
+        if tagName isnt 'helix-base'
+            helix.loadCount.dec()
     )
 
 
@@ -209,7 +247,7 @@ helix.createBase = (tag, elOptions={}) ->
 
     return element
 
-
+ 
 helix.activeBases = []
 
 helix._freeze = false
@@ -243,6 +281,19 @@ helix.freeze = () ->
 
 
 @helix = helix
+
+
+observer = new MutationObserver((events) ->
+    for _event in events
+        if _event.addedNodes.length > 0
+            for child in _event.addedNodes
+                {tagName} = child
+                if tagName? and tagName.split('-').length > 1
+                    helix.loadBase(child))
+
+observer.observe(document.body, {
+    childList: true
+    subtree: true })
 
 
 ## kickoff
