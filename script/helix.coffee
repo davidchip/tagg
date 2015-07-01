@@ -2,7 +2,7 @@ helix = {}
 
 helix.config = {}
 helix.config.localStream = "/"
-helix.config.remoteStream = "//stream.helix.to/"
+helix.config.remoteStream = "http://stream.helix.to/"
 
 
 helix.loadedScripts = {}
