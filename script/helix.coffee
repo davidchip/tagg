@@ -168,6 +168,14 @@ helix.defineBase = (tagName, definition) ->
         splitTag = tagName.split('-')
         baseName = splitTag.pop()
 
+        ## allow wildcards, but think of them as -base's
+        if baseName is '*'
+            baseName = 'base'
+            definition.wildcard = true
+            tagName = splitTag.join().replace(/\,/g, '-') + '-base'
+        else
+            definition.wildcard = false
+
         ## extend from the next base family up
         if baseName is 'base'
             splitTag.pop()
@@ -181,9 +189,10 @@ helix.defineBase = (tagName, definition) ->
         
         baseParent = splitTag.join().replace(/\,/g, '-')
 
+    ## load the bases parent
     baseDependencies.push(helix.loadBase(baseParent))
 
-    ## load libraries
+    ## load libs from family root like: /helix/bower_components
     libs = if definition.libs? then definition.libs else []
     if typeof libs is 'string'
         libs = [libs]
@@ -193,34 +202,34 @@ helix.defineBase = (tagName, definition) ->
         libLoad = helix.loadURL(parentDir + lib)
         baseDependencies.push(libLoad)
 
-    ## set up bridges for later
-    if not definition.bridges?
-        definition.bridges = []
-
     ## declare element after dependencies are loaded
     $.when.apply($, baseDependencies).then(() =>
         parentConstructor = helix.bases["#{baseParent}"]
         
+        ## extend parent prototype
         if baseParent? and parentConstructor?
             elPrototype = Object.create(parentConstructor.prototype)
         else
             elPrototype = Object.create(HTMLElement.prototype)
 
-        ## tease apart our custom functions/attributes from its declaration
         for key, value of definition
+            ## define functions at root level off base
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
-            else if key in ['properties', 'template', 'class', 'bridges']
-                if key is 'properties' and elPrototype.properties?
+            
+            ## extend parent attributes
+            else if key is 'properties' and elPrototype.properties?
+                if key is 'properties' 
                     extendedProperties = $.extend({}, elPrototype.properties)
-
-                    ## extend parent properties
                     for k, v of value
                         if v?
                             extendedProperties[k] = v
 
                     value = $.extend({}, extendedProperties)
 
+            ## only allow a subset of non-function values to be set at
+            ## at the prototype level
+            else if key in ['template', 'class', 'wildcard']
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true
@@ -229,10 +238,12 @@ helix.defineBase = (tagName, definition) ->
         CustomElement = document.registerElement("#{tagName}", {
             prototype: elPrototype })
 
+        ## allow access to the prototype
         helix.bases["#{tagName}"] = CustomElement
         if not helix.loadedBases["#{tagName}"]?
             helix.loadedBases["#{tagName}"] = new $.Deferred()    
         
+        ## let everyone know the base has been loaded
         helix.loadedBases["#{tagName}"].resolve()
         if tagName isnt 'helix-base'
             helix.loadCount.dec()

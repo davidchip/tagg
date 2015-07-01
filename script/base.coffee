@@ -1,6 +1,5 @@
 ## built by @davidchippendale
 
-
 helix.defineBase("helix-base", {
 
     properties: {}
@@ -27,8 +26,12 @@ helix.defineBase("helix-base", {
 
     mapName: (tagName) ->
         splitTag = tagName.split('-')
-        fileName = splitTag.join().replace(/\,/g, '/') + ".js"
-        return fileName
+        if @wildcard is true
+            helix.defineBase(tagName, {})
+            return false
+        else
+            fileName = splitTag.join().replace(/\,/g, '/') + ".js"
+            return fileName
 
     get: (attribute, _default) ->
         if @properties[attribute]?
@@ -88,19 +91,9 @@ helix.defineBase("helix-base", {
             childrenLoaded.push(helix.loadBase(child))
 
         $.when.apply($, childrenLoaded).then(() =>
-            bridgesLoaded = []
-            _bridges = {}
-            for bridgeID in @bridges
-                bridgeEl = $("##{bridgeID}")
-                if bridgeEl.length > 0
-                    bridgesLoaded.push(helix.loadBase(bridgeEl[0]))
-                    _bridges[bridgeID] = bridgeEl[0]
-
-            @bridges = _bridges
-            $.when.apply($, bridgesLoaded).then(() =>
-                @_create()
-                @_postCreate()
-                helix.activeBases.push(@)))
+            @_create()
+            @_postCreate()
+            helix.activeBases.push(@))
 
     detachedCallback: () ->
         baseIndex = helix.activeBases.indexOf(@)
@@ -180,7 +173,5 @@ helix.defineBase("helix-base", {
             if value?
                 return value
         )
-
-
 
 })
