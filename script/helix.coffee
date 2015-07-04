@@ -2,7 +2,7 @@ helix = {}
 
 
 helix.config = {}
-helix.config.localStream = "/"
+helix.config.localStream = "http://localhost:9000/"
 helix.config.remoteStream = "http://stream.helix.to/"
 
 
@@ -76,6 +76,34 @@ helix.loadURL = (url) ->
         load.reject()
 
     return load
+    
+
+helix.smartLoad = (url, loaded, formats=['html', 'js'], i=0) ->
+    """multi format loader
+    """
+    if not loaded?
+        loaded = new $.Deferred()
+
+    splitURL = url.split('.')
+    if splitURL.length > 1
+        fullURL = url
+    else
+        fullURL = url + "." + formats[i]
+
+    formatLoaded = helix.loadURL(fullURL)
+    $.when(formatLoaded).then(() ->
+        loaded.resolve()
+        console.log "#{fullURL} successfully loaded")
+
+    formatLoaded.fail(() ->
+        i = i + 1
+        if i <= formats.length
+            helix.smartLoad(url, loaded, formats, i)
+        else
+            loaded.reject()
+            console.log "#{url} couldn't be located using #{formats.toString()}")
+
+    return loaded
 
 
 helix._loadFileURL = (url, direct=false) ->
@@ -132,8 +160,7 @@ helix.loadFile = (path, direct=false) ->
     return helix.loadedFiles[path]
 
 
-helix.loadedBases = {}
-helix.loadedFamilies = {}
+helix.definedBases = {}
 helix.loadBase = (base) ->
     """attempts a load of the specified base
 
@@ -161,29 +188,26 @@ helix.loadBase = (base) ->
     if splitTag.length <= 1
         return ''
 
-    if not helix.loadedBases[baseName]?
-        helix.loadedBases[baseName] = new $.Deferred()
+    if not helix.definedBases[baseName]?
+        helix.definedBases[baseName] = new $.Deferred()
         if baseName isnt 'helix-base'
             helix.loadCount.inc()
 
-        ## base of family should be a base.html or base.js file
-        baseFamily = splitTag[0] + "-base"
-        if baseName isnt baseFamily
-            familyBaseLoaded = helix.loadBase(baseFamily)
+        familyBase = splitTag[0] + "-base"
+        if baseName isnt familyBase
+            familyBaseLoaded = helix.loadBase(familyBase)
 
             helix.loadCount.inc()
             $.when(familyBaseLoaded).then(() =>
                 helix.loadCount.dec()
-                mappedPath = helix.bases[baseFamily].prototype.mapPath(baseName)
+                mappedPath = helix.bases[familyBase].prototype.mapPath(baseName)
                 if mappedPath isnt false and typeof mappedPath is 'string'
-                    baseLoaded = helix.loadFile(mappedPath)
-                    $.when(baseLoaded).then(() =>
-                        helix.loadedBases[baseName].resolve()))
+                    helix.loadFile(mappedPath))
         else
-            baseFamilyPath = baseFamily.replace(/\-/g, '/')
-            helix.loadFile(baseFamilyPath)
+            familyBasePath = familyBase.replace(/\-/g, '/')
+            helix.loadFile(familyBasePath)
 
-    return helix.loadedBases[baseName]
+    return helix.definedBases[baseName]
 
 
 helix.bases = {}
@@ -253,9 +277,9 @@ helix.defineBase = (tagName, definition) ->
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value
             
-            ## extend parent attributes
-            else if key is 'properties' and elPrototype.properties?
-                if key is 'properties' 
+            else if key in ['properties', 'template', 'class', 'wildcard']
+                ## extend parent attributes
+                if key is 'properties' and elPrototype.properties?
                     extendedProperties = $.extend({}, elPrototype.properties)
                     for k, v of value
                         if v?
@@ -263,9 +287,6 @@ helix.defineBase = (tagName, definition) ->
 
                     value = $.extend({}, extendedProperties)
 
-            ## only allow a subset of non-function values to be set at
-            ## at the prototype level
-            else if key in ['template', 'class', 'wildcard']
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true
@@ -276,11 +297,11 @@ helix.defineBase = (tagName, definition) ->
 
         ## allow access to the prototype
         helix.bases["#{tagName}"] = CustomElement
-        if not helix.loadedBases["#{tagName}"]?
-            helix.loadedBases["#{tagName}"] = new $.Deferred()    
+        if not helix.definedBases["#{tagName}"]?
+            helix.definedBases["#{tagName}"] = new $.Deferred()    
         
         ## let everyone know the base has been loaded
-        helix.loadedBases["#{tagName}"].resolve()
+        helix.definedBases["#{tagName}"].resolve()
         if tagName isnt 'helix-base'
             helix.loadCount.dec()
     )
