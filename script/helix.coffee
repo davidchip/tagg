@@ -1,7 +1,8 @@
 helix = {}
 
+
 helix.config = {}
-helix.config.localStream = "/"
+helix.config.localStream = "http://localhost:9000/"
 helix.config.remoteStream = "http://stream.helix.to/"
 
 
@@ -31,8 +32,8 @@ createRequest = (method, url) ->
   return xhr
 
 
-helix._attemptLoad = (url) ->
-    """attempt to load and cache a script or HTML file
+helix.loadURL = (url) ->
+    """attempt to load and cache a script or HTML file from the specified URL
 
        returns the promise of the load
     """
@@ -43,7 +44,7 @@ helix._attemptLoad = (url) ->
         helix.log "helix: load attempt failed"
         return
 
-    xhr.onload = ->
+    xhr.onload = () ->
         if xhr.status is 404
             load.reject()
         else
@@ -61,6 +62,8 @@ helix._attemptLoad = (url) ->
                     loadedHTML = $("#loadedHTML")
                     loadedHTML.append(xhr.response)
                     helix.loadBase(loadedHTML)
+
+            console.log url + " loaded successfully"
             
             load.resolve()
 
@@ -75,25 +78,58 @@ helix._attemptLoad = (url) ->
     return load
 
 
-helix.loadedURLs = {}
-helix.loadURL = (url) ->
-    if not helix.loadedURLs[url]?
-        helix.loadedURLs[url] = new $.Deferred()
+helix._loadFileURL = (url, direct=false) ->
+    """Attempts to load HTML or JS file
+    """
+    load = new $.Deferred()
 
-        localLoad = helix._attemptLoad(helix.config.localStream + url)
+    if direct is true
+        directLoaded = helix.loadURL(url)
+
+        $.when(directLoaded).then(() =>
+            load.resolve())
+
+        directLoaded.fail(() =>
+            load.reject())
+    else
+        htmlLoaded = helix.loadURL(url + ".html")
+        $.when(htmlLoaded).then(() =>
+            load.resolve())
+
+        htmlLoaded.fail(() =>
+            jsLoaded = helix.loadURL(url + ".js")
+            $.when(jsLoaded).then(() =>
+                load.resolve())
+
+            jsLoaded.fail(() =>
+                load.reject()))
+
+    return load
+
+
+helix.loadedFiles = {}
+helix.loadFile = (path, direct=false) ->
+    """Attempts to load the file at the given path
+       locally and then remotely
+    """
+    if not helix.loadedFiles[path]?
+        helix.loadedFiles[path] = new $.Deferred()
+
+        localLoad = helix._loadFileURL(helix.config.localStream + path, direct)
 
         $.when(localLoad).then(() =>
-            helix.loadedURLs[url].resolve())
+            helix.loadedFiles[path].resolve())
 
-        localLoad.fail(() ->
-            remoteLoad = helix._attemptLoad(helix.config.remoteStream + url)
+        localLoad.fail(() =>
+            remoteLoad = helix._loadFileURL(helix.config.remoteStream + path, direct)
             $.when(remoteLoad).then(() =>
-                helix.loadedURLs[url].resolve())
+                helix.loadedFiles[path].resolve())
 
             remoteLoad.fail(() =>
-                helix.loadedURLs[url].reject()))
+                helix.loadedFiles[path].reject()
+                console.log "couldn't load #{path}"))
 
-    return helix.loadedURLs[url]
+    return helix.loadedFiles[path]
 
 
 helix.loadedBases = {}
@@ -130,25 +166,22 @@ helix.loadBase = (base) ->
         if baseName isnt 'helix-base'
             helix.loadCount.inc()
 
-        ## base of family should be a base.js or base.html file
+        ## base of family should be a base.html or base.js file
         baseFamily = splitTag[0] + "-base"
-        if baseName is baseFamily
-            baseURL = baseFamily.replace(/\-/g, '/')
-            familyLoad = helix.loadURL(baseURL + ".js")
-            familyLoad.fail(() ->
-                helix.loadURL(baseURL + ".html"))
+        if baseName isnt baseFamily
+            familyBaseLoaded = helix.loadBase(baseFamily)
 
-        ## everything else gets passed throuugh the mapName
-        ## function of that baseFamily
-        else
-            familyLoaded = helix.loadBase(baseFamily)
             helix.loadCount.inc()
-            $.when(familyLoaded).then(() =>
+            $.when(familyBaseLoaded).then(() =>
                 helix.loadCount.dec()
-                mappedName = helix.bases[baseFamily].prototype.mapName(baseName)
-                if mappedName isnt false and typeof mappedName is 'string'
-                    $.when(helix.loadURL(mappedName)).then(() =>
+                mappedPath = helix.bases[baseFamily].prototype.mapPath(baseName)
+                if mappedPath isnt false and typeof mappedPath is 'string'
+                    baseLoaded = helix.loadFile(mappedPath)
+                    $.when(baseLoaded).then(() =>
                         helix.loadedBases[baseName].resolve()))
+        else
+            baseFamilyPath = baseFamily.replace(/\-/g, '/')
+            helix.loadFile(baseFamilyPath)
 
     return helix.loadedBases[baseName]
 
@@ -159,6 +192,8 @@ helix.defineBase = (tagName, definition) ->
     """
     if helix.bases[tagName]?
         return
+    else
+        helix.bases[tagName] = ''
 
     baseDependencies = []
 
@@ -190,7 +225,8 @@ helix.defineBase = (tagName, definition) ->
         baseParent = splitTag.join().replace(/\,/g, '-')
 
     ## load the bases parent
-    baseDependencies.push(helix.loadBase(baseParent))
+    parentLoaded = helix.loadBase(baseParent)
+    baseDependencies.push(parentLoaded)
 
     ## load libs from family root like: /helix/bower_components
     libs = if definition.libs? then definition.libs else []
@@ -199,7 +235,7 @@ helix.defineBase = (tagName, definition) ->
         
     parentDir = tagName.split('-')[0] + "/"
     for lib in libs
-        libLoad = helix.loadURL(parentDir + lib)
+        libLoad = helix.loadFile(parentDir + lib, true)
         baseDependencies.push(libLoad)
 
     ## declare element after dependencies are loaded
@@ -294,21 +330,22 @@ helix.freeze = () ->
 @helix = helix
 
 
-observer = new MutationObserver((events) ->
-    for _event in events
-        if _event.addedNodes.length > 0
-            for child in _event.addedNodes
-                {tagName} = child
-                if tagName? and tagName.split('-').length > 1
-                    helix.loadBase(child))
+document.addEventListener('DOMContentLoaded', (event) ->
+    try
+        observer = new MutationObserver((events) ->
+            for _event in events
+                if _event.addedNodes.length > 0
+                    for child in _event.addedNodes
+                        {tagName} = child
+                        if tagName? and tagName.split('-').length > 1
+                            helix.loadBase(child))
 
-observer.observe(document.body, {
-    childList: true
-    subtree: true })
+        observer.observe(document.body, {
+            childList: true
+            subtree: true })
+    catch error
+        console.log 'issue: attaching mutuation observer'
 
-
-## kickoff
-setTimeout (() =>
     $('*').each((index, el) =>
         helix.loadBase(el))
 
@@ -323,4 +360,4 @@ setTimeout (() =>
             $("#loading").remove()
         ), 4000
     )
-), 100
+)

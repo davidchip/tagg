@@ -24,13 +24,13 @@ helix.defineBase("helix-base", {
 
     ## built ins
 
-    mapName: (tagName) ->
+    mapPath: (tagName) ->
         splitTag = tagName.split('-')
         if @wildcard is true
             helix.defineBase(tagName, {})
             return false
         else
-            fileName = splitTag.join().replace(/\,/g, '/') + ".js"
+            fileName = splitTag.join().replace(/\,/g, '/')
             return fileName
 
     get: (attribute, _default) ->
