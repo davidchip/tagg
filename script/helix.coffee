@@ -2,7 +2,7 @@ helix = {}
 
 
 helix.config = {}
-helix.config.localStream = "http://localhost:9000/"
+helix.config.localStream = "/"
 helix.config.remoteStream = "http://stream.helix.to/"
 
 
