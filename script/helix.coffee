@@ -2,8 +2,8 @@ helix = {}
 
 
 helix.config = {}
-helix.config.localStream = "http://localhost:9000/"
-helix.config.remoteStream = "http://stream.helix.to/"
+helix.config.localStream = "/"
+helix.config.remoteStream = "http://localhost:9000/"
 
 
 helix.loadedScripts = {}
@@ -61,7 +61,7 @@ helix.loadURL = (url) ->
                 else if extension is "html"
                     loadedHTML = $("#loadedHTML")
                     loadedHTML.append(xhr.response)
-                    helix.loadBase(loadedHTML)
+                    # helix.loadBase(loadedHTML)
 
             console.log url + " loaded successfully"
             
@@ -136,7 +136,7 @@ helix._loadFileURL = (url, direct=false) ->
 
 
 helix.loadedFiles = {}
-helix.loadFile = (path, direct=false) ->
+helix.loadPath = (path, direct=false) ->
     """Attempts to load the file at the given path
        locally and then remotely
     """
@@ -159,6 +159,35 @@ helix.loadFile = (path, direct=false) ->
 
     return helix.loadedFiles[path]
 
+helix._parseElDefinition = (base) ->
+    baseDefinition = {}
+    dependencies = []
+
+    children = base.children
+
+    for child in children
+        childName = child.tagName
+        if childName?
+            loadChild = helix.loadBase(childName)
+            dependencies.push(loadChild)
+
+    $.when.apply($, dependencies).then(() =>
+        baseName = base.tagName.toLowerCase()
+        if not helix.definitions[baseName]?
+            helix.definitions[baseName] = {}
+
+        for child in children
+            childName = child.tagName
+            if childName?
+                splitChild = childName.split('-')
+                childFamily = splitChild[splitChild.length - 1].toLowerCase()
+                if childFamily is 'template'
+                    helix.definitions[baseName]['template'] = child.innerHTML
+                else if childFamily in ['style']
+                    helix.definitions[baseName]['_style'] = child.innerText
+
+        helix.defineBase(baseName))
+
 
 helix.definedBases = {}
 helix.loadBase = (base) ->
@@ -179,22 +208,27 @@ helix.loadBase = (base) ->
         if not baseName?
             return ''
         else
+            ## define the base if it has an attribute
+            define = base.getAttribute('define')
+            if define? and define is ''
+                $(base).appendTo("#loadedHTML")
+                helix._parseElDefinition(base)
+
             for child in base.children
                 helix.loadBase(child)
 
     baseName = baseName.toLowerCase()
+    
     splitTag = baseName.split('-')
-
     if splitTag.length <= 1
         return ''
 
     if not helix.definedBases[baseName]?
         helix.definedBases[baseName] = new $.Deferred()
-        if baseName isnt 'helix-base'
-            helix.loadCount.inc()
 
-        familyBase = splitTag[0] + "-base"
-        if baseName isnt familyBase
+        family = splitTag.pop()
+        familyBase = "base-" + family
+        if baseName isnt familyBase  ## load standard base (ie: /family/thing.html)
             familyBaseLoaded = helix.loadBase(familyBase)
 
             helix.loadCount.inc()
@@ -202,53 +236,65 @@ helix.loadBase = (base) ->
                 helix.loadCount.dec()
                 mappedPath = helix.bases[familyBase].prototype.mapPath(baseName)
                 if mappedPath isnt false and typeof mappedPath is 'string'
-                    helix.loadFile(mappedPath))
-        else
-            familyBasePath = familyBase.replace(/\-/g, '/')
-            helix.loadFile(familyBasePath)
+                    helix.loadPath(mappedPath))
+        else ## load family base (ie: /family/base.html)
+            familyBasePath = family + "/" + splitTag.toString().replace(/\,/g, '/')
+            loadFamily = helix.loadPath(familyBasePath)
+            loadFamily.fail(() ->
+                helix.defineBase(familyBase)
+                console.log "auto defined #{familyBase} - no family base found")
 
     return helix.definedBases[baseName]
 
 
 helix.bases = {}
-helix.defineBase = (tagName, definition) ->
+helix.definitions = {}
+helix.defineBase = (tagName, definition={}) ->
     """attempt to define a new base
     """
+    ## only allow one write to definition
     if helix.bases[tagName]?
         return
     else
         helix.bases[tagName] = ''
 
-    baseDependencies = []
+    ## keep tracking of definition
+    if not helix.definitions[tagName]?
+        helix.definitions[tagName] = {}
 
+    if typeof definition is "object"
+        for key, value of definition
+            helix.definitions[tagName][key] = value
+    else
+        definition(helix.definitions[tagName])
+
+    definition = helix.definitions[tagName]
+
+    ## load parent
+    baseDependencies = []
     if definition.extends?
         baseParent = definition.extends
-    else if tagName isnt 'helix-base'
+    else if tagName isnt 'base-helix'
         splitTag = tagName.split('-')
-        baseName = splitTag.pop()
+        baseName = splitTag.shift()
 
-        ## allow wildcards, but think of them as -base's
+        ## define wildcard
         if baseName is '*'
             baseName = 'base'
             definition.wildcard = true
-            tagName = splitTag.join().replace(/\,/g, '-') + '-base'
+            tagName = "base-" + splitTag.join().replace(/\,/g, '-')
         else
             definition.wildcard = false
 
-        ## extend from the next base family up
+        ## define extends
         if baseName is 'base'
             splitTag.pop()
-
-        ## if not a -base.js file, inherit from a base.js
-        splitTag.push('base')
-
-        ## extend helix base if nothing else is available
+        splitTag.unshift('base')
         if splitTag.length is 1
-            splitTag.unshift("helix")
-        
+            splitTag.push("helix")
         baseParent = splitTag.join().replace(/\,/g, '-')
 
-    ## load the bases parent
+    ## load extends
     parentLoaded = helix.loadBase(baseParent)
     baseDependencies.push(parentLoaded)
 
@@ -256,10 +302,10 @@ helix.defineBase = (tagName, definition) ->
     libs = if definition.libs? then definition.libs else []
     if typeof libs is 'string'
         libs = [libs]
-        
-    parentDir = tagName.split('-')[0] + "/"
+    splitTag = tagName.split('-')
+    parentDir = splitTag[splitTag.length - 1] + "/"
     for lib in libs
-        libLoad = helix.loadFile(parentDir + lib, true)
+        libLoad = helix.loadPath(parentDir + lib, true)
         baseDependencies.push(libLoad)
 
     ## declare element after dependencies are loaded
@@ -273,24 +319,23 @@ helix.defineBase = (tagName, definition) ->
             elPrototype = Object.create(HTMLElement.prototype)
 
         for key, value of definition
-            ## define functions at root level off base
+            ## define actions of this
             if $.isFunction(value) # if key not in excludedKeys
-                elPrototype[key] = value
-            
-            else if key in ['properties', 'template', 'class', 'wildcard']
-                ## extend parent attributes
-                if key is 'properties' and elPrototype.properties?
-                    extendedProperties = $.extend({}, elPrototype.properties)
-                    for k, v of value
-                        if v?
-                            extendedProperties[k] = v
+                elPrototype[key] = value            
+            else
+                # extend parent attributes
+                # cosole.log elPrototype
+                # if key is 'properties' and elPrototype.properties?
+                #     extendedProperties = $.extend({}, elPrototype.properties)
+                #     for k, v of value
+                #         if v?
+                #             extendedProperties[k] = v
 
-                    value = $.extend({}, extendedProperties)
+                #     value = $.extend({}, extendedProperties)
 
                 Object.defineProperty(elPrototype, key, {
                     value: value
-                    writable: true
-                })
+                    writable: true })
 
         CustomElement = document.registerElement("#{tagName}", {
             prototype: elPrototype })
@@ -302,8 +347,10 @@ helix.defineBase = (tagName, definition) ->
         
         ## let everyone know the base has been loaded
         helix.definedBases["#{tagName}"].resolve()
-        if tagName isnt 'helix-base'
+        if tagName isnt 'base-helix'
             helix.loadCount.dec()
+
+        console.log "defined #{tagName}"
     )
 
 
@@ -327,7 +374,7 @@ helix.start = () ->
         requestAnimationFrame(update)
 
         for element in helix.activeBases
-            element._update()
+            element.update()
 
     update()
 
@@ -352,6 +399,29 @@ helix.freeze = () ->
 
 
 document.addEventListener('DOMContentLoaded', (event) ->
+    ## loader styles
+    loaderCSS = "body{margin:0;padding:0;} @-moz-keyframes rotate-clockwise{0%{transform:rotate(0deg);-ms-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);-o-transform:rotate(0deg)}100%{transform:rotate(360deg);-ms-transform:rotate(360deg);-moz-transform:rotate(360deg);-webkit-transform:rotate(360deg);-o-transform:rotate(360deg)}}@-webkit-keyframes rotate-clockwise{0%{transform:rotate(0deg);-ms-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);-o-transform:rotate(0deg)}100%{transform:rotate(360deg);-ms-transform:rotate(360deg);-moz-transform:rotate(360deg);-webkit-transform:rotate(360deg);-o-transform:rotate(360deg)}}@keyframes rotate-clockwise{0%{transform:rotate(0deg);-ms-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);-o-transform:rotate(0deg)}100%{transform:rotate(360deg);-ms-transform:rotate(360deg);-moz-transform:rotate(360deg);-webkit-transform:rotate(360deg);-o-transform:rotate(360deg)}}@-moz-keyframes fade-in{0%{opacity:0}100%{opacity:1}}@-webkit-keyframes fade-in{0%{opacity:0}100%{opacity:1}}@keyframes fade-in{0%{opacity:0}100%{opacity:1}}@-moz-keyframes fade-out{0%{opacity:1}100%{opacity:0}}@-webkit-keyframes fade-out{0%{opacity:1}100%{opacity:0}}@keyframes fade-out{0%{opacity:1}100%{opacity:0}}@-moz-keyframes shrink{0%{transform:scale(1, 1);-moz-transform:scale(1, 1);-ms-transform:scale(1, 1);-webkit-transform:scale(1, 1);-o-transform:scale(1, 1)}100%{transform:scale(.01, .01);-moz-transform:scale(.01, .01);-ms-transform:scale(.01, .01);-webkit-transform:scale(.01, .01);-o-transform:scale(.01, .01)}}@-webkit-keyframes shrink{0%{transform:scale(1, 1);-moz-transform:scale(1, 1);-ms-transform:scale(1, 1);-webkit-transform:scale(1, 1);-o-transform:scale(1, 1)}100%{transform:scale(.01, .01);-moz-transform:scale(.01, .01);-ms-transform:scale(.01, .01);-webkit-transform:scale(.01, .01);-o-transform:scale(.01, .01)}}@keyframes shrink{0%{transform:scale(1, 1);-moz-transform:scale(1, 1);-ms-transform:scale(1, 1);-webkit-transform:scale(1, 1);-o-transform:scale(1, 1)}100%{transform:scale(.01, .01);-moz-transform:scale(.01, .01);-ms-transform:scale(.01, .01);-webkit-transform:scale(.01, .01);-o-transform:scale(.01, .01)}}#loading{-webkit-transition:opacity 0.8s;-moz-transition:opacity 0.8s;-ms-transition:opacity 0.8s;-o-transition:opacity 0.8s;transition:opacity 0.8s;bottom:0;left:0;right:0;top:0;background:#000;position:fixed;z-index:1000000}#loading #loader{-webkit-animation:rotate-clockwise 1s ease-out infinite, fade-in 2s ease-in 1;-moz-animation:rotate-clockwise 1s ease-out infinite, fade-in 2s ease-in 1;animation:rotate-clockwise 1s ease-out infinite, fade-in 2s ease-in 1;-webkit-transition:opacity 0.4s;-moz-transition:opacity 0.4s;-ms-transition:opacity 0.4s;-o-transition:opacity 0.4s;transition:opacity 0.4s;background-color:#ff9800;height:60px;width:10px;left:50%;top:50%;margin-left:-5px;margin-top:-30px;position:absolute}#loading.loaded{opacity:0}#loading.loaded #loader{opacity:0}"
+    style = document.createElement('style')
+    style.type = 'text/css'            
+    style.appendChild(document.createTextNode(loaderCSS))
+    document.body.appendChild(style)
+
+    ## append loader
+    loader = document.createElement("div")
+    loader.id = "loading"
+    loader.innerHTML = "<div id='loader'></div>"
+    document.body.appendChild(loader)
+
+    ## append script cache
+    scripts = document.createElement("div")
+    scripts.id = "loadedScripts"
+    document.body.appendChild(scripts)
+
+    scripts = document.createElement("div")
+    scripts.id = "loadedHTML"
+    scripts.style.display = "none"
+    document.body.appendChild(scripts)
+
     try
         observer = new MutationObserver((events) ->
             for _event in events
@@ -382,3 +452,182 @@ document.addEventListener('DOMContentLoaded', (event) ->
         ), 4000
     )
 )
+
+
+helix.defineBase("base-helix", {
+
+    ## built-in properties
+
+    extends: ''
+    libs: []
+    template: ''
+
+    ## built-in actions
+
+    update: () ->
+        return
+
+    setup: () ->
+        return
+
+    create: () ->
+        return
+
+    remove: () ->
+        return
+
+    defined: () ->
+        return
+
+    mapPath: (tagName) ->
+        splitTag = tagName.split('-')
+        if @wildcard is true
+            helix.defineBase(tagName, {})
+            return false
+        else
+            family = splitTag.pop()
+            fileName = family + "/" + splitTag.join().replace(/\,/g, '/')
+            return fileName
+
+    ## be careful about what you move around here
+
+    attachedCallback: () ->
+        # @properties = $.extend({}, @properties)
+
+        ## set non generic attributes as properties
+        @_setAttributes()            
+
+        @setup()
+
+        template = if @template? then $.trim(@template) else ''
+        @innerHTML += template
+        @innerHTML = @_template(@innerHTML)
+
+        childrenLoaded = []
+        for child in @children
+            childrenLoaded.push(helix.loadBase(child))
+
+        $.when.apply($, childrenLoaded).then(() =>
+            define = @getAttribute('define')
+            if define? and define is ''
+                return
+                
+            @create()
+
+            helix.activeBases.push(@))
+
+    detachedCallback: () ->
+        baseIndex = helix.activeBases.indexOf(@)
+        if baseIndex > -1
+            helix.activeBases.splice(baseIndex, 1)
+        
+        @remove()
+        $(@).remove()
+
+    ## hooks
+
+    # helpers
+
+    _setAttributes: () ->
+        """iterate over bases attributes
+                append any specified base class
+                push the ids of any specified bridges
+                set all other attributes
+        """
+        for attr, attrMap of @attributes
+            name = attrMap.name
+            attrValue = attrMap.value
+
+            if attrValue?
+                if name is 'class'
+                    if @class?
+                        @setAttribute('class', "#{@class} #{attrValue}")
+
+                else if name isnt ['id', 'style']
+                    if attrValue in ['', 'true', 'True']
+                        value = true
+                    else if attrValue in ['false', 'False']
+                        value = false
+                    else
+                        value = attrValue
+
+                    if @[name]?
+                        @[name] = value
+
+    _template: (str) ->
+        regex = {
+            brackets: /\{\{(.*?)\}\}/
+            attributes: /(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/
+        }
+
+        # replace mustache variables
+        str = str.replace(/\{\{(.*?)\}\}/g, (surroundedAttribute) =>
+            attribute = surroundedAttribute.slice(2, -2)
+            value = @[attribute]
+            if value?
+                return value
+        )
+
+})
+
+    ## the main properties
+
+# })
+
+
+
+    # preCreate: () ->
+    #     return
+
+    # create: () ->
+    #     return
+
+    # update: () ->
+    #     return
+
+    # remove: () ->
+    #     return
+
+    ## built ins
+
+
+
+    # get: (attribute, _default) ->
+    #     if @properties[attribute]?
+    #         attr = @properties[attribute]
+
+    #     parsedFloat = parseFloat(attr)
+    #     if "#{attr}" is "#{parsedFloat}"
+    #         return parsedFloat
+    #     else
+    #         if not attr?
+    #             return _default
+    #         else
+    #             return attr
+
+    # set: (attribute, value) ->
+    #     if @properties[attribute]? or typeof @properties[attribute] is 'undefined'
+    #         @properties[attribute] = value
+        
+    #     if typeof value in ['string', 'number']
+    #         @setAttribute(attribute, value)
+
+    #     return @get(attribute)
+
+        # bind attributes
+        # slice = 0
+        # while slice < str.length
+        #     sliced = str.slice(slice, str.length)
+        #     split = sliced.match(regex.attributes)
+
+        #     if not split?
+        #         break
+
+        #     slice += split.index + split[0].length
+
+        # return str
+
+    ## DOM CALLBACKs
+
+    # createdCallback: () ->
+        # alert 'created'
