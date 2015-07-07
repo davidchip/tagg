@@ -2,7 +2,8 @@ helix = {}
 
 
 helix.config = {}
-helix.config.localStream = "/"
+helix.config.delimiter = /@([a-z0-9]{1,10})/g
+helix.config.localStream = ""
 helix.config.remoteStream = "http://localhost:9000/"
 
 
@@ -159,6 +160,7 @@ helix.loadPath = (path, direct=false) ->
 
     return helix.loadedFiles[path]
 
+
 helix._parseElDefinition = (base) ->
     baseDefinition = {}
     dependencies = []
@@ -209,7 +211,7 @@ helix.loadBase = (base) ->
             return ''
         else
             ## define the base if it has an attribute
-            define = base.getAttribute('define')
+            define = base.getAttribute('definition')
             if define? and define is ''
                 $(base).appendTo("#loadedHTML")
                 helix._parseElDefinition(base)
@@ -275,6 +277,8 @@ helix.defineBase = (tagName, definition={}) ->
     if definition.extends?
         baseParent = definition.extends
     else if tagName isnt 'base-helix'
+        helix.loadCount.inc()
+
         splitTag = tagName.split('-')
         baseName = splitTag.shift()
 
@@ -380,14 +384,27 @@ helix.start = () ->
 
 helix.loaded = new $.Deferred()
 helix._loadCount = 0
+helix._maxLoad = 0
 helix.loadCount = {
     inc: () ->
+        helix._maxLoad++
+        helix.loadCount.update()
         return helix._loadCount++
 
     dec: () ->
         count = helix._loadCount--
         if count <= 1
-            helix.loaded.resolve()
+            setTimeout (() =>
+                helix.loadCount.update()
+                if count <=1
+                    helix.loaded.resolve()
+            ), 1000
+            
+
+    update: () ->
+        loader = document.getElementById("loaderCount")
+        if loader?
+            loader.innerHTML = "#{helix._loadCount} left / #{helix._maxLoad} total"
 }
 
 
@@ -411,6 +428,17 @@ document.addEventListener('DOMContentLoaded', (event) ->
     loader.id = "loading"
     loader.innerHTML = "<div id='loader'></div>"
     document.body.appendChild(loader)
+
+    loaderCount = document.createElement("div")
+    loaderCount.id = "loaderCount"
+    loaderCount.style.position = 'fixed'
+    loaderCount.style.left = '20px'
+    loaderCount.style.bottom = '20px'
+    loaderCount.style.color = '#aaa'
+    loaderCount.style.fontSize = '10px'
+    loaderCount.style.fontFamily = 'Helvetica'
+    loaderCount.style.zIndex = '1000000'
+    document.body.appendChild(loaderCount)
 
     ## append script cache
     scripts = document.createElement("div")
@@ -449,7 +477,7 @@ document.addEventListener('DOMContentLoaded', (event) ->
 
         setTimeout (() =>
             $("#loading").remove()
-        ), 4000
+        ), 1600
     )
 )
 
@@ -499,16 +527,26 @@ helix.defineBase("base-helix", {
 
         @setup()
 
-        template = if @template? then $.trim(@template) else ''
-        @innerHTML += template
-        @innerHTML = @_template(@innerHTML)
+        define = @getAttribute('definition')
+        if not define?
+            if @template isnt false
+                if typeof @template is 'string'
+                    template = $.trim(@template)
+                else 
+                    template = ''
+
+                @innerHTML += template
+                @innerHTML = @_template(@innerHTML)
 
         childrenLoaded = []
         for child in @children
             childrenLoaded.push(helix.loadBase(child))
 
+        helix.loadCount.inc()
         $.when.apply($, childrenLoaded).then(() =>
-            define = @getAttribute('define')
+            helix.loadCount.dec()
+
+            define = @getAttribute('definition')
             if define? and define is ''
                 return
                 
@@ -555,17 +593,14 @@ helix.defineBase("base-helix", {
                         @[name] = value
 
     _template: (str) ->
-        regex = {
-            brackets: /\{\{(.*?)\}\}/
-            attributes: /(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/
-        }
-
-        # replace mustache variables
-        str = str.replace(/\{\{(.*?)\}\}/g, (surroundedAttribute) =>
-            attribute = surroundedAttribute.slice(2, -2)
-            value = @[attribute]
+        # replace delimited 
+        str = str.replace(helix.config.delimiter, (surroundedProperty) =>
+            property = surroundedProperty.slice(1)
+            value = @[property]
             if value?
                 return value
+            else
+                return surroundedProperty
         )
 
 })
