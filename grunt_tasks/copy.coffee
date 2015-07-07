@@ -13,7 +13,7 @@ module.exports = ->
       }]
     }
 
-    go: {
+    lib: {
     	files: [{
     		src: "target/helix.js"
     		dest: "../www/helix.js"
