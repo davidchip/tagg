@@ -2,7 +2,7 @@ helix = {}
 
 
 helix.config = {}
-helix.config.delimiter = /@([a-z0-9]{1,10})/g
+helix.config.delimiter = /@([a-z0-9_]{1,20})/g
 helix.config.localStream = "/"
 helix.config.remoteStream = "http://stream.helix.to/"
 
@@ -175,18 +175,18 @@ helix._parseElDefinition = (base) ->
 
     $.when.apply($, dependencies).then(() =>
         baseName = base.tagName.toLowerCase()
-        if not helix.definitions[baseName]?
-            helix.definitions[baseName] = {}
+        if not helix.instructions[baseName]?
+            helix.instructions[baseName] = {}
 
         for child in children
             childName = child.tagName
             if childName?
                 splitChild = childName.split('-')
-                childFamily = splitChild[splitChild.length - 1].toLowerCase()
+                childFamily = splitChild[0].toLowerCase()
                 if childFamily is 'template'
-                    helix.definitions[baseName]['template'] = child.innerHTML
+                    helix.instructions[baseName]['template'] = child.innerHTML
                 else if childFamily in ['style']
-                    helix.definitions[baseName]['_style'] = child.innerText
+                    helix.instructions[baseName]['_style'] = child.innerText
 
         helix.defineBase(baseName))
 
@@ -211,7 +211,7 @@ helix.loadBase = (base) ->
             return ''
         else
             ## define the base if it has an attribute
-            define = base.getAttribute('definition')
+            define = base.getAttribute('instructions')
             if define? and define is ''
                 $(base).appendTo("#loadedHTML")
                 helix._parseElDefinition(base)
@@ -228,8 +228,7 @@ helix.loadBase = (base) ->
     if not helix.definedBases[baseName]?
         helix.definedBases[baseName] = new $.Deferred()
 
-        family = splitTag.pop()
-        familyBase = "base-" + family
+        familyBase = splitTag[0] + "-base"
         if baseName isnt familyBase  ## load standard base (ie: /family/thing.html)
             familyBaseLoaded = helix.loadBase(familyBase)
 
@@ -240,17 +239,16 @@ helix.loadBase = (base) ->
                 if mappedPath isnt false and typeof mappedPath is 'string'
                     helix.loadPath(mappedPath))
         else ## load family base (ie: /family/base.html)
-            familyBasePath = family + "/" + splitTag.toString().replace(/\,/g, '/')
+            familyBasePath = splitTag.toString().replace(/\,/g, '/')
             loadFamily = helix.loadPath(familyBasePath)
             loadFamily.fail(() ->
-                helix.defineBase(familyBase)
-                console.log "auto defined #{familyBase} - no family base found")
+                helix.defineBase(familyBase))
 
     return helix.definedBases[baseName]
 
 
 helix.bases = {}
-helix.definitions = {}
+helix.instructions = {}
 helix.defineBase = (tagName, definition={}) ->
     """attempt to define a new base
     """
@@ -261,42 +259,45 @@ helix.defineBase = (tagName, definition={}) ->
         helix.bases[tagName] = ''
 
     ## keep tracking of definition
-    if not helix.definitions[tagName]?
-        helix.definitions[tagName] = {}
+    if not helix.instructions[tagName]?
+        helix.instructions[tagName] = {}
 
     if typeof definition is "object"
         for key, value of definition
-            helix.definitions[tagName][key] = value
+            helix.instructions[tagName][key] = value
     else
-        definition(helix.definitions[tagName])
+        definition(helix.instructions[tagName])
 
-    definition = helix.definitions[tagName]
+    definition = helix.instructions[tagName]
 
     ## load parent
     baseDependencies = []
     if definition.extends?
         baseParent = definition.extends
-    else if tagName isnt 'base-helix'
+    else if tagName isnt 'helix-base'
         helix.loadCount.inc()
 
-        splitTag = tagName.split('-')
-        baseName = splitTag.shift()
+        splitParent = tagName.split('-')
+        baseName = splitParent.pop()
 
         ## define wildcard
         if baseName is '*'
-            baseName = 'base'
             definition.wildcard = true
-            tagName = "base-" + splitTag.join().replace(/\,/g, '-')
+            baseName = 'base'
+            tagName = splitParent.join().replace(/\,/g, '-') + "-base"
         else
             definition.wildcard = false
 
         ## define extends
         if baseName is 'base'
-            splitTag.pop()
-        splitTag.unshift('base')
-        if splitTag.length is 1
-            splitTag.push("helix")
-        baseParent = splitTag.join().replace(/\,/g, '-')
+            splitParent.pop()
+        
+        splitParent.push('base')
+        
+        if splitParent.length is 1
+            splitParent.unshift("helix")
+        
+        baseParent = splitParent.join().replace(/\,/g, '-')
 
     ## load extends
     parentLoaded = helix.loadBase(baseParent)
@@ -307,7 +308,7 @@ helix.defineBase = (tagName, definition={}) ->
     if typeof libs is 'string'
         libs = [libs]
     splitTag = tagName.split('-')
-    parentDir = splitTag[splitTag.length - 1] + "/"
+    parentDir = splitTag[0] + "/"
     for lib in libs
         libLoad = helix.loadPath(parentDir + lib, true)
         baseDependencies.push(libLoad)
@@ -327,16 +328,6 @@ helix.defineBase = (tagName, definition={}) ->
             if $.isFunction(value) # if key not in excludedKeys
                 elPrototype[key] = value            
             else
-                # extend parent attributes
-                # cosole.log elPrototype
-                # if key is 'properties' and elPrototype.properties?
-                #     extendedProperties = $.extend({}, elPrototype.properties)
-                #     for k, v of value
-                #         if v?
-                #             extendedProperties[k] = v
-
-                #     value = $.extend({}, extendedProperties)
-
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true })
@@ -351,7 +342,7 @@ helix.defineBase = (tagName, definition={}) ->
         
         ## let everyone know the base has been loaded
         helix.definedBases["#{tagName}"].resolve()
-        if tagName isnt 'base-helix'
+        if tagName isnt 'helix-base'
             helix.loadCount.dec()
 
         console.log "defined #{tagName}"
@@ -468,11 +459,10 @@ document.addEventListener('DOMContentLoaded', (event) ->
     $('*').each((index, el) =>
         helix.loadBase(el))
 
-    helix.start()
-
     $.when(helix.loaded).then(() =>
         setTimeout (() =>
             $("#loading").addClass('loaded')
+            helix.start()
         ), 1000
 
         setTimeout (() =>
@@ -482,7 +472,7 @@ document.addEventListener('DOMContentLoaded', (event) ->
 )
 
 
-helix.defineBase("base-helix", {
+helix.defineBase("helix-base", {
 
     ## built-in properties
 
@@ -513,8 +503,7 @@ helix.defineBase("base-helix", {
             helix.defineBase(tagName, {})
             return false
         else
-            family = splitTag.pop()
-            fileName = family + "/" + splitTag.join().replace(/\,/g, '/')
+            fileName = splitTag.join().replace(/\,/g, '/')
             return fileName
 
     ## be careful about what you move around here
@@ -527,7 +516,7 @@ helix.defineBase("base-helix", {
 
         @setup()
 
-        define = @getAttribute('definition')
+        define = @getAttribute('instructions')
         if not define?
             if @template isnt false
                 if typeof @template is 'string'
@@ -546,7 +535,7 @@ helix.defineBase("base-helix", {
         $.when.apply($, childrenLoaded).then(() =>
             helix.loadCount.dec()
 
-            define = @getAttribute('definition')
+            define = @getAttribute('instructions')
             if define? and define is ''
                 return
                 
