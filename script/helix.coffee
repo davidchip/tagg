@@ -4,7 +4,7 @@ helix = {}
 helix.config = {}
 helix.config.delimiter = /@([a-z0-9_]{1,20})/g
 helix.config.localStream = "/"
-helix.config.remoteStream = "http://stream.helix.to/"
+helix.config.remoteStream = "http://localhost:9000/"
 
 
 helix.loadedScripts = {}
@@ -325,12 +325,15 @@ helix.defineBase = (tagName, definition={}) ->
 
         for key, value of definition
             ## define actions of this
-            if $.isFunction(value) # if key not in excludedKeys
+            if $.isFunction(value)
                 elPrototype[key] = value            
             else
                 Object.defineProperty(elPrototype, key, {
                     value: value
                     writable: true })
+
+            if key is 'defined'
+                value()
 
         CustomElement = document.registerElement("#{tagName}", {
             prototype: elPrototype })
@@ -353,7 +356,7 @@ helix.createBase = (tag, elOptions={}) ->
     element = document.createElement("#{tag}")
     for key, value of elOptions
         if value?
-            element.set(key, value)
+            element.setAttribute(key, value)
 
     return element
 
@@ -361,6 +364,7 @@ helix.createBase = (tag, elOptions={}) ->
 helix.activeBases = []
 
 helix._freeze = false
+helix.frame = 0
 helix.start = () ->
     update = () ->
         if helix._freeze is true
@@ -369,7 +373,10 @@ helix.start = () ->
         requestAnimationFrame(update)
 
         for element in helix.activeBases
-            element.update()
+            if helix.frame % element.refresh is 0
+                element.update()
+
+        helix.frame++
 
     update()
 
@@ -478,6 +485,7 @@ helix.defineBase("helix-base", {
 
     extends: ''
     libs: []
+    refresh: 1
     template: ''
 
     ## built-in actions
@@ -509,10 +517,8 @@ helix.defineBase("helix-base", {
     ## be careful about what you move around here
 
     attachedCallback: () ->
-        # @properties = $.extend({}, @properties)
-
         ## set non generic attributes as properties
-        @_setAttributes()            
+        @_setAttributes()
 
         @setup()
 
@@ -558,7 +564,7 @@ helix.defineBase("helix-base", {
     _setAttributes: () ->
         """iterate over bases attributes
                 append any specified base class
-                push the ids of any specified bridges
+                cast strings as floats (if applicable)
                 set all other attributes
         """
         for attr, attrMap of @attributes
@@ -575,6 +581,8 @@ helix.defineBase("helix-base", {
                         value = true
                     else if attrValue in ['false', 'False']
                         value = false
+                    else if "#{attrValue}" is "#{parseFloat(attrValue)}"
+                        value = parseFloat(attrValue)
                     else
                         value = attrValue
 
@@ -582,7 +590,7 @@ helix.defineBase("helix-base", {
                         @[name] = value
 
     _template: (str) ->
-        # replace delimited 
+        # replace delimited character
         str = str.replace(helix.config.delimiter, (surroundedProperty) =>
             property = surroundedProperty.slice(1)
             value = @[property]
@@ -593,65 +601,3 @@ helix.defineBase("helix-base", {
         )
 
 })
-
-    ## the main properties
-
-# })
-
-
-
-    # preCreate: () ->
-    #     return
-
-    # create: () ->
-    #     return
-
-    # update: () ->
-    #     return
-
-    # remove: () ->
-    #     return
-
-    ## built ins
-
-
-
-    # get: (attribute, _default) ->
-    #     if @properties[attribute]?
-    #         attr = @properties[attribute]
-
-    #     parsedFloat = parseFloat(attr)
-    #     if "#{attr}" is "#{parsedFloat}"
-    #         return parsedFloat
-    #     else
-    #         if not attr?
-    #             return _default
-    #         else
-    #             return attr
-
-    # set: (attribute, value) ->
-    #     if @properties[attribute]? or typeof @properties[attribute] is 'undefined'
-    #         @properties[attribute] = value
-        
-    #     if typeof value in ['string', 'number']
-    #         @setAttribute(attribute, value)
-
-    #     return @get(attribute)
-
-        # bind attributes
-        # slice = 0
-        # while slice < str.length
-        #     sliced = str.slice(slice, str.length)
-        #     split = sliced.match(regex.attributes)
-
-        #     if not split?
-        #         break
-
-        #     slice += split.index + split[0].length
-
-        # return str
-
-    ## DOM CALLBACKs
-
-    # createdCallback: () ->
-        # alert 'created'
