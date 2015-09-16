@@ -20,61 +20,41 @@ helix.log = (message, debugObj={}) ->
     console.log "#{message}\n#{formattedObj}"
 
 
-createRequest = (method, url) ->
-  xhr = new XMLHttpRequest
-  if 'withCredentials' of xhr # XHR for Chrome/Firefox/Opera/Safari.
-    xhr.open method, url, true
-  else if typeof XDomainRequest != 'undefined' # XDomainRequest for IE.
-    xhr = new XDomainRequest
-    xhr.open method, url
-  else # CORS not supported.
-    xhr = null
-  
-  return xhr
-
-
 helix.loadURL = (url) ->
-    """attempt to load and cache a script or HTML file from the specified URL
-
-       returns the promise of the load
+    """gets a response from the URL passed in, and
+       returns a load object which has a:
+         promise: resolved() if the load is a success
+         response: the response that was received as 
     """
-    load = new $.Deferred()
+    load = {}
+    load.promise = new $.Deferred()
     
-    xhr = createRequest('GET', url)
-    if not xhr
-        helix.log "helix: load attempt failed"
-        return
+    ## get proper ajax request
+    xhr = new XMLHttpRequest()
+    if 'withCredentials' of xhr
+        ## Chrome/Firefox/Opera/Safari.
+        xhr.open('GET', url, true)
+    else if typeof XDomainRequest != 'undefined' 
+        # IE. God damn IE.
+        xhr = new XDomainRequest()
+        xhr.open('GET', url)
+    else
+        helix.log("can\'t create an ajax request")
 
     xhr.onload = () ->
         if xhr.status is 404
-            load.reject()
-        else
-            splitURL = url.split('.')
-            if splitURL.length > 1
-                extension = splitURL[splitURL.length - 1]
-                
-                if extension is "js"
-                    script = document.createElement("script")
-                    script.type = "text/javascript"
-                    script.text = xhr.response
-                    $("#loadedScripts")[0].appendChild(script)
-                
-                else if extension is "html"
-                    loadedHTML = $("#loadedHTML")
-                    loadedHTML.append(xhr.response)
-                    # helix.loadBase(loadedHTML)
-
-            console.log url + " loaded successfully"
-            
-            load.resolve()
+            load.promise.reject()
+        else                
+            load.response = xhr.response
+            load.promise.resolve()
 
     xhr.onerror = ->
-        load.reject()
+        load.promise.reject()
 
     try
         xhr.send()
     catch error
-        load.reject()
+        load.promise.reject()
 
     return load
     
@@ -83,25 +63,33 @@ helix.smartLoad = (url, loaded, formats=['html', 'js'], i=0) ->
     """multi format loader
     """
     if not loaded?
-        loaded = new $.Deferred()
+        loaded = {}            
+        loaded.promise = new $.Deferred()
 
+    ## load the format specified by i
+    ## if the file already has an extension, don't add one
     splitURL = url.split('.')
-    if splitURL.length > 1
+    if splitURL.length > 1 
         fullURL = url
     else
         fullURL = url + "." + formats[i]
 
-    formatLoaded = helix.loadURL(fullURL)
-    $.when(formatLoaded).then(() ->
-        loaded.resolve()
+    formatLoad = helix.loadURL(fullURL)
+
+    ## load worked
+    $.when(formatLoad.promise).then(() ->
+        loaded.value = formatLoad.response
+        loaded.promise.resolve()
+
         console.log "#{fullURL} successfully loaded")
 
-    formatLoaded.fail(() ->
+    ## load failed, try the next one on the extensions list
+    formatLoad.fail(() ->
         i = i + 1
-        if i <= formats.length
+        if i < formats.length
             helix.smartLoad(url, loaded, formats, i)
         else
-            loaded.reject()
+            loaded.promise.reject()
             console.log "#{url} couldn't be located using #{formats.toString()}")
 
     return loaded
@@ -142,6 +130,7 @@ helix.loadPath = (path, direct=false) ->
        locally and then remotely
     """
     if not helix.loadedFiles[path]?
+        clearTimeout(helix.loadTimer)
         helix.loadedFiles[path] = new $.Deferred()
 
         localLoad = helix._loadFileURL(helix.config.localStream + path, direct)
@@ -387,12 +376,13 @@ helix.loadCount = {
     inc: () ->
         helix._maxLoad++
         helix.loadCount.update()
+        clearTimeout(helix.loadTimer)
         return helix._loadCount++
 
     dec: () ->
         count = helix._loadCount--
         if count <= 1
-            setTimeout (() =>
+            helix.loadTimer = setTimeout (() =>
                 helix.loadCount.update()
                 if count <=1
                     helix.loaded.resolve()
