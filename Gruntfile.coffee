@@ -1,32 +1,26 @@
 module.exports = ->
 
 
-    # Load the tasks from the grunt_tasks folder
+    ## grunt tasks are located in grunt_tasks/
     @loadTasks("grunt_tasks")
 
-  
-    # Compile for local or production serving
+
     @registerTask("compile", [
-        ## remove our target/ directory
-        "clean:everything"
-        "less:compile"        
-        "copy:libs" ## bower_components/ + libs/
-        "coffee:compile"  
-        "concat:coffee"
-        "copy:lib"
+        "coffee:compileSource"
+        "concat:libsAndSource"
+        "copy:sourceToWWW"
     ])
 
 
-    ## Compile for production
     @registerTask("release", [
+        "clean:everything"
         "compile"
-        "uglify:coffee"
+        "uglify:helixJS"
     ])
 
 
-    ## Used locally to compile our src, provide source maps, etc.
-    ## remove our target/ directory
     @registerTask("listen", [
+        "clean:everything"
         "compile"
-        "watch"
+        "watch:coffee"
     ])

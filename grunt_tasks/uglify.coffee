@@ -6,12 +6,10 @@ module.exports = ->
 
   @config "uglify", {
 
-    coffee: {
+    helixJS: {
       files: [{
-        src: [ 'libs/zepto.min.js', 
-            './bower_components/webcomponentsjs/webcomponents-lite.min.js',
-            'target/script/helix.js' ]
-        dest: 'target/helix.js',
+        src: 'target/helix.js'
+        dest: 'target/helix.min.js',
       }]
     }
 

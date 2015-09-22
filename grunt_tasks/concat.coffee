@@ -6,13 +6,16 @@ module.exports = ->
 
   @config "concat", {
 
-    coffee: {
+    libsAndSource: {
       files: [{
-        src: [ 'libs/zepto.min.js', 
-            './bower_components/webcomponentsjs/webcomponents-lite.min.js',
-            'target/script/helix.js' ]
+        src: [ 
+          './libs/zepto.min.js',
+          './bower_components/webcomponentsjs/webcomponents-lite.min.js',
+          'target/source.js'
+        ]
         dest: 'target/helix.js',
       }]
     }
 
   }
+  

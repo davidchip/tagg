@@ -6,18 +6,11 @@ module.exports = ->
 
   @config "copy", {
 
-    libs: {
+    sourceToWWW: {
       files: [{
-        src: ["bower_components/**/*", "libs/**/*"]
-        dest: "target/"
+        src: 'target/helix.js'
+        dest: '../www/helix.js',
       }]
-    }
-
-    lib: {
-    	files: [{
-    		src: "target/helix.js"
-    		dest: "../www/helix.js"
-    	}]
     }
 
   }

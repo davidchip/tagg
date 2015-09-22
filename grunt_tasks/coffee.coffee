@@ -6,14 +6,13 @@ module.exports = ->
 
   @config "coffee", {
 
-    compile: {
+    compileSource: {
       files: [{
-        expand: true,
-        cwd: './',
-        src: ['script/**/*.coffee'],
-        dest: 'target/',
-        ext: '.js',
-        extDot: 'first'
+        src: 'source/**/*.coffee'
+        dest: 'target/source.js'
+        options: {
+          join: true
+        }
       }]
     }
 
