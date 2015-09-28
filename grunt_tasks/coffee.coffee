@@ -10,10 +10,10 @@ module.exports = ->
       files: [{
         src: 'source/**/*.coffee'
         dest: 'target/source.js'
-        options: {
-          join: true
-        }
       }]
+      options: {
+        join: true
+      }
     }
 
   }

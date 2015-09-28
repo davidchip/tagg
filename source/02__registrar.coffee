@@ -1,3 +1,5 @@
+## parse element registrations
+
 helix._parseElDefinition = (base) ->
     baseDefinition = {}
     dependencies = []
@@ -10,7 +12,7 @@ helix._parseElDefinition = (base) ->
             loadChild = helix.loadBase(childName)
             dependencies.push(loadChild)
 
-    $.when.apply($, dependencies).then(() =>
+    Promise.all(dependencies).then(() =>
         baseName = base.tagName.toLowerCase()
         if not helix.instructions[baseName]?
             helix.instructions[baseName] = {}
@@ -91,11 +93,11 @@ helix.defineBase = (tagName, definition={}) ->
     splitTag = tagName.split('-')
     parentDir = splitTag[0] + "/"
     for lib in libs
-        libLoad = helix.loadPath(parentDir + lib, true)
+        libLoad = helix.smartLoad(parentDir + lib)
         baseDependencies.push(libLoad)
 
     ## declare element after dependencies are loaded
-    $.when.apply($, baseDependencies).then(() =>
+    Promise.all(baseDependencies).then(() =>
         parentConstructor = helix.bases["#{baseParent}"]
         
         ## extend parent prototype
@@ -106,7 +108,7 @@ helix.defineBase = (tagName, definition={}) ->
 
         for key, value of definition
             ## define actions of this
-            if $.isFunction(value)
+            if typeof value is "function"
                 elPrototype[key] = value            
             else
                 Object.defineProperty(elPrototype, key, {
@@ -122,7 +124,10 @@ helix.defineBase = (tagName, definition={}) ->
         ## allow access to the prototype
         helix.bases["#{tagName}"] = CustomElement
         if not helix.definedBases["#{tagName}"]?
-            helix.definedBases["#{tagName}"] = new $.Deferred()    
+            helix.definedBases["#{tagName}"] = new Promise()
+            helix.definedBases["#{tagName}"].then((result) ->
+                alert 'yo'
+            )
         
         ## let everyone know the base has been loaded
         helix.definedBases["#{tagName}"].resolve()

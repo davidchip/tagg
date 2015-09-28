@@ -45,7 +45,7 @@ helix.defineBase("helix-base", {
         if not define?
             if @template isnt false
                 if typeof @template is 'string'
-                    template = $.trim(@template)
+                    template = @template.replace(/^\s+|\s+$/g,'') ## trim
                 else 
                     template = ''
 
@@ -57,7 +57,7 @@ helix.defineBase("helix-base", {
             childrenLoaded.push(helix.loadBase(child))
 
         helix.loadCount.inc()
-        $.when.apply($, childrenLoaded).then(() =>
+        Promise.all(childrenLoaded).then(() =>
             helix.loadCount.dec()
 
             define = @getAttribute('instructions')
@@ -74,7 +74,7 @@ helix.defineBase("helix-base", {
             helix.activeBases.splice(baseIndex, 1)
         
         @remove()
-        $(@).remove()
+        @parentNode.removeChild(@)
 
     ## hooks
 
