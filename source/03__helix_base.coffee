@@ -76,8 +76,6 @@ helix.defineBase("helix-base", {
         @remove()
         @parentNode.removeChild(@)
 
-    ## hooks
-
     # helpers
 
     _setAttributes: () ->

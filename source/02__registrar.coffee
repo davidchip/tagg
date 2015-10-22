@@ -1,147 +1,149 @@
-## parse element registrations
+tag.load = (tag) ->
+    """load an tag, by
+       returning its registration if it exists, 
+       if it doesn't exist
+          load its family
+          map what it extends
+          map where to find it
 
-helix._parseElDefinition = (base) ->
-    baseDefinition = {}
-    dependencies = []
+       ignores built in dom elements, loaded tags
 
-    children = base.children
-
-    for child in children
-        childName = child.tagName
-        if childName?
-            loadChild = helix.loadBase(childName)
-            dependencies.push(loadChild)
-
-    Promise.all(dependencies).then(() =>
-        baseName = base.tagName.toLowerCase()
-        if not helix.instructions[baseName]?
-            helix.instructions[baseName] = {}
-
-        for child in children
-            childName = child.tagName
-            if childName?
-                splitChild = childName.split('-')
-                childFamily = splitChild[0].toLowerCase()
-                if childFamily is 'template'
-                    helix.instructions[baseName]['template'] = child.innerHTML
-                else if childFamily in ['style']
-                    helix.instructions[baseName]['_style'] = child.innerText
-
-        helix.defineBase(baseName))
-
-
-helix.bases = {}
-helix.instructions = {}
-helix.defineBase = (tagName, definition={}) ->
-    """attempt to define a new base
+       el:     "a-base" or <a-base>
+       return: smartLoad Promise
     """
-    ## only allow one write to definition
-    if helix.bases[tagName]?
+    if not hyphenated 
         return
-    else
-        helix.bases[tagName] = ''
 
-    ## keep tracking of definition
-    if not helix.instructions[tagName]?
-        helix.instructions[tagName] = {}
+    loadFamily = smartLoad(family)
 
-    if typeof definition is "object"
-        for key, value of definition
-            helix.instructions[tagName][key] = value
-    else
-        definition(helix.instructions[tagName])
+    loadFamily.then((familyRej) =>
+        if typeof tag if "string"
+            loadURL(family.mapPath(tag))
 
-    definition = helix.instructions[tagName]
+        else if typeof tag is "HTMLElement"
+            if "registration" in tag.attributes
+                registration = {}
+                registration['inner'] = tag.innerHTML
+                for option in tag.attributes
+                    registration[option] = tagReg.getAttribute(option)
 
-    ## load parent
-    baseDependencies = []
-    if definition.extends?
-        baseParent = definition.extends
-    else if tagName isnt 'helix-base'
-        helix.loadCount.inc()
+                tag.register(tag.tagName, registration)
 
-        splitParent = tagName.split('-')
-        baseName = splitParent.pop()
-
-        ## define wildcard
-        if baseName is '*'
-            definition.wildcard = true
-            baseName = 'base'
-            tagName = splitParent.join().replace(/\,/g, '-') + "-base"
-        else
-            definition.wildcard = false
-
-        ## define extends
-        if baseName is 'base'
-            splitParent.pop()
-        
-        splitParent.push('base')
-        
-        if splitParent.length is 1
-            splitParent.unshift("helix")
-        
-        baseParent = splitParent.join().replace(/\,/g, '-')
-
-    ## load extends
-    parentLoaded = helix.loadBase(baseParent)
-    baseDependencies.push(parentLoaded)
-
-    ## load libs from family root like: /helix/bower_components
-    libs = if definition.libs? then definition.libs else []
-    if typeof libs is 'string'
-        libs = [libs]
-    splitTag = tagName.split('-')
-    parentDir = splitTag[0] + "/"
-    for lib in libs
-        libLoad = helix.smartLoad(parentDir + lib)
-        baseDependencies.push(libLoad)
-
-    ## declare element after dependencies are loaded
-    Promise.all(baseDependencies).then(() =>
-        parentConstructor = helix.bases["#{baseParent}"]
-        
-        ## extend parent prototype
-        if baseParent? and parentConstructor?
-            elPrototype = Object.create(parentConstructor.prototype)
-        else
-            elPrototype = Object.create(HTMLElement.prototype)
-
-        for key, value of definition
-            ## define actions of this
-            if typeof value is "function"
-                elPrototype[key] = value            
             else
-                Object.defineProperty(elPrototype, key, {
-                    value: value
-                    writable: true })
-
-            if key is 'defined'
-                value()
-
-        CustomElement = document.registerElement("#{tagName}", {
-            prototype: elPrototype })
-
-        ## allow access to the prototype
-        helix.bases["#{tagName}"] = CustomElement
-        if not helix.definedBases["#{tagName}"]?
-            helix.definedBases["#{tagName}"] = new Promise()
-            helix.definedBases["#{tagName}"].then((result) ->
-                alert 'yo'
-            )
-        
-        ## let everyone know the base has been loaded
-        helix.definedBases["#{tagName}"].resolve()
-        if tagName isnt 'helix-base'
-            helix.loadCount.dec()
-
-        console.log "defined #{tagName}"
+                tags[tag] = loadURL(family.mapPath(tag.tagName))
     )
 
 
-helix.createBase = (tag, elOptions={}) ->
-    element = document.createElement("#{tag}")
-    for key, value of elOptions
-        if value?
-            element.setAttribute(key, value)
 
-    return element
+tag.register = (tagName, registration) ->
+    """Register a new tag
+
+       tagName (string): the hyphenated name of the tag to register
+       registration (object): the options, functions to attach to the tag.
+           extends: defines what tag to extend
+
+       return: Promise(registration, registrationError)
+    """
+    if not tags[tagName]?
+        tags[tagName] = new Promise()
+        
+        return new Promise((resolveTagReg, rejectTagReg) =>
+            if typeof tagName isnt "string"
+                rejectTagReg(Error("#{tagName} tagName should be a string"))
+
+            if tagName.split('-').length isnt >= 2
+                rejectTagReg(Error("#{tagName} needs a hyphen"))
+
+            if typeof registration isnt "object"
+                rejectTagReg((Error("#{tagName} registration should be an object"))
+
+            ## load the family registration
+            tagFamilyName = tagName.split('-')[0]
+            getFamilyReg = new Promise((resolveFamReg) =>
+                tag.load(tagFamilyName).then((file) =>
+                    resolveFamReg(tags[tagFamilyName])
+                , (error) =>
+                    resolveFamReg(tag.register("#{tagFamilyName}-family"))
+                )
+            )
+
+            ## figure out what this tag extends from
+            getFamilyReg.then((familyReg) =>
+                if registration.extends?
+                    tagExtends = registration.extends
+                else if tagName is (tagFamilyName + "-" + "family")
+                    tagExtends = "tag" + "-" + "family"
+                else
+                    tagExtends = familyReg.mapExtends(tagName)
+
+                ## load the prototype of the tag this one extends
+                getPrototype = new Promise((resolveExtendsReg, rejectExtendsReg) =>
+                    if tags[tagExtends]?
+                        resolveExtendsReg(Object.create(tags[tagExtends].prototype))
+                    else
+                        tag.load(tagExtends).then((protoLoaded) =>
+                            resolveExtendsReg(Object.create(protoLoaded))
+                        , (protoFailed) =>
+                            resolveExtendsReg(Object.create(HTMLElement.prototype))
+                        )
+                )
+
+                ## attach this tags functions and options to its parents prototype
+                getPrototype.then((prototype) =>
+                    for key, value of registration
+                        if typeof value is "function"
+                            prototype[key] = value
+                        else
+                            Object.defineProperty(prototype, key, {
+                                value: value
+                                writable: true
+                            })
+
+                    ## register the tag
+                    Tag = document.registerElement(tagName, {
+                        prototype: prototype })
+
+                    resolveTagReg(Tag)
+                )
+            )
+        )
+
+    return tags[tagName]
+
+
+tag.create = (tag, options={}) ->
+    """Create the specified tag with the passed in options.
+    """
+    if not tags[tag]?
+        return Error("#{tag} could not be created; has not been registered.")
+
+    tag = document.createElement("#{tag}")
+    for key, value of options
+        if value?
+            tag.setAttribute(key, value)
+
+    return tag
+
+
+tag.scanEl = (tagReg) ->
+    """From an HTML element, load its children,
+       and then take its innerHTML and attributes, and 
+       turn them into that tags inner and options respectively
+    """
+    if typeof tagReg isnt 'HTMLElement'
+        return
+
+    if not tagReg.getAttribute('registration')?
+        return
+
+    regDependencies = []
+    for reg in tagReg.children
+        regDependencies.push(tag.load(reg))
+                
+    Promise.all(regDependencies).then(() =>
+        registration = {}
+        registration['inner'] = tag.innerHTML
+        for option in tagReg.attributes
+            registration[option] = tagReg.getAttribute(option)
+
+        tag.register(tagReg.tagName, registration))
