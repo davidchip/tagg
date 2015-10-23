@@ -1,7 +1,7 @@
 tag = {}
 tag.dicts = {
     local: {
-        dir: "/bases"
+        dir: "/tags/"
         extensions: [".html", ".js"]
         hostname: window.location.hostname  
         port: window.location.port
@@ -14,7 +14,6 @@ tag.dicts = {
     }
     remote: {
         dir: ""
-        extensions: [".html", ".js"]
         hostname: "stream.helix.to"
         port: 80
         protocol: "http:"

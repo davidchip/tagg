@@ -7,30 +7,20 @@ tag.loadSingle = (url) ->
        return:  Promise(file, error)
     """
     return new Promise((resolve, reject) ->
-        xhr = new XMLHttpRequest()
-        if 'withCredentials' of xhr
-            ## Chrome/Firefox/Opera/Safari.
-            xhr.open('GET', url, true)
-        else if typeof XDomainRequest != 'undefined' 
-            # IE. God damn IE.
-            xhr = new XDomainRequest()
-            xhr.open('GET', url)
-        else
-            reject(Error("couldn't create a XHR request"))
-
-        xhr.onload = () ->
-            if xhr.status is 404
-                reject(Error("#{url} returned a 404"))
-            else                
-                resolve(xhr.response)
-
-        xhr.onerror = ->
-            reject(Error("#{url} failed to load"))
-
         try
-            xhr.send()
+            link = document.createElement('link')
+            link.rel = "import"
+            link.href = url
+
+            link.onload = (e) ->
+                resolve(link)       
+
+            link.onerror = (e) ->
+                reject(Error("#{url} failed to load"))
+
+            document.body.appendChild(link)
         catch error
-            reject(Error("#{url} XHR request failed to send"))
+            reject(Error("#{url} link couldn't be generated"))
     )
 
 
@@ -74,23 +64,24 @@ tag.loadFamily = (familyName) ->
 
  tag.loadFile = (filePath) ->
     """Given a path to a file, attempt a load
-       from each dictionary.
+       by searching through each dictionary for it.
+
+       filePath: "/a/tag"
+       return: link with href="/a/tag
     """
     fileURLs = []
     for dictName, dict of tag.dicts
         for url in tag.constructURLs(dict, filePath)
             fileURLs.push(url)
 
-    return tag.load.serial(fileURLs)
+    return tag.loadSerial(fileURLs)
 
 
 tag.loadReg = (el) ->
-    """from a el, that's either a string, or element
-
-       load its tag registration, from its family mapped name
+    """Return the registration from a given tag.
 
        el:     "a-base" or <a-base>
-       return: smartLoad Promise
+       return: registration of el
     """
     return new Promise((loadFinished, loadFailed) ->
         if typeof el is "string"
@@ -104,16 +95,9 @@ tag.loadReg = (el) ->
         familyName = tagParts[0]
         tag.loadFamily(familyName).then((family) =>
             tagPath = family.mapNameToPath(tagName)
-            tag.loadFile(tagPath).then((tagContent) ->
-                if typeof tagContent is "html"
-                    append = document.createElement("div")
-                    append.innerHTML = fileText
-                else if typeof tagContent is "js"
-                    append = document.createElement("script")
-                    append.textContent = fileText
-
-                document.body.appendChild(tagContent)
-                loadFinished()
+            tag.loadFile(tagPath).then((link) ->
+                family.parse(link.import)
+                loadFinished(tags[tag])
             , (tagNotFound) ->
                 console.log(tagNotFound)
                 loadFinished()

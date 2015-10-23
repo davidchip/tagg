@@ -24,6 +24,15 @@ tag.register = (tagName, registration) ->
             rejectReg((Error("#{tagName} registration should be an object"))
 
         ## load the prototype of the tag this one extends
+        tag.loadFamily(familyName).then((family) =>
+            if registration.extends?
+                extends = registration.extends
+            else
+                extends = family.mapNameToExtends(tagName)
+
+            tag.loadReg
+        )
+
         getPrototype = new Promise((parentRegFound) =>
             if tags[tagExtends]?
                 parentRegFound(Object.create(tags[tagExtends].prototype))
