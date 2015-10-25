@@ -12,7 +12,7 @@ tag.crawl = (el) ->
                 return crawled()
 
             tagParts = tagName.split('-')
-            if tagParts.length isnt >= 2
+            if not tagParts.length >= 2
                 return crawled()
 
             tag.lookUp(el).then((elLoaded) ->

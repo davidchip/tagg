@@ -6,10 +6,10 @@ module.exports = ->
 
   @config "uglify", {
 
-    helixJS: {
+    tagJS: {
       files: [{
-        src: 'target/helix.js'
-        dest: 'target/helix.min.js',
+        src: 'target/tag.js'
+        dest: 'target/tag.min.js',
       }]
     }
 

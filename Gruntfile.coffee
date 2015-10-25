@@ -15,7 +15,7 @@ module.exports = ->
     @registerTask("release", [
         "clean:everything"
         "compile"
-        "uglify:helixJS"
+        "uglify:tagJS"
     ])
 
 

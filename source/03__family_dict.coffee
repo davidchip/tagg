@@ -11,13 +11,12 @@ class tag.FamilyDictionary extends tag.StaticDictionary
        family.lookUp,
        family.lookUpParent,
        family.parse,
+       family.parseTagName
 
        See tag.StaticDictionary for the default behavior
        of these functions.
     """
     lookUp: (tagName) =>
-        """Returns the path to file, having been parsed.
-        """
         return new Promise((defFound, defNotFound) =>
             @loadFamily(tagName).then((family) =>
                 if family.lookUp?
@@ -27,7 +26,11 @@ class tag.FamilyDictionary extends tag.StaticDictionary
                         defNotFound(familyNotDef)
                     )
                 else
-                    urls = @parseTagName(tagName)
+                    if family.parseTagName?
+                        urls = family.parseTagName(tagName)
+                    else
+                        urls = @parseTagName(tagName) 
+
                     tag.serialLoad(urls).then((tagLink) =>
                         if family.parse?
                             parsed = family.parse(tagLink.import)
@@ -42,30 +45,24 @@ class tag.FamilyDictionary extends tag.StaticDictionary
                     , (lookupFailed) =>
                         defNotFound()
                     )
-                )
             , (noFamily) =>
                 defNotFound()
+            )
         )
 
     lookUpParent: (tagName) =>
-        """From a tagName, return the definition of what it
-           is descended from: its root.
-        """
         return new Promise((parentFound, parentNotFound) =>
             @loadFamily(tagName).then((family) =>
-                if not family.lookUpParent?
-                    parentFound(super(tagName))
-                else
+                if family.lookUpParent?
                     parentFound(family.lookUpParent(tagName))
+                else
+                    parentFound(super(tagName))
             , (noFamily) =>
                 parentNotFound(noFamily)
             )
         )
 
     loadFamily: (tagName) =>
-        """From a tag name, extract its familyName, and return
-           the family active definition.
-        """
         tagParts = tagName.split('-')
         familyName = tagParts[0] + "-" + "family"
         

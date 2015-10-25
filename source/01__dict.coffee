@@ -5,7 +5,7 @@ class tag.Dictionary
     """The interface for a dictionary.
     """
 
-    constructor: () =>
+    initialize: () =>
         """Given each dictionary a unique ID.
         """
         @id = Math.random().toString(36).substr(2, 5)
@@ -31,3 +31,6 @@ class tag.Dictionary
            import it, return the definition itself.
         """
         new Promise((defParsed, defNotParsed) =>
+
+        )
+        

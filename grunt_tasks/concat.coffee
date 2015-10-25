@@ -13,7 +13,7 @@ module.exports = ->
           './bower_components/webcomponentsjs/webcomponents-lite.min.js',
           'target/source.js'
         ]
-        dest: 'target/helix.js',
+        dest: 'target/tag.js',
       }]
       options: {
         banner: 'console.log("last built: <%= grunt.template.today("yyyy-mm-dd h:MM:sstt") %>");'

@@ -1,6 +1,6 @@
 tag.dicts.push(
-    new FamilyDictionary({dir:      "/"}), 
-    new FamilyDictionary({hostname: "helix.to" }))
+    new tag.FamilyDictionary({dir:      "/"}), 
+    new tag.FamilyDictionary({hostname: "helix.to" }))
 
 tag.crawl(document.body)
 

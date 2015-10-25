@@ -1,5 +1,3 @@
-## this should combine with helix-base
-
 tag.define('tag-family', {
 
     lookUp: (tagName) =>
@@ -11,9 +9,11 @@ tag.define('tag-family', {
     parse: (link) =>
         return
 
+    nameToPath: (tagName) =>
+        return
+
 })
 
-## this should combine with tag-root
 
 helix.defineBase("helix-base", {
 

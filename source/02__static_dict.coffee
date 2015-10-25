@@ -15,8 +15,12 @@ class tag.StaticDictionary extends tag.Dictionary
           default: takes a <link rel="import"> and either 
                    surrounds it in <script> tags if its a JS extension,
                    or just directly imports it if its an HTML file.
+
+       family.nameToPath,
+          default: splits on the "-" in the tagName, precedes the tagName
+                   with the @dir specified, and adds each extension specified. 
     """
-    constructor: (options) =>
+    initialize: (options) =>
         super options
 
         @protocol = window.location.protocol ## http
@@ -33,12 +37,17 @@ class tag.StaticDictionary extends tag.Dictionary
                 @parse(link).then(() =>
                     tagDefined(tags[tagName])
                 )
-            ), (loadRejected) =>
+            , (loadRejected) =>
                 tagFailed(Error("#{tagName} could not be found"))
             )
         )
 
     lookUpParent: (tagName) =>
+        ## ATTENTION: need to cover case when tagParts.length < 2
+        ## extend tag-root?
+        ## or extends doesn't extend anything? how to deal with
+        ## tag-root?
+
         tagParts = tagName.split('-')
         lastPart = tagParts.pop()
         rootName = tagParts.join().replace(/\,/g, "-")
@@ -67,9 +76,8 @@ class tag.StaticDictionary extends tag.Dictionary
         )
 
     parseTagName: (tagName) =>
-        """Parse a tagName into an array of potential locations
-           it could exist.
-
+        """Map a tagName to an array of the potential locations
+           it could be.
 
            tagName:  "a-partial"
            return:  ["http://www.tag.to/a/file/to/a/partial.html", 

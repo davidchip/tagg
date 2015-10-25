@@ -1,5 +1,3 @@
-## think about lines 27:36
-
 tags = {}
 tag.register = (tagName, registration) ->    
     """Register a new tag
@@ -17,17 +15,17 @@ tag.register = (tagName, registration) ->
         if typeof tagName isnt "string"
             rejectReg(Error("#{tagName} tagName should be a string"))
 
-        if tagName.split('-').length isnt >= 2
+        if not tagName.split('-').length >= 2
             rejectReg(Error("#{tagName} needs a hyphen"))
 
         if typeof registration isnt "object"
-            rejectReg((Error("#{tagName} registration should be an object"))
+            rejectReg(Error("#{tagName} registration should be an object"))
 
-        ## retrieve parent prototype            
+        ## retrieve parent prototype
         loadedPrototype = new Promise((parentPrototype) =>
             tag.lookUpParent(tagName).then((parentDef) =>
                 parentPrototype(Object.create(parentDef.prototype))
-            ), (noParentDef) =>
+            , (noParentDef) =>  ## ATTENTION: tag-root? 
                 parentPrototype(Object.create(HTMLElement.prototype))
             )
         )
@@ -58,7 +56,8 @@ tag.registerElement = (element) ->
     """Take the passed in element, and register it as a tag.
     """
     registration = {}
-    registration['template'] = element.innerHTML
+    ## registration['template'] = element.innerHTML
+    ## ATTENTION: how to deal with templates?
     for option in element.attributes
         registration[option] = element.getAttribute(option)
 

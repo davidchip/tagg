@@ -8,8 +8,8 @@ module.exports = ->
 
     sourceToWWW: {
       files: [{
-        src: 'target/helix.js'
-        dest: '../www/helix.js',
+        src: 'target/tag.js'
+        dest: '../www/tag.js',
       }]
     }
 

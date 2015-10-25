@@ -34,9 +34,11 @@ tag.lookUpParent = (tagName) =>
        parentDefinition you can.
        that can be found in any dictionary.
     """
+    ## ATTENTION: CATCHING HERE?
     # if tag.openDefinitions[tagName]? and tag.openDefinitions[tagName].found is true
     #     dict = tag.openDefinitions[tagName].dict
     #     loadedParent = dict.lookUpParent(tagName)
+    ## very similar to lookUp
 
     return new Promise((defFound, defNotFound) =>
         dictLookUp = (i=0) =>
