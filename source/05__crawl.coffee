@@ -15,7 +15,7 @@ tag.crawl = (el) ->
             if tagParts.length isnt >= 2
                 return crawled()
 
-            tag.loadReg(el).then((elLoaded) ->
+            tag.lookUp(el).then((elLoaded) ->
                 crawled()
             , (elFailedToLoad) ->
                 crawled()
@@ -26,5 +26,4 @@ tag.crawl = (el) ->
         for child in el.children
             _crawl(el)
     )
-
-tag.crawl(document.body)
+    
