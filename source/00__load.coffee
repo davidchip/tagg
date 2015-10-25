@@ -26,41 +26,25 @@ tag.singleLoad = (url) ->
     )
 
 
-tag.chainPromises = (config={}) =>
-    """Iterate over the the array passed in, using each item
-       to construct a promise. Move on to the next item
-       if the current promise is rejected.
-    """
-    return new Promise((resolve, reject) =>
-        {items, itemPromise, error} = config
-
-        loadItem = (i=0) =>
-            if i < items.length
-                constructedPromise = itemPromise(items[i])
-                constructedPromise.then((result) =>
-                    resolve(result)
-                , (error) =>
-                    loadItem(i+1)
-                )
-            else
-                reject(error)
-
-        _loadItem(0)
-    )
-
-
 tag.serialLoad = (urls) =>
-    """Pass in an array of URLs, and return the first URL
+    """Pass in an array of URLs, and return the first link
        that is loaded successfully.
 
        urls:    ["http://www.path.to/tag/file.html",
                  "http://www.path.to/another/tag.html", ]
-       return:   Promise(link, error)
+       
+       return:  Promise(link, error)
     """
-    return tag.chainPromises({
-        items: urls
-        itemPromise: (url) =>
-            return tag.loadSingle(url)
-        error: () =>
-            return Error("no successful load from urls #{urls}")
+    return new Promise((resolve, reject) =>
+        loadURL = (i=0) =>
+            if i < urls.length
+                tag.loadSingle(urls[i]).then((link) =>
+                    resolve(link)
+                , (error) =>
+                    loadItem(i+1)
+                )
+            else
+                reject(Error("no successful load from urls #{urls}"))
+
+        _loadURL(0)
     )

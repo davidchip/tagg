@@ -1,3 +1,18 @@
+## this should combine with helix-base
+
+tag.define('tag-family', {
+
+    lookUp: (tagName) =>
+        return
+
+    lookUpParent: (tagName) =>
+        return
+
+    parse: (link) =>
+        return
+
+})
+
 ## this should combine with tag-root
 
 helix.defineBase("helix-base", {
