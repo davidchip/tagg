@@ -6,7 +6,7 @@ tag.define('tag-family', {
     lookUpParent: (tagName) =>
         return
 
-    parse: (link) =>
+    appendDefinition: (link) =>
         return
 
     nameToPath: (tagName) =>

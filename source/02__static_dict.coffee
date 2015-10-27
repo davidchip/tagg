@@ -32,9 +32,9 @@ class tag.StaticDictionary extends tag.Dictionary
 
     lookUp: (tagName) =>
         return new Promise((tagDefined, tagFailed) =>
-            urls = @parseTagName(tagName)
+            urls = @nameToUrl(tagName)
             tag.serialLoad(urls).then((link) =>
-                @parse(link).then(() =>
+                @appendDefinition(link).then(() =>
                     tagDefined(tags[tagName])
                 )
             , (loadRejected) =>
@@ -52,10 +52,10 @@ class tag.StaticDictionary extends tag.Dictionary
         lastPart = tagParts.pop()
         rootName = tagParts.join().replace(/\,/g, "-")
         
-        parentURLs = @parseTagName(rootName)
+        parentURLs = @nameToUrl(rootName)
         return @lookUp(parentURLs)
 
-    parse: (link) =>
+    appendDefinition: (link) =>
         new Promise((defParsed, defNotParsed) =>
             splitURL = link.href.split('.')
             extension = splitURL[splitURL.length - 1]
@@ -75,7 +75,7 @@ class tag.StaticDictionary extends tag.Dictionary
                 defNotParsed(Error("#{link.href} wasn't an HTML or JS file"))
         )
 
-    parseTagName: (tagName) =>
+    nameToUrl: (tagName) =>
         """Map a tagName to an array of the potential locations
            it could be.
 

@@ -11,7 +11,7 @@ class tag.FamilyDictionary extends tag.StaticDictionary
        family.lookUp,
        family.lookUpParent,
        family.parse,
-       family.parseTagName
+       family.nameToUrl
 
        See tag.StaticDictionary for the default behavior
        of these functions.
@@ -26,16 +26,16 @@ class tag.FamilyDictionary extends tag.StaticDictionary
                         defNotFound(familyNotDef)
                     )
                 else
-                    if family.parseTagName?
-                        urls = family.parseTagName(tagName)
+                    if family.nameToUrl?
+                        urls = family.nameToUrl(tagName)
                     else
-                        urls = @parseTagName(tagName) 
+                        urls = @nameToUrl(tagName) 
 
                     tag.serialLoad(urls).then((tagLink) =>
-                        if family.parse?
-                            parsed = family.parse(tagLink.import)
+                        if family.appendDefinition?
+                            parsed = family.appendDefinition(tagLink.import)
                         else
-                            parsed = @parse(tagLink.import)
+                            parsed = @appendDefinition(tagLink.import)
 
                         parsed.then((def) =>
                             defFound(def)

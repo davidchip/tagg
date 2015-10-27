@@ -57,7 +57,7 @@ tag.registerElement = (element) ->
     """
     registration = {}
     for option in element.attributes
-        registration[option] = element.getAttribute(option))
+        registration[option] = element.getAttribute(option)
 
     childLookUps = []
     for child in element.children

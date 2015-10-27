@@ -25,12 +25,4 @@ class tag.Dictionary
         return new Promise((parentDefined, parentFailed) =>
 
         )
-    
-    parse: (link) =>
-        """Using a <link rel="import">, parse the definition, and
-           import it, return the definition itself.
-        """
-        new Promise((defParsed, defNotParsed) =>
-
-        )
         
