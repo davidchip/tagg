@@ -26,6 +26,9 @@ helix.defineBase("helix-base", {
 
     ## built-in actions
 
+    mutateParentDefinition: (definition) =>
+        return definition
+
     update: () ->
         return
 

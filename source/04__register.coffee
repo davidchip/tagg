@@ -53,15 +53,28 @@ tag.register = (tagName, registration) ->
 
 
 tag.registerElement = (element) ->
-    """Take the passed in element, and register it as a tag.
+    """Take the passed in element, pass in its attributes
     """
     registration = {}
-    ## registration['template'] = element.innerHTML
-    ## ATTENTION: how to deal with templates?
     for option in element.attributes
-        registration[option] = element.getAttribute(option)
+        registration[option] = element.getAttribute(option))
 
-    element.register(element.tagName, registration)
+    childLookUps = []
+    for child in element.children
+        childLookUp = new Promise((resolve) =>
+            tag.lookUp(child).then((definition) =>
+                registration = definition.mutateParentDefinition(registration)
+                resolve()
+            , (noDefinition) =>
+                resolve()
+            )
+        )
+
+        childLookUps.push(childLookUp)
+
+    Promise.all(childLookUps).then(() =>
+        element.register(element.tagName, registration)
+    )
 
 
 tag.create = (tag, options={}) ->
