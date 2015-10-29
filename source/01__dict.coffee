@@ -25,4 +25,11 @@ class tag.Dictionary
         return new Promise((parentDefined, parentFailed) =>
 
         )
+
+    publish: (tagName, definition) =>
+        """Publish a definition to the dictionary.
+        """
+        return new Promise((published, notPublished) =>
+
+        )
         
