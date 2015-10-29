@@ -4,7 +4,6 @@ tag.dicts = []
 class tag.Dictionary
     """The interface for a dictionary.
     """
-
     initialize: () =>
         """Given each dictionary a unique ID.
         """
