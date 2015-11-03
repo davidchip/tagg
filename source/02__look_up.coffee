@@ -1,24 +1,26 @@
 tag.caches = {}
 tag.cache = (cacheName, cacheKey, cacheValue) =>
     """Cache a key/value pair in the passed in cache
-       specified byb cacheName.
+       specified by cacheName.
     """
     if not tag.caches[cacheName]?
         tag.caches[cacheName] = {}
 
-    if not cacheName[cacheKey]?
-        cacheName[cacheKey] = tag.forEachDict((dict) =>
+    cache = tag.caches[cacheName] 
+
+    if not cache[cacheKey]?
+        cache[cacheKey] = tag.cycleDicts((dict) =>
             if typeof cacheValue is "function"
-                return cacheValue(dict) 
+                return cacheValue(dict)
             else
                 return cacheValue )
 
-    return cacheName[cacheKey]
+    return cache[cacheKey]
 
 
-tag.forEachDict = (func) =>
-    """Pass in a promise to be resoled across all dictionaries,
-       in order of there index number in the tag.dicts array.
+tag.cycleDicts = (func) =>
+    """Pass in a function that cycles over tag.dicts,
+       running the passed in function over each dictionary.
     """
     return new Promise((resolve, reject) =>
         dictLookUp = (i=0) =>
@@ -32,22 +34,46 @@ tag.forEachDict = (func) =>
                 reject(Error("promise #{func} failed across all dictionaries")))
 
 
+tag.opens = {}
 tag.lookUp = (tagName) =>
     """Find the first tagDefinition across all dictionaries.
     """
-    tag.cache("lookUps", tagName, (dict) =>
+    return tag.cycleDicts((dict) =>
+        tag.opens[tagName] = dict
         return dict.lookUp(tagName))
 
 
 tag.lookUpParent = (tagName) =>
     """Find the parent definition of the passed in tagName.
     """
-    tag.cache("parentLookUps", tagName, (dict) =>
+    return tag.cycleDicts((dict) =>
         return dict.lookUpParent(tagName))
 
 
-tag.publish = (tagName, definition) =>
-    """Publish to the first dictionary available.
+tag.opens = {}
+tag.define = (tagName, definition, publish=false) =>
+    """Define a tag.
     """
-    tag.cache("pubs", tagName, (dict) =>
-        return dict.publish(tagName, definition))
+    openDict = tag.opens[tagName]
+    if openDict?
+        define = openDict.define(tagName, definition, publish)
+    else
+        define = tag.cycleDicts((dict) =>
+            return dict.define(tagName, definition, publish))
+
+    return define
+
+
+tag.create = (tagName, tagOptions={}) ->
+    """Create the specified tag with the passed in options.
+    """
+    return new Promise((tagCreated, tagFailed) =>
+        tag.lookUp(tagName).then((tagDef) =>
+            for key, value of tagOptions
+                tagDef[key] = value
+
+            tagCreated(tagDef)
+        , (lookUpFailed) =>
+            tagFailed(lookUpFailed)
+        )
+    )

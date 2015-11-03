@@ -1,3 +1,27 @@
+tag.registerElement = (element) ->
+    """Take the passed in element, pass in its attributes
+    """
+    registration = {}
+    for option in element.attributes
+        registration[option] = element.getAttribute(option)
+
+    childLookUps = []
+    for child in element.children
+        childLookUp = new Promise((resolve) =>
+            tag.lookUp(child).then((definition) =>
+                registration = definition.mutateParentDefinition(registration)
+                resolve()
+            , (noDefinition) =>
+                resolve()
+            )
+        )
+
+        childLookUps.push(childLookUp)
+
+    Promise.all(childLookUps).then(() =>
+        tag.define(element.tagName, registration))
+
+
 tag.crawl = (el) ->
     """Parse an el, and fetch its definition if it has one
     """

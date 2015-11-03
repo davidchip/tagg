@@ -1,6 +1,3 @@
-tag = {}
-
-
 tag.singleLoad = (url) ->
     """Load a single file from a single precise URL
 
