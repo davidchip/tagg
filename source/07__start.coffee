@@ -1,15 +1,25 @@
-tag.dicts.push(
-    new tag.FamilyDictionary({dir:      "/"}), 
-    new tag.FamilyDictionary({hostname: "helix.to" }))
+window.tag = tag
 
-tag.crawl(document.body)
+document.addEventListener("DOMContentLoaded", (event) =>
+	observer = new MutationObserver((mutations) =>
+		for mutation in mutations
+			for child in mutation.addedNodes
+				tag.crawl(child)
+	)
 
+	observer.observe(document.body, { 
+		childList: true, 
+		subtree: true
+	})
 
+	temp_dict = new tag.Dictionary()
+	temp_dict.define("tag-core", {})
 
+	static_dict = new tag.StaticDictionary({dirName:""})
 
-
-
-
+	tag.dicts.push(temp_dict, static_dict)
+	tag.crawl(document.body)
+)
 
 
 

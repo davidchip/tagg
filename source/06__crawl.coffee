@@ -1,4 +1,4 @@
-tag.registerElement = (element) ->
+tag.defineFromEl = (element) ->
     """Take the passed in element, pass in its attributes
     """
     registration = {}
@@ -30,24 +30,26 @@ tag.crawl = (el) ->
             if not el? or not el.children? or not el.tagName?
                 return
 
-            tagName = el.tagName
-            if "registration" in el.attributes
-                tag.registerElement(tag)
-                return crawled()
+            tagName = el.tagName.toLowerCase()
+            if "definition" in el.attributes
+                tag.defineFromEl(el)
+                crawled()
+                return 
 
             tagParts = tagName.split('-')
-            if not tagParts.length >= 2
-                return crawled()
+            if tagParts.length < 2
+                crawled()
+                return 
 
-            tag.lookUp(el).then((elLoaded) ->
+            tag.lookUp(tagName).then((tagDef) ->
                 crawled()
             , (elFailedToLoad) ->
                 crawled()
             )
         )
 
-    _crawl(el).then(() ->
+    _crawl(el).then(() =>
         for child in el.children
-            _crawl(el)
+            _crawl(child)
     )
     

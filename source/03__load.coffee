@@ -14,10 +14,10 @@ tag.singleLoad = (url) ->
                 resolve(link)
 
             link.onerror = (e) ->
-                document.removeNode(link)
+                document.head.removeChild(link)
                 reject(Error("#{url} failed to load"))
 
-            document.body.appendChild(link)
+            document.head.appendChild(link)
         catch error
             reject(Error("#{url} link couldn't be generated"))
     )
@@ -33,15 +33,15 @@ tag.serialLoad = (urls) =>
        return:  Promise(link, error)
     """
     return new Promise((resolve, reject) =>
-        loadURL = (i=0) =>
+        _loadURL = (i=0) =>
             if i < urls.length
-                tag.loadSingle(urls[i]).then((link) =>
+                tag.singleLoad(urls[i]).then((link) =>
                     resolve(link)
                 , (error) =>
-                    loadItem(i+1)
+                    _loadURL(i+1)
                 )
             else
                 reject(Error("no successful load from urls #{urls}"))
 
-        _loadURL(0)
+        _loadURL()
     )

@@ -1,5 +1,24 @@
+tag.cycleDicts = (func) =>
+    """Pass in a function that cycles over tag.dicts,
+       running the passed in function over each dictionary.
+    """
+    return new Promise((resolve, reject) =>
+        dictLookUp = (i=0) =>
+            if i < tag.dicts.length
+                dict = tag.dicts[i]
+                func(dict).then((dictResolve) =>
+                    dict(dictResolve)
+                , (dictReject) =>
+                    dictLookUp(i+1))
+            else
+                reject(Error("promise #{func} failed across all dictionaries"))
+
+        dictLookUp()
+    )
+
+
 tag.caches = {}
-tag.cache = (cacheName, cacheKey, cacheValue) =>
+tag.cycleDictsAndCache = (cacheName, cacheKey, cacheValue) =>
     """Cache a key/value pair in the passed in cache
        specified by cacheName.
     """
@@ -18,27 +37,11 @@ tag.cache = (cacheName, cacheKey, cacheValue) =>
     return cache[cacheKey]
 
 
-tag.cycleDicts = (func) =>
-    """Pass in a function that cycles over tag.dicts,
-       running the passed in function over each dictionary.
-    """
-    return new Promise((resolve, reject) =>
-        dictLookUp = (i=0) =>
-            if i < tag.dicts.length
-                dict = tag.dicts[i]
-                func(dict).then((dictResolve) =>
-                    dict(dictResolve)
-                , (dictReject) =>
-                    dictLookUp(i+1))
-            else
-                reject(Error("promise #{func} failed across all dictionaries")))
-
-
 tag.opens = {}
 tag.lookUp = (tagName) =>
     """Find the first tagDefinition across all dictionaries.
     """
-    return tag.cycleDicts((dict) =>
+    return tag.cycleDictsAndCache("lookUps", tagName, (dict) =>
         tag.opens[tagName] = dict
         return dict.lookUp(tagName))
 
@@ -46,7 +49,7 @@ tag.lookUp = (tagName) =>
 tag.lookUpParent = (tagName) =>
     """Find the parent definition of the passed in tagName.
     """
-    return tag.cycleDicts((dict) =>
+    return tag.cycleDictsAndCache("parentLookUps", tagName, (dict) =>
         return dict.lookUpParent(tagName))
 
 

@@ -1,140 +1,140 @@
-tag.define('tag-family', {
+# tag.define('tag-family', {
 
-    lookUp: (tagName) =>
-        return
+#     lookUp: (tagName) =>
+#         return
 
-    lookUpParent: (tagName) =>
-        return
+#     lookUpParent: (tagName) =>
+#         return
 
-    appendDefinition: (link) =>
-        return
+#     appendDefinition: (link) =>
+#         return
 
-    nameToPath: (tagName) =>
-        return
+#     nameToPath: (tagName) =>
+#         return
 
-})
+# })
 
 
-helix.defineBase("helix-base", {
+# helix.defineBase("helix-base", {
 
-    ## built-in properties
+#     ## built-in properties
 
-    extends: ''
-    libs: []
-    refresh: 1
-    template: ''
+#     extends: ''
+#     libs: []
+#     refresh: 1
+#     template: ''
 
-    ## built-in actions
+#     ## built-in actions
 
-    mutateParentDefinition: (definition) =>
-        return definition
+#     mutateParentDefinition: (definition) =>
+#         return definition
 
-    update: () ->
-        return
+#     update: () ->
+#         return
 
-    setup: () ->
-        return
+#     setup: () ->
+#         return
 
-    create: () ->
-        return
+#     create: () ->
+#         return
 
-    remove: () ->
-        return
+#     remove: () ->
+#         return
 
-    defined: () ->
-        return
+#     defined: () ->
+#         return
 
-    mapPath: (tagName) ->
-        splitTag = tagName.split('-')
-        if @wildcard is true
-            helix.defineBase(tagName, {})
-            return false
-        else
-            fileName = splitTag.join().replace(/\,/g, '/')
-            return fileName
+#     mapPath: (tagName) ->
+#         splitTag = tagName.split('-')
+#         if @wildcard is true
+#             helix.defineBase(tagName, {})
+#             return false
+#         else
+#             fileName = splitTag.join().replace(/\,/g, '/')
+#             return fileName
 
-    ## be careful about what you move around here
+#     ## be careful about what you move around here
 
-    attachedCallback: () ->
-        ## set non generic attributes as properties
-        @_setAttributes()
+#     attachedCallback: () ->
+#         ## set non generic attributes as properties
+#         @_setAttributes()
 
-        @setup()
+#         @setup()
 
-        define = @getAttribute('instructions')
-        if not define?
-            if @template isnt false
-                if typeof @template is 'string'
-                    template = @template.replace(/^\s+|\s+$/g,'') ## trim
-                else 
-                    template = ''
+#         define = @getAttribute('instructions')
+#         if not define?
+#             if @template isnt false
+#                 if typeof @template is 'string'
+#                     template = @template.replace(/^\s+|\s+$/g,'') ## trim
+#                 else 
+#                     template = ''
 
-                @innerHTML += template
-                @innerHTML = @_template(@innerHTML)
+#                 @innerHTML += template
+#                 @innerHTML = @_template(@innerHTML)
 
-        childrenLoaded = []
-        for child in @children
-            childrenLoaded.push(helix.loadBase(child))
+#         childrenLoaded = []
+#         for child in @children
+#             childrenLoaded.push(helix.loadBase(child))
 
-        helix.loadCount.inc()
-        Promise.all(childrenLoaded).then(() =>
-            helix.loadCount.dec()
+#         helix.loadCount.inc()
+#         Promise.all(childrenLoaded).then(() =>
+#             helix.loadCount.dec()
 
-            define = @getAttribute('instructions')
-            if define? and define is ''
-                return
+#             define = @getAttribute('instructions')
+#             if define? and define is ''
+#                 return
                 
-            @create()
+#             @create()
 
-            helix.activeBases.push(@))
+#             helix.activeBases.push(@))
 
-    detachedCallback: () ->
-        baseIndex = helix.activeBases.indexOf(@)
-        if baseIndex > -1
-            helix.activeBases.splice(baseIndex, 1)
+#     detachedCallback: () ->
+#         baseIndex = helix.activeBases.indexOf(@)
+#         if baseIndex > -1
+#             helix.activeBases.splice(baseIndex, 1)
         
-        @remove()
-        @parentNode.removeChild(@)
+#         @remove()
+#         @parentNode.removeChild(@)
 
-    # helpers
+#     # helpers
 
-    _setAttributes: () ->
-        """iterate over bases attributes
-                append any specified base class
-                cast strings as floats (if applicable)
-                set all other attributes
-        """
-        for attr, attrMap of @attributes
-            name = attrMap.name
-            attrValue = attrMap.value
+#     _setAttributes: () ->
+#         """iterate over bases attributes
+#                 append any specified base class
+#                 cast strings as floats (if applicable)
+#                 set all other attributes
+#         """
+#         for attr, attrMap of @attributes
+#             name = attrMap.name
+#             attrValue = attrMap.value
 
-            if attrValue?
-                if name is 'class'
-                    if @class?
-                        @setAttribute('class', "#{@class} #{attrValue}")
+#             if attrValue?
+#                 if name is 'class'
+#                     if @class?
+#                         @setAttribute('class', "#{@class} #{attrValue}")
 
-                else if name isnt ['id', 'style']
-                    if attrValue in ['', 'true', 'True']
-                        value = true
-                    else if attrValue in ['false', 'False']
-                        value = false
-                    else if "#{attrValue}" is "#{parseFloat(attrValue)}"
-                        value = parseFloat(attrValue)
-                    else
-                        value = attrValue
+#                 else if name isnt ['id', 'style']
+#                     if attrValue in ['', 'true', 'True']
+#                         value = true
+#                     else if attrValue in ['false', 'False']
+#                         value = false
+#                     else if "#{attrValue}" is "#{parseFloat(attrValue)}"
+#                         value = parseFloat(attrValue)
+#                     else
+#                         value = attrValue
 
-                    if @[name]?
-                        @[name] = value
+#                     if @[name]?
+#                         @[name] = value
 
-    _template: (str) ->
-        # replace delimited character
-        str = str.replace(helix.config.delimiter, (surroundedProperty) =>
-            property = surroundedProperty.slice(1)
-            value = @[property]
-            if value?
-                return value
-            else
-                return surroundedProperty
-        )
+#     _template: (str) ->
+#         # replace delimited character
+#         str = str.replace(helix.config.delimiter, (surroundedProperty) =>
+#             property = surroundedProperty.slice(1)
+#             value = @[property]
+#             if value?
+#                 return value
+#             else
+#                 return surroundedProperty
+#         )
 
-})
+# })
