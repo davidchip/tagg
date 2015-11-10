@@ -1,24 +1,36 @@
 window.tag = tag
 
 document.addEventListener("DOMContentLoaded", (event) =>
-	observer = new MutationObserver((mutations) =>
-		for mutation in mutations
-			for child in mutation.addedNodes
-				tag.crawl(child)
-	)
+    observer = new MutationObserver((mutations) =>
+        for mutation in mutations
+            for child in mutation.addedNodes
+                tag.crawl(child)
+    )
 
-	observer.observe(document.body, { 
-		childList: true, 
-		subtree: true
-	})
+    observer.observe(document.body, { 
+        childList: true, 
+        subtree: true
+    })
 
-	temp_dict = new tag.Dictionary()
-	temp_dict.define("tag-core", {})
+    temp_dict = new tag.Dictionary()
+    tag.dicts.push(temp_dict)
+    tag.define("tag-core", {
+        attachedCallback: () ->
+            # alert 'attached'
+        detachedCallback: () ->
+            # alert 'detached'
+    })
 
-	static_dict = new tag.StaticDictionary({dirName:""})
+    tag.define("tag-plum", {
+        attachedCallback: () ->
+            # alert 'yo'
+    })
 
-	tag.dicts.push(temp_dict, static_dict)
-	tag.crawl(document.body)
+    # static_dict = new tag.StaticDictionary({dirName:""})
+
+    
+    # tag.dicts.push(static_dict)
+    tag.crawl(document.body)
 )
 
 

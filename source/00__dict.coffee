@@ -30,12 +30,14 @@ class tag.Dictionary
             parentName = tagParts.join().replace(/\,/g, "-")
 
             if tagName is "tag-core"
-                parentFound("")
+                parentNotFound()
+            else if tagParts.length < 2
+                parentFound("tag-core")
             else
                 parentFound(parentName)
         )
 
-    define: (tagName, definition, publish) =>
+    define: (tagName, definition={}, publish) =>
         """Given the name of a tag, build its prototype using
            the passed in definition object.
 
@@ -47,6 +49,7 @@ class tag.Dictionary
            return: Promise(definition, definition error)
         """
         return new Promise((acceptDef, rejectDef) =>
+            console.log "defined #{tagName}"
             if typeof tagName isnt "string"
                 rejectDef(Error("#{tagName} tagName should be a string"))
 
@@ -56,20 +59,35 @@ class tag.Dictionary
             if typeof definition isnt "object"
                 rejectDef(Error("#{tagName} definition should be an object"))
 
-            lookUpParentDef = new Promise((found, notFound) =>
-                @parentName(tagName).then((parentName) =>
-                    @lookUp(tagName).then((def) =>
-                        found(def)
-                    , (lookUpFailed) =>
-                        notFound(lookUpFailed)
+            getParentName = new Promise((found, notFound) =>
+                if definition.extends?
+                    found(definition.extends)
+                else
+                    @parentName(tagName).then((parentName) =>
+                        found(parentName)
+                    , (parentNameNotFound) =>
+                        notFound()
                     )
+            )
+
+            getParentClass = new Promise((classFound, classNotFound) =>
+                getParentName.then((parentName) =>
+                    console.log parentName
+                    @lookUp(parentName).then((_class) =>
+                        classFound(_class)
+                    , (classNotFound) =>
+                        classFound(HTMLElement)
+                    )
+                , (noParentName) =>
+                    classFound(HTMLElement)
                 )
             )
 
             ## attach options and tasks to its 
             ## parents prototype, and register the custom element
-            lookUpParentDef.then((parentDef) => 
-                prototype = Object.create(parentDef.prototype)
+            getParentClass.then((parentClass) => 
+                console.log tagName
+                prototype = Object.create(parentClass.prototype)
 
                 for key, value of definition
                     if typeof value is "function"
@@ -84,6 +102,7 @@ class tag.Dictionary
                     prototype: prototype })
 
                 @definitions[tagName] = Tag
+                console.log @definitions[tagName]
 
                 acceptDef(Tag)
             )

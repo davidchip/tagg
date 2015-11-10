@@ -39,7 +39,7 @@ tag.crawl = (el) ->
             tagParts = tagName.split('-')
             if tagParts.length < 2
                 crawled()
-                return 
+                return
 
             tag.lookUp(tagName).then((tagDef) ->
                 crawled()

@@ -4,10 +4,12 @@ tag.cycleDicts = (func) =>
     """
     return new Promise((resolve, reject) =>
         dictLookUp = (i=0) =>
+            if tag.dicts.length is 0
+                reject("tag.dicts is empty; push a dictionary before using any commands.")
             if i < tag.dicts.length
                 dict = tag.dicts[i]
                 func(dict).then((dictResolve) =>
-                    dict(dictResolve)
+                    resolve(dictResolve)
                 , (dictReject) =>
                     dictLookUp(i+1))
             else
