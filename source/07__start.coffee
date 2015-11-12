@@ -12,16 +12,23 @@ document.addEventListener("DOMContentLoaded", (event) =>
         subtree: true
     })
 
-    temp_dict = new tag.Dictionary()
-    
+    classic_dict = new tag.Dictionary()
+    tag.dicts.push(classic_dict)
 
     # static_dict = new tag.StaticDictionary({dirName:""})
     # tag.dicts.push(static_dict)
-    tag.dicts.push(temp_dict)
+    
 
-    temp_dict.define("tag-core", {
+    classic_dict.define("tag-core", {
+        template: undefined
+
         attachedCallback: () ->
+            if @template?
+                @innerHTML = @template
             @created()
+
+        setup: () ->
+            @innerHTML = @template
         
         detachedCallback: () ->
             @destroyed()
@@ -31,14 +38,17 @@ document.addEventListener("DOMContentLoaded", (event) =>
 
         destroyed: () ->
             "pass"
+
     })
 
     tag.define("tag-plum", {
-        created: () ->
-            @parentTag.created()
+        # created: () ->
             # alert 'yo'
-    })
 
+        template: """
+            yo
+        """
+    })
     
     # tag.dicts.push(static_dict)
     tag.crawl(document.body)

@@ -76,6 +76,7 @@ class tag.Dictionary
            return: Promise(definition, definition error)
         """
         if @opens[tagName]?
+            tag.log "definition for #{tagName} already found, ignoring"
             return @opens[tagName]
 
         @opens[tagName] = new Promise((acceptDef, rejectDef) =>
@@ -131,7 +132,6 @@ class tag.Dictionary
                             value: value
                             writable: true
                         })
-
 
                 Object.defineProperty(prototype, "parentTag", {
                     value: Object.create(parentClass.prototype)
