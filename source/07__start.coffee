@@ -13,24 +13,37 @@ document.addEventListener("DOMContentLoaded", (event) =>
     })
 
     temp_dict = new tag.Dictionary()
+    
+
+    # static_dict = new tag.StaticDictionary({dirName:""})
+    # tag.dicts.push(static_dict)
     tag.dicts.push(temp_dict)
-    tag.define("tag-core", {
+
+    temp_dict.define("tag-core", {
         attachedCallback: () ->
-            # alert 'attached'
+            @created()
+        
         detachedCallback: () ->
-            # alert 'detached'
+            @destroyed()
+        
+        created: () ->
+            "pass"
+
+        destroyed: () ->
+            "pass"
     })
 
     tag.define("tag-plum", {
-        attachedCallback: () ->
+        created: () ->
+            @parentTag.created()
             # alert 'yo'
     })
-
-    # static_dict = new tag.StaticDictionary({dirName:""})
 
     
     # tag.dicts.push(static_dict)
     tag.crawl(document.body)
+
+    console.dir tag.logs
 )
 
 

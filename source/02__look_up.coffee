@@ -56,15 +56,15 @@ tag.lookUpParent = (tagName) =>
 
 
 tag.opens = {}
-tag.define = (tagName, definition, publish=false) =>
+tag.define = (tagName, definition) =>
     """Define a tag.
     """
     openDict = tag.opens[tagName]
     if openDict?
-        define = openDict.define(tagName, definition, publish)
+        define = openDict.define(tagName, definition)
     else
         define = tag.cycleDicts((dict) =>
-            return dict.define(tagName, definition, publish))
+            return dict.define(tagName, definition))
 
     return define
 

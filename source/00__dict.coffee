@@ -1,13 +1,24 @@
 tag = {}
+
+
+tag.logs = {}
+tag.log_i = 0
+tag.log = (msg) =>
+    tag.logs[tag.log_i] = msg
+    tag.log_i++
+
+
 tag.dicts = []
-
-
 class tag.Dictionary
     """A dictionary stores the definitions of tags.
     """
     definitions: {}
+    prototypeBase: HTMLElement
+    opens: {}
 
     constructor: (options) ->
+        @id = Math.ceil(Math.random() * 1000)
+
         for key, value of options
             @[key] = value
 
@@ -15,10 +26,26 @@ class tag.Dictionary
         """Given the name of tag, return its definition.
         """
         return new Promise((tagFound, tagNotFound) =>
-            if @definitions[tagName]?
-                tagFound(@definitions[tagName])
-            else
-                tagNotFound(Error("no tag of name #{tagName} found"))
+            openResolved = new Promise((resolve, reject) =>
+                if @opens[tagName]?
+                    tag.log "open definition found for #{tagName}, waiting until it's defined to return it"
+                    @opens[tagName].then(() =>
+                        resolve()
+                    , () =>
+                        tag.log "open definition for #{tagName} failed to complete"
+                        resolve()
+                    )
+                else
+                    tag.log "no open definition for #{tagName} found"
+                    resolve()
+            )
+
+            openResolved.then(() =>
+                if @definitions[tagName]?
+                    tagFound(@definitions[tagName])
+                else
+                    tagNotFound(Error("no tag of name #{tagName} found"))
+            )
         )
 
     parentName: (tagName) =>
@@ -48,8 +75,11 @@ class tag.Dictionary
 
            return: Promise(definition, definition error)
         """
-        return new Promise((acceptDef, rejectDef) =>
-            console.log "defined #{tagName}"
+        if @opens[tagName]?
+            return @opens[tagName]
+
+        @opens[tagName] = new Promise((acceptDef, rejectDef) =>
+            tag.log "defining #{tagName}"
             if typeof tagName isnt "string"
                 rejectDef(Error("#{tagName} tagName should be a string"))
 
@@ -61,8 +91,10 @@ class tag.Dictionary
 
             getParentName = new Promise((found, notFound) =>
                 if definition.extends?
+                    tag.log "#{tagName} has a specified parentName of #{definition.extends}, using that"
                     found(definition.extends)
                 else
+                    tag.log "retrieving #{tagName}'s parentName"
                     @parentName(tagName).then((parentName) =>
                         found(parentName)
                     , (parentNameNotFound) =>
@@ -72,21 +104,23 @@ class tag.Dictionary
 
             getParentClass = new Promise((classFound, classNotFound) =>
                 getParentName.then((parentName) =>
-                    console.log parentName
+                    tag.log "#{tagName}'s parentName is #{parentName}, looking up its definition"
                     @lookUp(parentName).then((_class) =>
+                        tag.log "located #{tagName}'s parent definition, #{parentName}, extending from that"
                         classFound(_class)
                     , (classNotFound) =>
-                        classFound(HTMLElement)
+                        tag.log "could not find #{tagName}'s parent, #{parentName}, extending from #{@prototypeBase.name}"
+                        classFound(@prototypeBase)
                     )
                 , (noParentName) =>
-                    classFound(HTMLElement)
+                    tag.log "could not find #{tagName}'s parentName, extending from #{@prototypeBase.name}"
+                    classFound(@prototypeBase)
                 )
             )
 
             ## attach options and tasks to its 
             ## parents prototype, and register the custom element
             getParentClass.then((parentClass) => 
-                console.log tagName
                 prototype = Object.create(parentClass.prototype)
 
                 for key, value of definition
@@ -98,15 +132,23 @@ class tag.Dictionary
                             writable: true
                         })
 
+
+                Object.defineProperty(prototype, "parentTag", {
+                    value: Object.create(parentClass.prototype)
+                    writable: false
+                })
+
                 Tag = document.registerElement(tagName, {
                     prototype: prototype })
 
                 @definitions[tagName] = Tag
-                console.log @definitions[tagName]
+                tag.log "pushed #{tagName} definition to dict (id: #{@id})"
 
                 acceptDef(Tag)
             )
         )
+
+        return @opens[tagName]
         
 
 class tag.StaticDictionary extends tag.Dictionary
