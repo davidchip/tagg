@@ -17,15 +17,30 @@ document.addEventListener("DOMContentLoaded", (event) =>
 
     # static_dict = new tag.StaticDictionary({dirName:""})
     # tag.dicts.push(static_dict)
-    
 
     classic_dict.define("tag-core", {
+
         template: undefined
 
         attachedCallback: () ->
-            if @template?
-                @innerHTML = @template
+            @attached = new Promise((resolve) =>
+
+            )
+            console.dir @attached
+            # console.log @template
+            # if @template?
+                # @innerHTML = @template
+
+            Promise.resolve(@attached)
+            
             @created()
+
+        update: (key, value) ->
+            @attached.then(() =>
+                if typeof value in ["string", "number"]
+                    @setAttribute(key, value)
+            )
+
 
         setup: () ->
             @innerHTML = @template
@@ -42,18 +57,41 @@ document.addEventListener("DOMContentLoaded", (event) =>
     })
 
     tag.define("tag-plum", {
-        # created: () ->
-            # alert 'yo'
 
-        template: """
-            yo
-        """
+        string: "HELLO WORLD!"
+
+    })
+
+    tag.define("this-string", {
+
+        created: () ->
+            observer = new MutationObserver((mutations) =>
+                for mutation in mutations
+                    for child in mutation.addedNodes
+                        tag.crawl(child)
+            )
+
+            observer.observe(document.body, { 
+                childList: true, 
+                subtree: true
+            })
+
+            @innerHTML = @parentElement[string]
+
+
     })
     
     # tag.dicts.push(static_dict)
     tag.crawl(document.body)
 
     console.dir tag.logs
+
+    setTimeout (() =>
+        plum = document.getElementById("plum")
+        # plum.string = "yo"
+    ), 100
+
+    # plum.string = "yo"
 )
 
 

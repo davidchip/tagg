@@ -8,6 +8,11 @@ tag.log = (msg) =>
     tag.log_i++
 
 
+tag.loaded = new Promise((DOMLoaded) =>
+    document.addEventListener("DOMContentLoaded", (event) =>
+        DOMLoaded()))
+
+
 tag.dicts = []
 class tag.Dictionary
     """A dictionary stores the definitions of tags.
@@ -128,10 +133,24 @@ class tag.Dictionary
                     if typeof value is "function"
                         prototype[key] = value
                     else
-                        Object.defineProperty(prototype, key, {
-                            value: value
-                            writable: true
-                        })
+                        if key in ['template']
+                            Object.defineProperty(prototype, key, {
+                                value: value
+                                writable: true
+                            })    
+                        else
+                            Object.defineProperty(prototype, key, {
+                                get: () ->
+                                    return @["_" + key]
+                                set: (value) ->
+                                    @["_" + key] = value
+
+                                    tag.loaded.then(() =>
+                                        @update(key, value)
+                                    )
+                            })
+
+                            prototype[key] = value
 
                 Object.defineProperty(prototype, "parentTag", {
                     value: Object.create(parentClass.prototype)
