@@ -1,98 +1,42 @@
 window.tag = tag
 
-document.addEventListener("DOMContentLoaded", (event) =>
-    observer = new MutationObserver((mutations) =>
-        for mutation in mutations
-            for child in mutation.addedNodes
-                tag.crawl(child)
+tag.loaded = new Promise((loaded) =>
+    document.addEventListener("DOMContentLoaded", (event) =>
+        observer = new MutationObserver((mutations) =>
+            for mutation in mutations
+                for child in mutation.addedNodes
+                    tag.crawl(child)
+        )
+
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true
+        })
+
+        classic_dict = new tag.Dictionary()
+        tag.dicts.push(classic_dict)
+
+        classic_dict.define("tag-core", {
+
+            template: ""
+
+            changed: (name, old, val) ->
+                "pass"
+
+            created: () ->
+                "pass"
+
+            removed: () ->
+                "pass"
+
+        })
+
+        tag.crawl(document.body)
+
+        loaded()
     )
-
-    observer.observe(document.body, { 
-        childList: true, 
-        subtree: true
-    })
-
-    classic_dict = new tag.Dictionary()
-    tag.dicts.push(classic_dict)
-
-    # static_dict = new tag.StaticDictionary({dirName:""})
-    # tag.dicts.push(static_dict)
-
-    classic_dict.define("tag-core", {
-
-        template: undefined
-
-        attachedCallback: () ->
-            @attached = new Promise((resolve) =>
-
-            )
-            console.dir @attached
-            # console.log @template
-            # if @template?
-                # @innerHTML = @template
-
-            Promise.resolve(@attached)
-            
-            @created()
-
-        update: (key, value) ->
-            @attached.then(() =>
-                if typeof value in ["string", "number"]
-                    @setAttribute(key, value)
-            )
-
-
-        setup: () ->
-            @innerHTML = @template
-        
-        detachedCallback: () ->
-            @destroyed()
-        
-        created: () ->
-            "pass"
-
-        destroyed: () ->
-            "pass"
-
-    })
-
-    tag.define("tag-plum", {
-
-        string: "HELLO WORLD!"
-
-    })
-
-    tag.define("this-string", {
-
-        created: () ->
-            observer = new MutationObserver((mutations) =>
-                for mutation in mutations
-                    for child in mutation.addedNodes
-                        tag.crawl(child)
-            )
-
-            observer.observe(document.body, { 
-                childList: true, 
-                subtree: true
-            })
-
-            @innerHTML = @parentElement[string]
-
-
-    })
-    
-    # tag.dicts.push(static_dict)
-    tag.crawl(document.body)
-
-    console.dir tag.logs
-
-    setTimeout (() =>
-        plum = document.getElementById("plum")
-        # plum.string = "yo"
-    ), 100
-
-    # plum.string = "yo"
 )
+
 
 
 

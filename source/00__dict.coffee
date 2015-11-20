@@ -7,6 +7,9 @@ tag.log = (msg) =>
     tag.logs[tag.log_i] = msg
     tag.log_i++
 
+trail = tag.logs
+console.dir trail
+
 
 tag.loaded = new Promise((DOMLoaded) =>
     document.addEventListener("DOMContentLoaded", (event) =>
@@ -69,7 +72,7 @@ class tag.Dictionary
                 parentFound(parentName)
         )
 
-    define: (tagName, definition={}, publish) =>
+    define: (tagName, definition={}) =>
         """Given the name of a tag, build its prototype using
            the passed in definition object.
 
@@ -85,15 +88,18 @@ class tag.Dictionary
             return @opens[tagName]
 
         @opens[tagName] = new Promise((acceptDef, rejectDef) =>
-            tag.log "defining #{tagName}"
+            tag.log "starting a definition for #{tagName}"
             if typeof tagName isnt "string"
-                rejectDef(Error("#{tagName} tagName should be a string"))
+                tag.log "#{tagName} tagName should be a string"
+                rejectDef()
 
             if not tagName.split('-').length >= 2
-                rejectDef(Error("#{tagName} needs a hyphen"))
+                tag.log "#{tagName} needs a hyphen"
+                rejectDef()
 
             if typeof definition isnt "object"
-                rejectDef(Error("#{tagName} definition should be an object"))
+                tag.log "#{tagName} definition should be an object"
+                rejectDef
 
             getParentName = new Promise((found, notFound) =>
                 if definition.extends?
@@ -129,45 +135,112 @@ class tag.Dictionary
             getParentClass.then((parentClass) => 
                 prototype = Object.create(parentClass.prototype)
 
-                for key, value of definition
-                    if typeof value is "function"
-                        prototype[key] = value
-                    else
-                        if key in ['template']
-                            Object.defineProperty(prototype, key, {
-                                value: value
-                                writable: true
-                            })    
-                        else
-                            Object.defineProperty(prototype, key, {
-                                get: () ->
-                                    return @["_" + key]
-                                set: (value) ->
-                                    @["_" + key] = value
+                ## @attached promise gets resolved after a tag's been
+                ## bound, registered, and recognized by the DOM
+                prototype["attached"] = new Promise((attached) =>
+                    prototype["attachedCallback"] = () ->
+                        ## can get hasOwnProperties? some way around this defaults obj?
+                        for _default, defaultVal of @defaults
+                            if not @[_default]?
+                                tag.log "setting #{tagName} default #{_default} to #{defaultVal}"
+                                @[_default] = defaultVal
+                            else
+                                @[_default] = @[_default]
 
-                                    tag.loaded.then(() =>
-                                        @update(key, value)
-                                    )
-                            })
+                        ## template our tag
+                        if @template?
+                            @innerHTML = @template
 
-                            prototype[key] = value
+                        ## watch our tag for any updates made to its attributes
+                        ## if an update occurs, update the underlying property
+                        propWatcher = new MutationObserver((mutations) =>
+                            for mutation in mutations
+                                propName = mutation.attributeName
+                                @[propName] = @getAttribute(propName))
 
+                        propWatcher.observe(@, { 
+                            attributes: true
+                            attributeOldValue: true
+                            # attributeFilter: @defaults.keys()
+                        })
+
+                        ## resolve out tags @attached promise
+                        attached()
+                        @created()
+                        tag.log "#{tagName} was attached to the DOM"
+                )
+
+                ## call when the tag has been removed from the DOM
+                prototype["detachedCallback"] = () ->
+                    @removed()
+                    tag.log "#{tagName} was removed from the DOM"
+
+                ## when a property is changed via JS, update the tags attributes
+                ## to reflect the update. 
+                ##
+                ## should screen for things that can't be set as attributes
+                prototype["changedProperty"] = (prop, old, val) ->
+                    @attached.then(() =>
+                        @setAttribute(prop, val)
+                        @changed(prop, old, val)
+                    )
+
+                ## append a "parentTag" for easy access to parents functions
                 Object.defineProperty(prototype, "parentTag", {
                     value: Object.create(parentClass.prototype)
-                    writable: false
-                })
+                    writable: false })
+
+                ## attach our template
+                prototype.template = definition.template
+                delete(definition.template)
+
+                ## bind properties to prototype
+                ## shove them in defaults if applicable
+                for key, value of definition
+                    prototype = @bind(key, value, prototype, tagName)
 
                 Tag = document.registerElement(tagName, {
                     prototype: prototype })
 
                 @definitions[tagName] = Tag
                 tag.log "pushed #{tagName} definition to dict (id: #{@id})"
-
-                acceptDef(Tag)
+                acceptDef()
             )
         )
-
+        
         return @opens[tagName]
+
+    bind: (key, value, prototype, tagName) ->
+        """If the value isnt a function, build a custom
+           getter and setter, that auto parses values before
+           being stored, and hooks into the changedProperty
+           functionality.
+        """
+        if typeof value is "function"
+            prototype[key] = value
+        else
+            Object.defineProperty(prototype, key, {
+                get: () ->
+                    return @["__" + key]
+                set: (value) ->
+                    ## parse the property
+                    if Number(value) isnt NaN
+                        value = Number(value)
+
+                    ## don't update a property unless a change has occured
+                    old = @[key]
+                    if old isnt value
+                        @changedProperty(key, old, value)
+                        @["__" + key] = value
+                        tag.log "#{tagName} #{key} changed from #{old} to #{value}"
+            })
+
+            ## store our bound properties in a defaults obj (try and avoid overhead)
+            prototype.defaults = {}
+            prototype.defaults[key] = value
+
+        return prototype
+
         
 
 class tag.StaticDictionary extends tag.Dictionary
