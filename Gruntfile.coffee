@@ -16,6 +16,7 @@ module.exports = ->
         "clean:everything"
         "compile"
         "uglify:tagJS"
+        "copy:minifiedToWWW"
     ])
 
 

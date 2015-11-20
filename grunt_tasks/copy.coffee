@@ -13,4 +13,11 @@ module.exports = ->
       }]
     }
 
+    minifiedToWWW: {
+      files: [{
+        src: 'target/tag.min.js'
+        dest: '../www/tag.min.js',
+      }]
+    }
+
   }
