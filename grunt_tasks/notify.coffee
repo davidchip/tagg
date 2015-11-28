@@ -12,5 +12,12 @@ module.exports = ->
         message: 'nice job! :D'
       }
     }
+
+    tests: {
+      options: {
+        title: 'tests updated'
+        message: 'little bit stronger!'
+      }
+    }
     
   }

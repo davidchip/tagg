@@ -1,6 +1,7 @@
 tag.trail_index = 0
 tag.logs = {
     _all: {}
+    _verbose: {}
 }
 
 
@@ -11,7 +12,23 @@ tag.assertEvent = (tagName, eventName, eventDetails) ->
     return tag.assert(testingObj)
 
 
-tag.assert = (testingObj={}, delay=0) ->
+tag.assertEvents = (events=[]) ->
+    testingObj = {}
+
+    for event in events
+        tagName = event[0]
+        eventName = event[1]
+        eventDetails = event[2]
+        
+        if not testingObj[tagName]?
+            testingObj[tagName] = {}
+
+        testingObj[tagName][eventName] = eventDetails
+    
+    return tag.assert(testingObj)
+
+
+tag.assert = (testingObj={}, delay=1000) ->
     return new Promise ((testsFinished) =>
         timeout = new Promise ((timeoutCompleted) =>
             tag.loaded.then(() =>
@@ -29,56 +46,57 @@ tag.assert = (testingObj={}, delay=0) ->
 
             for tagName, tagCrumbs of testingObj
                 if not tag.logs[tagName]?
-                    results.failed.push("no crumbs dropped for #{tagName}")
+                    results.failed.push("#{tagName} has had no events at all")
                 else
-                    for crumbType, crumbTest of tagCrumbs
-                        trailCrumb = tag.logs[tagName][crumbType]
-                        if not trailCrumb?
-                            results.failed.push("crumb of type #{crumbType} not dropped for #{tagName}")
+                    for eventType, eventTest of tagCrumbs
+                        event = tag.logs[tagName][eventType]
+                        if not event?
+                            results.failed.push("#{tagName} has had no events of type #{eventType}")
                         else
-                            if typeof crumbTest is "object"
-                                for testKey, testValue of crumbTest
-                                    crumbValue = trailCrumb[testKey]
-                                    if crumbValue is testValue
-                                        results.passed.push("crumb of type #{crumbType} for #{tagName} has detail #{testKey} equaling #{testValue}")
+                            if typeof eventTest is "object"
+                                for testKey, testValue of eventTest
+                                    eventValue = event[testKey]
+                                    if eventValue is testValue
+                                        results.passed.push("#{tagName} had an event #{eventType} where #{testKey} equalled #{testValue}")
                                     else
-                                        results.failed.push("crumb of type #{crumbType} for #{tagName} has a different value for #{testKey}. found as #{crumbValue} instead of #{testValue}")
-                            else if typeof crumbTest is "function"
-                                _crumbTest = crumbTest(trailCrumb)
-                                if _crumbTest is true
-                                    results.passed.push("crumb test function for #{crumbType} passed")
+                                        results.failed.push("#{tagName} had an event #{eventType} where #{testKey} equalled #{eventValue} instead of #{testValue}")
+                            else if typeof eventTest is "function"
+                                _eventTest = eventTest(event)
+                                if _eventTest is true
+                                    results.passed.push("#{tagName} function for #{eventType} passed")
                                 else
-                                    results.failed.push("crumb test function for #{crumbType} failed")
-                            else if typeof crumbTest is "number"
-                                if trailCrumb["_length"] is crumbTest
-                                    results.passed.push("crumb #{crumbType} found #{crumbTest} times")
+                                    results.failed.push("#{tagName} function for #{eventType} failed")
+                            else if typeof eventTest is "number"
+                                if event["_length"] is eventTest
+                                    testLength = 
+                                    results.passed.push("#{tagName} had #{eventTest} instances of #{eventType} events")
                                 else
-                                    results.failed.push("crumb #{crumbType} found #{trailCrumb["_length"]} times, not #{crumbTest} times")
+                                    results.failed.push("#{tagName} had #{event["_length"]} instances of #{eventType} being called, not #{eventTest}")
 
             if results.failed.length is 0
-                console.log "passed test suite"
+                console.log("test(s) passed", results)
             else
-                console.log "failed test suite"
+                console.log("test(s) failed", results)
 
-            console.log results
             testsFinished(results)
         )
     )
 
 
-tag.log = (tagName, type, msg, details={}) =>
+tag.log = (tagName, type, verbose, details={}) =>
     """Add event regarding a tagName the central log.
     """
+    tagName = tagName.toLowerCase()
     today = new Date()
     date = today.toLocaleDateString()
     time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds()
     datetime = date + " " + time
     datetime_ms = Date.now()
 
-    key = "#{tag.trail_index} - #{datetime} (#{tagName} #{type})"
+    key = "#{tag.trail_index} #{time}: #{tagName} / #{type}"
     crumb = {
         short: type
-        long: msg
+        verbose: verbose
         details: details
         datetime: datetime
         datetime_ms: datetime_ms
@@ -89,6 +107,7 @@ tag.log = (tagName, type, msg, details={}) =>
     if not tag.logs[tagName]?
         tag.logs[tagName] = {}
         tag.logs[tagName]["_all"] = {}
+        tag.logs[tagName]["_verbose"] = {}
 
     if not tag.logs[tagName][type]?
         tag.logs[tagName][type] = {}
@@ -97,8 +116,10 @@ tag.log = (tagName, type, msg, details={}) =>
     tag.logs[tagName][type][key] = crumb
     tag.logs[tagName][type]['_length'] = Object.keys(tag.logs[tagName][type]).length - 1 ## for _length property
     tag.logs[tagName]["_all"][key] = crumb
+    tag.logs[tagName]["_verbose"][tag.trail_index + " " + time] = verbose
     
     ## track by time
     tag.logs["_all"][key] = crumb
+    tag.logs["_verbose"][tag.trail_index + " " + time] = verbose
     
     tag.trail_index++

@@ -2,16 +2,18 @@ tag.defineFromHTML = (element) ->
     """Take the passed in element, pass in its attributes
     """
     def = {}
-    for option in element.attributes
-        def[option] = element.getAttribute(option)
+    for attr in element.attributes
+        if attr.name isnt "definition"
+            def[attr.name] = element.getAttribute(attr.name)
 
     childLookUps = []
-    for child in element.children
+    for childEl in element.children
+        childName = childEl.tagName.toLowerCase()
         childLookUp = new Promise((resolve) =>
             ## bind childrens functions to parents
-            tag.lookUp(child).then((childPrototype) =>
-                childTag = tag.lookUp(child)
-                def = childPrototype.bindToExtendsDef(def)
+            tag.lookUp(childName).then((childClass) =>
+                childPrototype = Object.create(childClass.prototype)
+                def = childClass.prototype.mutateParentDefinition.call(childEl, def)
                 resolve()
             , (noDefinition) =>
                 resolve()
@@ -21,7 +23,9 @@ tag.defineFromHTML = (element) ->
         childLookUps.push(childLookUp)
 
     Promise.all(childLookUps).then(() =>
-        tag.define(element.tagName, registration))
+        document.head.appendChild(element)
+
+        tag.define(element.tagName.toLowerCase(), def))
 
 
 tag.crawl = (el) ->
@@ -33,10 +37,12 @@ tag.crawl = (el) ->
                 return
 
             tagName = el.tagName.toLowerCase()
-            if "definition" in el.attributes
-                tag.defineFromEl(el)
-                crawled()
-                return 
+            for attribute in el.attributes
+                if attribute.name is "definition"
+                    tag.log tagName, "def-html-started", "definition attribute found on #{tagName}, starting definition"
+                    tag.defineFromHTML(el)
+                    crawled()
+                    return 
 
             tagParts = tagName.split('-')
             if tagParts.length < 2

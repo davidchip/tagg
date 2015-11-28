@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <script>
+        tag.define("definition-script", {
+            mutateParentDefinition: function (def) {
+                func = new Function(this.textContent)
+                func.call(def)
+                return def
+            }
+        })
+    </script>
+
+    <plum-tree definition fruits="30">
+        <style>
+            plum-tree {
+                display:block;
+                position:relative;
+                height:200px;
+                width:200px;
+            }
+        </style>
+
+        <definition-script>
+            this.changed = function(name, oldVal, newVal) {
+                if (name === "fruits") {
+                    return this.drawFruits();
+                }
+            }
+
+            this.drawFruits = function(desired) {
+                var plums, remainingFruits, size;
+                plums = this.getElementsByTagName("plum-fruit");
+                remainingFruits = this.fruits - (plums.length);
+
+                if (remainingFruits > 0) {
+                    while (remainingFruits > 0) {
+                        newFruit = tag.create("plum-fruit");
+                        this.appendChild(newFruit);
+                        remainingFruits--;
+                    }
+                } else if (remainingFruits < 0) {
+                    while (remainingFruits < 0) {
+                        this.removeChild(plums[0])
+                        remainingFruits++;
+                    }
+                }
+            }
+        </definition-script>
+    </plum-tree>
+
+    <plum-fruit definition size="10">
+        <style>
+            plum-fruit {
+                background-color:purple;
+                border-radius:50%;
+                display:block;
+                height:20px;
+                position:absolute;
+                width:20px;
+            }
+        </style>
+
+        <definition-script>
+            this.created = function () {
+                this.style.top = Math.random() * 100 + "%";
+                this.style.left = Math.random() * 100 + "%";
+            };
+        </definition-script>
+    </plum-fruit>
+
+    <script>
+        tag.assertEvents([
+            ["plum-tree", "def-pushed", 1],
+            ["plum-fruit", "tag-attached", 50],
+            ["plum-fruit", "prop-changed", 50]
+        ]).then(function(){
+            t.id("tree").fruits = 5
+            t.name("plum-fruit")[0].size = 20
+            t.name("plum-fruit")[0].size = 25
+
+            tag.assertEvents([
+                ["plum-fruit", "tag-removed", 45],
+                ["plum-fruit", "prop-changed", 52]
+            ])
+        });
+    </script>
+
+    <plum-tree fruits="50" id="tree">
+        <plum-fruit size="15"></plum-fruit>
+        <div></div>
+        <h1></h1>
+    </plum-tre>
+</body>
+</html>

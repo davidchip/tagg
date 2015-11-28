@@ -1,46 +1,48 @@
-tag.start = () ->
-    observer = new MutationObserver((mutations) =>
-        for mutation in mutations
-            for child in mutation.addedNodes
-                tag.crawl(child)
-    )
-
-    observer.observe(document.body, { 
-        childList: true, 
-        subtree: true
-    })
-
-    classic_dict = new tag.Dictionary()
-    tag.dicts.push(classic_dict)
-
-    classic_dict.define("tag-core", {
-
-        template: ""
-
-        changed: (name, old, val) ->
-            "pass"
-
-        created: () ->
-            "pass"
-
-        removed: () ->
-            "pass"
-
-    })
-
-    tag.crawl(document.body)
-
-    console.log tag.logs
-
-
+## crawl any changes to document.body
 tag.loaded = new Promise((loaded) =>
     document.addEventListener("DOMContentLoaded", (event) =>
-        tag.start()
+        observer = new MutationObserver((mutations) =>
+            for mutation in mutations
+                for child in mutation.addedNodes
+                    tag.crawl(child)
+        )
+
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true
+        })
+
+        tag.crawl(document.body)
+
+        console.log("lifecycle logs", tag.logs)
         loaded()
     )
 )
 
+
+## attach to window + basic aliases
 window.tag = tag
+window.t = {
+    id : (id) ->
+        return document.getElementById(id)
+
+    class: (className) ->
+        return document.getElementsByClassName(className)
+
+    name: (tagName) ->
+        return document.getElementsByTagName(tagName)
+}
+
+
+## push a sane default dictionary
+tag.dicts.push(new tag.Dictionary())
+
+
+## hide definitions by default
+style = document.createElement("style")
+style.type = "text/css"
+style.appendChild(document.createTextNode("*[definition]{display:none};"));
+document.head.appendChild(style)
 
 
 
@@ -71,35 +73,6 @@ window.tag = tag
 
 #     update()
 
-# helix.loaded = new $.Deferred()
-# helix._loadCount = 0
-# helix._maxLoad = 0
-# helix.loadCount = {
-#     inc: () ->
-#         helix._maxLoad++
-#         helix.loadCount.update()
-#         clearTimeout(helix.loadTimer)
-#         return helix._loadCount++
-
-#     dec: () ->
-#         count = helix._loadCount--
-#         if count <= 1
-#             helix.loadTimer = setTimeout (() =>
-#                 helix.loadCount.update()
-#                 if count <=1
-#                     helix.loaded.resolve()
-#             ), 1000
-            
-
-#     update: () ->
-#         loader = document.getElementById("loaderCount")
-#         if loader?
-#             loader.innerHTML = "#{helix._loadCount} left / #{helix._maxLoad} total"
-# }
-
-
-# helix.freeze = () ->
-#     helix._freeze = not helix._freeze
 
 
 # @helix = helix
@@ -170,7 +143,7 @@ window.tag = tag
 #     )
 # )
 
-# ## define the base if it has an attribute
+# ## define the base if it has an n
 # define = base.getAttribute('instructions')
 # if define? and define is ''
 #     loadedHTML = document.getElementById("loadedHTML")

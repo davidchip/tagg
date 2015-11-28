@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <style>
+        plum-tree {
+            display:block;
+            position:relative;
+            height:200px;
+            width:200px;
+        }
+
+        plum-fruit {
+            background-color:purple;
+            border-radius:50%;
+            display:block;
+            height:20px;
+            position:absolute;
+            width:20px;
+        }
+    </style>
+
+    <script>
+        tag.loaded.then(function() {
+            tag.define("plum-tree", {
+                fruits: "10",
+                changed: function(name, oldVal, newVal) {
+                    if (name === "fruits") {
+                        return this.drawFruits();
+                    }
+                },
+                drawFruits: function(desired) {
+                    var plums, remainingFruits, size;
+                    plums = this.getElementsByTagName("plum-fruit");
+                    remainingFruits = this.fruits - (plums.length);
+
+                    if (remainingFruits > 0) {
+                        while (remainingFruits > 0) {
+                            this.appendChild(tag.create("plum-fruit", {
+                                size: Math.ceil(Math.random() * 100)
+                            }));
+                            remainingFruits--;
+                        }
+                    }
+                    else if (remainingFruits < 0) {
+                        while (remainingFruits < 0) {
+                            this.removeChild(plums[0])
+                            remainingFruits++;
+                        }
+                    }
+                }
+            });
+
+            tag.define("plum-fruit", {
+                size: "5",
+                created: function() {
+                    this.style.top = Math.random() * 100 + "%";
+                    this.style.left = Math.random() * 100 + "%";
+                }
+            });
+        });
+    </script>
+
+    <script>
+        tag.assertEvent("plum-tree", "tag-attached", 1)
+        tag.assertEvent("plum-fruit", "tag-attached", 10).then(function() {
+            tree = document.getElementsByTagName("plum-tree")[0]
+            tree.fruits = 50
+
+            tag.assertEvent("plum-fruit", "tag-attached", 50).then(function() {
+                tree.fruits = 5
+
+                tag.assertEvent("plum-fruit", "tag-removed", 45)
+            });
+        });
+    </script>
+
+    <plum-tree>
+        <div></div>
+        <plum-fruit size="20"></plum-fruit>
+        <h1></h1>
+    </plum-tree>
+</body>
+</html>

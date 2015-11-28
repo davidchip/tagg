@@ -9,6 +9,7 @@ module.exports = ->
         "coffee:compileSource"
         "concat:libsAndSource"
         "copy:sourceToWWW"
+        "copy:testsToWWW"
     ])
 
 
@@ -23,5 +24,5 @@ module.exports = ->
     @registerTask("listen", [
         "clean:everything"
         "compile"
-        "watch:coffee"
+        "watch"
     ])

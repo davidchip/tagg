@@ -20,4 +20,11 @@ module.exports = ->
       }]
     }
 
+    testsToWWW: {
+      files: [{
+        src: 'tests/**/*'
+        dest: '../www/'
+      }]
+    }
+
   }

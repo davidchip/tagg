@@ -36,9 +36,11 @@ class tag.Dictionary
 
             openResolved.then(() =>
                 if @definitions[tagName]?
+                    tag.log tagName, "tag-found", "open definition found for #{tagName}, waiting until it's defined to return it"
                     tagFound(@definitions[tagName])
                 else
-                    tagNotFound(Error("no tag of name #{tagName} found"))
+                    tag.log tagName, "tag-not-found", "tag not found in dict #{@id}"
+                    tagNotFound()
             )
         )
 
@@ -121,7 +123,7 @@ class tag.Dictionary
             getParentClass.then((parentClass) => 
                 prototype = Object.create(parentClass.prototype)
 
-                for builtIn in ['created', 'removed', 'changed']
+                for builtIn in ['created', 'removed', 'changed', 'mutateParentDefinition']
                     if not prototype[builtIn]?
                         prototype[builtIn] = () ->
                             return
@@ -130,10 +132,13 @@ class tag.Dictionary
                 ## bound, registered, and recognized by the DOM
                 prototype["attached"] = new Promise((attached) =>
                     prototype["attachedCallback"] = () ->
-                        ## can get hasOwnProperties? some way around this defaults obj?
+                        if @getAttribute('definition') is ""
+                            return
+
                         for _default, defaultVal of @defaults
-                            if not @[_default]?
-                                # tag.log tagName, "ta "setting #{tagName} default #{_default} to #{defaultVal}"
+                            if @getAttribute(_default)?
+                                @[_default] = @getAttribute(_default)
+                            else if not @[_default]?
                                 @[_default] = defaultVal
                             else
                                 @[_default] = @[_default]
@@ -162,6 +167,9 @@ class tag.Dictionary
                 )
 
                 prototype["detachedCallback"] = () ->
+                    if @getAttribute('definition') is ""
+                        return
+
                     @removed()
                     tag.log tagName, "tag-removed", "#{tagName} was removed from the DOM"
 
@@ -212,6 +220,9 @@ class tag.Dictionary
                     old = @[key]
                     if old isnt value
                         @attached.then(() =>
+                            if @getAttribute('definition') is ""
+                                return
+
                             @setAttribute(key, value)
                             @changed(key, old, value))
 
