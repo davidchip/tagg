@@ -1,15 +1,17 @@
-tag.defineFromEl = (element) ->
+tag.defineFromHTML = (element) ->
     """Take the passed in element, pass in its attributes
     """
-    registration = {}
+    def = {}
     for option in element.attributes
-        registration[option] = element.getAttribute(option)
+        def[option] = element.getAttribute(option)
 
     childLookUps = []
     for child in element.children
         childLookUp = new Promise((resolve) =>
-            tag.lookUp(child).then((definition) =>
-                registration = definition.mutateParentDefinition(registration)
+            ## bind childrens functions to parents
+            tag.lookUp(child).then((childPrototype) =>
+                childTag = tag.lookUp(child)
+                def = childPrototype.bindToExtendsDef(def)
                 resolve()
             , (noDefinition) =>
                 resolve()

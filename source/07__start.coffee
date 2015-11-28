@@ -1,41 +1,48 @@
-window.tag = tag
+tag.start = () ->
+    observer = new MutationObserver((mutations) =>
+        for mutation in mutations
+            for child in mutation.addedNodes
+                tag.crawl(child)
+    )
+
+    observer.observe(document.body, { 
+        childList: true, 
+        subtree: true
+    })
+
+    classic_dict = new tag.Dictionary()
+    tag.dicts.push(classic_dict)
+
+    classic_dict.define("tag-core", {
+
+        template: ""
+
+        changed: (name, old, val) ->
+            "pass"
+
+        created: () ->
+            "pass"
+
+        removed: () ->
+            "pass"
+
+    })
+
+    tag.crawl(document.body)
+
+    console.log tag.logs
+
 
 tag.loaded = new Promise((loaded) =>
     document.addEventListener("DOMContentLoaded", (event) =>
-        observer = new MutationObserver((mutations) =>
-            for mutation in mutations
-                for child in mutation.addedNodes
-                    tag.crawl(child)
-        )
-
-        observer.observe(document.body, { 
-            childList: true, 
-            subtree: true
-        })
-
-        classic_dict = new tag.Dictionary()
-        tag.dicts.push(classic_dict)
-
-        classic_dict.define("tag-core", {
-
-            template: ""
-
-            changed: (name, old, val) ->
-                "pass"
-
-            created: () ->
-                "pass"
-
-            removed: () ->
-                "pass"
-
-        })
-
-        tag.crawl(document.body)
-
+        tag.start()
         loaded()
     )
 )
+
+window.tag = tag
+
+
 
 
 

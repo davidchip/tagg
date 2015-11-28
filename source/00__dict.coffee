@@ -1,19 +1,5 @@
-tag = {}
-
-
-tag.logs = {}
-tag.log_i = 0
-tag.log = (msg) =>
-    tag.logs[tag.log_i] = msg
-    tag.log_i++
-
-trail = tag.logs
-console.dir trail
-
-
-tag.loaded = new Promise((DOMLoaded) =>
-    document.addEventListener("DOMContentLoaded", (event) =>
-        DOMLoaded()))
+if not tag?
+    tag = {}
 
 
 tag.dicts = []
@@ -36,15 +22,15 @@ class tag.Dictionary
         return new Promise((tagFound, tagNotFound) =>
             openResolved = new Promise((resolve, reject) =>
                 if @opens[tagName]?
-                    tag.log "open definition found for #{tagName}, waiting until it's defined to return it"
+                    tag.log tagName, "open-def-exists", "open definition found for #{tagName}, waiting until it's defined to return it"
                     @opens[tagName].then(() =>
                         resolve()
                     , () =>
-                        tag.log "open definition for #{tagName} failed to complete"
+                        tag.log tagName, "open-def-failed", "open definition for #{tagName} failed to complete"
                         resolve()
                     )
                 else
-                    tag.log "no open definition for #{tagName} found"
+                    tag.log tagName, "open-def-dne", "no open definition for #{tagName} found"
                     resolve()
             )
 
@@ -84,29 +70,29 @@ class tag.Dictionary
            return: Promise(definition, definition error)
         """
         if @opens[tagName]?
-            tag.log "definition for #{tagName} already found, ignoring"
+            tag.log tagName, "def-found", "definition for #{tagName} already found, ignoring"
             return @opens[tagName]
 
         @opens[tagName] = new Promise((acceptDef, rejectDef) =>
-            tag.log "starting a definition for #{tagName}"
+            tag.log tagName, "def-started", "starting a definition for #{tagName}"
             if typeof tagName isnt "string"
-                tag.log "#{tagName} tagName should be a string"
+                tag.log tagName, "def-failed", "#{tagName} tagName should be a string"
                 rejectDef()
 
             if not tagName.split('-').length >= 2
-                tag.log "#{tagName} needs a hyphen"
+                tag.log tagName, "def-failed", "#{tagName} needs a hyphen"
                 rejectDef()
 
             if typeof definition isnt "object"
-                tag.log "#{tagName} definition should be an object"
-                rejectDef
+                tag.log tagName, "def-failed", "#{tagName} definition should be an object"
+                rejectDef()
 
             getParentName = new Promise((found, notFound) =>
                 if definition.extends?
-                    tag.log "#{tagName} has a specified parentName of #{definition.extends}, using that"
+                    # tag.log  "#{tagName} has a specified parentName of #{definition.extends}, using that"
                     found(definition.extends)
                 else
-                    tag.log "retrieving #{tagName}'s parentName"
+                    # tag.log "retrieving #{tagName}'s parentName"
                     @parentName(tagName).then((parentName) =>
                         found(parentName)
                     , (parentNameNotFound) =>
@@ -116,16 +102,16 @@ class tag.Dictionary
 
             getParentClass = new Promise((classFound, classNotFound) =>
                 getParentName.then((parentName) =>
-                    tag.log "#{tagName}'s parentName is #{parentName}, looking up its definition"
+                    tag.log tagName, "parent-name-exists", "#{tagName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
                     @lookUp(parentName).then((_class) =>
-                        tag.log "located #{tagName}'s parent definition, #{parentName}, extending from that"
+                        tag.log tagName, "parent-def-exists", "located #{tagName}'s parent definition, #{parentName}, extending from that"
                         classFound(_class)
                     , (classNotFound) =>
-                        tag.log "could not find #{tagName}'s parent, #{parentName}, extending from #{@prototypeBase.name}"
+                        tag.log tagName, "parent-def-dne", "could not find #{tagName}'s parent, #{parentName}, extending from #{@prototypeBase.name}"
                         classFound(@prototypeBase)
                     )
                 , (noParentName) =>
-                    tag.log "could not find #{tagName}'s parentName, extending from #{@prototypeBase.name}"
+                    tag.log tagName, "parent-name-dne", "could not find #{tagName}'s parentName, extending from #{@prototypeBase.name}"
                     classFound(@prototypeBase)
                 )
             )
@@ -135,6 +121,11 @@ class tag.Dictionary
             getParentClass.then((parentClass) => 
                 prototype = Object.create(parentClass.prototype)
 
+                for builtIn in ['created', 'removed', 'changed']
+                    if not prototype[builtIn]?
+                        prototype[builtIn] = () ->
+                            return
+
                 ## @attached promise gets resolved after a tag's been
                 ## bound, registered, and recognized by the DOM
                 prototype["attached"] = new Promise((attached) =>
@@ -142,7 +133,7 @@ class tag.Dictionary
                         ## can get hasOwnProperties? some way around this defaults obj?
                         for _default, defaultVal of @defaults
                             if not @[_default]?
-                                tag.log "setting #{tagName} default #{_default} to #{defaultVal}"
+                                # tag.log tagName, "ta "setting #{tagName} default #{_default} to #{defaultVal}"
                                 @[_default] = defaultVal
                             else
                                 @[_default] = @[_default]
@@ -167,23 +158,12 @@ class tag.Dictionary
                         ## resolve out tags @attached promise
                         attached()
                         @created()
-                        tag.log "#{tagName} was attached to the DOM"
+                        tag.log tagName, "tag-attached", "#{tagName} was attached to the DOM"
                 )
 
-                ## call when the tag has been removed from the DOM
                 prototype["detachedCallback"] = () ->
                     @removed()
-                    tag.log "#{tagName} was removed from the DOM"
-
-                ## when a property is changed via JS, update the tags attributes
-                ## to reflect the update. 
-                ##
-                ## should screen for things that can't be set as attributes
-                prototype["changedProperty"] = (prop, old, val) ->
-                    @attached.then(() =>
-                        @setAttribute(prop, val)
-                        @changed(prop, old, val)
-                    )
+                    tag.log tagName, "tag-removed", "#{tagName} was removed from the DOM"
 
                 ## append a "parentTag" for easy access to parents functions
                 Object.defineProperty(prototype, "parentTag", {
@@ -194,8 +174,9 @@ class tag.Dictionary
                 prototype.template = definition.template
                 delete(definition.template)
 
-                ## bind properties to prototype
+                ## bind definition properties and methods to prototype
                 ## shove them in defaults if applicable
+                prototype.defaults = {}
                 for key, value of definition
                     prototype = @bind(key, value, prototype, tagName)
 
@@ -203,7 +184,7 @@ class tag.Dictionary
                     prototype: prototype })
 
                 @definitions[tagName] = Tag
-                tag.log "pushed #{tagName} definition to dict (id: #{@id})"
+                tag.log tagName, "def-pushed", "pushed #{tagName} definition to dict (id: #{@id})"
                 acceptDef()
             )
         )
@@ -230,13 +211,15 @@ class tag.Dictionary
                     ## don't update a property unless a change has occured
                     old = @[key]
                     if old isnt value
-                        @changedProperty(key, old, value)
+                        @attached.then(() =>
+                            @setAttribute(key, value)
+                            @changed(key, old, value))
+
                         @["__" + key] = value
-                        tag.log "#{tagName} #{key} changed from #{old} to #{value}"
+                        tag.log tagName, "prop-changed", "#{tagName} #{key} changed from #{old} to #{value}"
             })
 
-            ## store our bound properties in a defaults obj (try and avoid overhead)
-            prototype.defaults = {}
+            ## store our bound properties in a defaults obj (try and avoid overhead) 
             prototype.defaults[key] = value
 
         return prototype
