@@ -13,4 +13,11 @@ module.exports = ->
       }]
     }
 
+    sourceJS: {
+      files: [{
+      	src: 'target/source.js'
+      	dest: 'target/source.min.js'
+      }]
+    }
+
   }

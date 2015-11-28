@@ -65,8 +65,10 @@
     </script>
 
     <script>
-        tag.assertEvent("plum-tree", "tag-attached", 1)
-        tag.assertEvent("plum-fruit", "tag-attached", 10).then(function() {
+        tag.assertEvents([
+            ["plum-tree", "tag-attached", 1],
+            ["plum-fruit", "tag-attached", 10]
+        ]).then(function() {
             tree = document.getElementsByTagName("plum-tree")[0]
             tree.fruits = 50
 

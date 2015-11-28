@@ -69,9 +69,9 @@ tag.assert = (testingObj={}, delay=1000) ->
                             else if typeof eventTest is "number"
                                 if event["_length"] is eventTest
                                     testLength = 
-                                    results.passed.push("#{tagName} had #{eventTest} instances of #{eventType} events")
+                                    results.passed.push("#{tagName} had #{eventTest} instance(s) of #{eventType} event(s)")
                                 else
-                                    results.failed.push("#{tagName} had #{event["_length"]} instances of #{eventType} being called, not #{eventTest}")
+                                    results.failed.push("#{tagName} had #{event["_length"]} instance(s) of #{eventType} being called, not #{eventTest}")
 
             if results.failed.length is 0
                 console.log("test(s) passed", results)
@@ -114,7 +114,7 @@ tag.log = (tagName, type, verbose, details={}) =>
         tag.logs[tagName][type]['_length'] = 0
 
     tag.logs[tagName][type][key] = crumb
-    tag.logs[tagName][type]['_length'] = Object.keys(tag.logs[tagName][type]).length - 1 ## for _length property
+    tag.logs[tagName][type]['_length'] = Object.keys(tag.logs[tagName][type]).length - 1 ## - 1 for _length property
     tag.logs[tagName]["_all"][key] = crumb
     tag.logs[tagName]["_verbose"][tag.trail_index + " " + time] = verbose
     

@@ -1,6 +1,4 @@
-if not tag?
-    tag = {}
-
+tag = {}
 
 tag.dicts = []
 class tag.Dictionary
@@ -123,6 +121,8 @@ class tag.Dictionary
             getParentClass.then((parentClass) => 
                 prototype = Object.create(parentClass.prototype)
 
+                ## mutateParentDefinition: a synchronous opportunity to alter 
+                ## the parentTags definition if its being defined by HTML
                 for builtIn in ['created', 'removed', 'changed', 'mutateParentDefinition']
                     if not prototype[builtIn]?
                         prototype[builtIn] = () ->
