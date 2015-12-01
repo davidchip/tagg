@@ -4,7 +4,7 @@ class tag.StaticDictionary extends tag.Dictionary
     """
     protocol: window.location.protocol ## http
     hostname: window.location.hostname ## www.tag.to
-    port: window.location.port         ## 80  
+    port: if window.location.port isnt "" then window.location.port else 80
 
     dir: "tags"                        ## /dir/
     extensions: ['html', 'js']         ## [html, js]
