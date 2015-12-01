@@ -6,16 +6,24 @@ tag.defineFromHTML = (element) ->
         if attr.name isnt "definition"
             def[attr.name] = element.getAttribute(attr.name)
 
+    def_script = tag.dicts[0].definitions['definition-script']
+    if def_script?
+        tag.log "found-defintion", "definition-script", "found definition-script"
+    else
+        tag.log "no-def-found", "definition-script", "no def found"
+
     childLookUps = []
     for childEl in element.children
         childName = childEl.tagName.toLowerCase()
         childLookUp = new Promise((resolve) =>
             ## bind childrens functions to parents
             tag.lookUp(childName).then((childClass) =>
+                tag.log "child-def-found", element.tagName, "definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
                 childPrototype = Object.create(childClass.prototype)
                 def = childClass.prototype.mutateParentDefinition.call(childEl, def)
                 resolve()
             , (noDefinition) =>
+                tag.log "no-child-not-def", element.tagName, "no definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
                 resolve()
             )
         )
@@ -39,15 +47,10 @@ tag.crawl = (el) ->
             tagName = el.tagName.toLowerCase()
             for attribute in el.attributes
                 if attribute.name is "definition"
-                    tag.log tagName, "def-html-started", "definition attribute found on #{tagName}, starting definition"
+                    tag.log "def-html-started", tagName, "definition attribute found on #{tagName}, starting definition"
                     tag.defineFromHTML(el)
                     crawled()
                     return 
-
-            tagParts = tagName.split('-')
-            if tagParts.length < 2
-                crawled()
-                return
 
             tag.lookUp(tagName).then((tagDef) ->
                 crawled()
@@ -58,6 +61,6 @@ tag.crawl = (el) ->
 
     _crawl(el).then(() =>
         for child in el.children
-            _crawl(child)
+            tag.crawl(child)
     )
     

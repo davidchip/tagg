@@ -25,7 +25,7 @@ tag.cycleDicts = (func) =>
     """
     dictLookUp = (i=0) =>
         if tag.dicts.length is 0
-            tag.log "tag.dicts is empty; push a dictionary before using any commands."
+            tag.log "dict-empty", tagName, "tag.dicts is empty; push a dictionary before using any commands."
             return false
 
         if i < tag.dicts.length
@@ -65,6 +65,11 @@ tag.opens = {}
 tag.lookUp = (tagName) =>
     """Find the first tagDefinition across all dictionaries.
     """
+    tagParts = tagName.split('-')
+    if tagParts.length < 2
+        return new Promise((resolve, reject) =>
+            reject())
+
     return tag.cycleDictsAndCache("lookUps", tagName, (dict) =>
         tag.opens[tagName] = dict
         return dict.lookUp(tagName))
@@ -91,11 +96,31 @@ tag.define = (tagName, definition) =>
     return define
 
 
-tag.create = (tagName, tagOptions={}) ->
+tag.create = (tagName, tagOptions={}) =>
+    """Find the first tagDefinition across all dictionaries.
+    """
+    return new Promise((tagFound, tagNotFound) =>
+        tag.cycleDictsAsync((dict) =>
+            return dict.lookUp(tagName)
+        ).then((tagDef) =>
+            tag.log "tag-created", tagName, "tag #{tagName} was successfully created"
+            el = document.createElement(tagName)
+            for key, value of tagOptions
+                el[key] = value
+
+            tagFound(el)
+        , (tagNotFound) =>
+            tag.log "tag-not-created", tagName, "tag #{tagName} had a failed lookup"
+            tagNotFound()
+        )
+    )
+
+
+tag._create = (tagName, tagOptions={}) ->
     """Create the specified tag with the passed in options.
     """
     return tag.cycleDicts((dict) ->
-        def = dict.definitions[tagName]
+        def = dict.getDefinition(tagName)
         if def?
             el = document.createElement(tagName)
             for key, value of tagOptions
@@ -105,3 +130,4 @@ tag.create = (tagName, tagOptions={}) ->
         else
             return false
     )
+

@@ -14,35 +14,58 @@ class tag.Dictionary
         for key, value of options
             @[key] = value
 
+    checkOpenDefinition: (tagName) ->
+        """Async, always resolve - 
+
+           If an open defintion exists, wait for it to be defined
+           and then return else.
+
+           If it doesn't exist, resolve and continue.
+        """
+        return new Promise((resolve, reject) =>
+            if @opens[tagName]?
+                tag.log "open-def-exists", tagName, "open definition found for #{tagName}, waiting until it's defined to return it"
+                @opens[tagName].then(() =>
+                    resolve()
+                , () =>
+                    tag.log "open-def-failed", tagName, "open definition for #{tagName} failed to complete"
+                    resolve()
+                )
+            else
+                tag.log "open-def-dne", tagName, "no open definition for #{tagName} found"
+                resolve()
+        )
+
+    getDefinition: (tagName) ->
+        """Sync, return the definition if it's stored.
+        """
+        def = @definitions[tagName]
+        if def?
+            tag.log "tag-found", tagName, "open definition found for #{tagName}, waiting until it's defined to return it"
+            return def
+        else
+            tag.log "tag-not-found", tagName, "#{tagName} not found in dict (id: #{@id})"
+            return undefined
+
     lookUp: (tagName) =>
         """Given the name of tag, return its definition.
+
+           Should implement checkOpenDefinition() and getDefinition()
         """
         return new Promise((tagFound, tagNotFound) =>
-            openResolved = new Promise((resolve, reject) =>
-                if @opens[tagName]?
-                    tag.log tagName, "open-def-exists", "open definition found for #{tagName}, waiting until it's defined to return it"
-                    @opens[tagName].then(() =>
-                        resolve()
-                    , () =>
-                        tag.log tagName, "open-def-failed", "open definition for #{tagName} failed to complete"
-                        resolve()
-                    )
+            @checkOpenDefinition(tagName).then(() =>
+                def = @getDefinition(tagName)
+                
+                if def?
+                    tagFound(def)
                 else
-                    tag.log tagName, "open-def-dne", "no open definition for #{tagName} found"
-                    resolve()
-            )
-
-            openResolved.then(() =>
-                if @definitions[tagName]?
-                    tag.log tagName, "tag-found", "open definition found for #{tagName}, waiting until it's defined to return it"
-                    tagFound(@definitions[tagName])
-                else
-                    tag.log tagName, "tag-not-found", "tag not found in dict #{@id}"
                     tagNotFound()
+            , (noOpenDefinition) =>
+                tagNotFound()
             )
         )
 
-    parentName: (tagName) =>
+    getParentName: (tagName) =>
         """Given the name of tag, return the name of its parent.
         """
         new Promise((parentFound, parentNotFound) =>
@@ -50,10 +73,8 @@ class tag.Dictionary
             lastPart = tagParts.pop()
             parentName = tagParts.join().replace(/\,/g, "-")
 
-            if tagName is "tag-core"
+            if tagParts.length < 2
                 parentNotFound()
-            else if tagParts.length < 2
-                parentFound("tag-core")
             else
                 parentFound(parentName)
         )
@@ -70,21 +91,21 @@ class tag.Dictionary
            return: Promise(definition, definition error)
         """
         if @opens[tagName]?
-            tag.log tagName, "def-found", "definition for #{tagName} already found, ignoring"
+            tag.log "def-found", tagName, "definition for #{tagName} already found, ignoring"
             return @opens[tagName]
 
         @opens[tagName] = new Promise((acceptDef, rejectDef) =>
-            tag.log tagName, "def-started", "starting a definition for #{tagName}"
+            tag.log "def-started", tagName, "starting a definition for #{tagName}"
             if typeof tagName isnt "string"
-                tag.log tagName, "def-failed", "#{tagName} tagName should be a string"
+                tag.log "def-failed", tagName, "#{tagName} tagName should be a string"
                 rejectDef()
 
             if not tagName.split('-').length >= 2
-                tag.log tagName, "def-failed", "#{tagName} needs a hyphen"
+                tag.log "def-failed", tagName, "#{tagName} needs a hyphen"
                 rejectDef()
 
             if typeof definition isnt "object"
-                tag.log tagName, "def-failed", "#{tagName} definition should be an object"
+                tag.log "def-failed", tagName, "#{tagName} definition should be an object"
                 rejectDef()
 
             getParentName = new Promise((found, notFound) =>
@@ -93,7 +114,7 @@ class tag.Dictionary
                     found(definition.extends)
                 else
                     # tag.log "retrieving #{tagName}'s parentName"
-                    @parentName(tagName).then((parentName) =>
+                    @getParentName(tagName).then((parentName) =>
                         found(parentName)
                     , (parentNameNotFound) =>
                         notFound()
@@ -102,16 +123,16 @@ class tag.Dictionary
 
             getParentClass = new Promise((classFound, classNotFound) =>
                 getParentName.then((parentName) =>
-                    tag.log tagName, "parent-name-exists", "#{tagName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
+                    tag.log "parent-name-exists", tagName, "#{tagName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
                     @lookUp(parentName).then((_class) =>
-                        tag.log tagName, "parent-def-exists", "located #{tagName}'s parent definition, #{parentName}, extending from that"
+                        tag.log "parent-def-exists", tagName, "located #{tagName}'s parent definition, #{parentName}, extending from that"
                         classFound(_class)
                     , (classNotFound) =>
-                        tag.log tagName, "parent-def-dne", "could not find #{tagName}'s parent, #{parentName}, extending from #{@prototypeBase.name}"
+                        tag.log "parent-def-dne", tagName, "could not find #{tagName}'s parent, #{parentName}, extending from #{@prototypeBase.name}"
                         classFound(@prototypeBase)
                     )
                 , (noParentName) =>
-                    tag.log tagName, "parent-name-dne", "could not find #{tagName}'s parentName, extending from #{@prototypeBase.name}"
+                    tag.log "parent-name-dne", tagName, "could not find #{tagName}'s parentName, extending from #{@prototypeBase.name}"
                     classFound(@prototypeBase)
                 )
             )
@@ -163,7 +184,7 @@ class tag.Dictionary
                         ## resolve out tags @attached promise
                         attached()
                         @created()
-                        tag.log tagName, "tag-attached", "#{tagName} was attached to the DOM"
+                        tag.log "tag-attached", tagName, "#{tagName} was attached to the DOM"
                 )
 
                 prototype["detachedCallback"] = () ->
@@ -171,7 +192,7 @@ class tag.Dictionary
                         return
 
                     @removed()
-                    tag.log tagName, "tag-removed", "#{tagName} was removed from the DOM"
+                    tag.log "tag-removed", tagName, "#{tagName} was removed from the DOM"
 
                 ## append a "parentTag" for easy access to parents functions
                 Object.defineProperty(prototype, "parentTag", {
@@ -192,7 +213,7 @@ class tag.Dictionary
                     prototype: prototype })
 
                 @definitions[tagName] = Tag
-                tag.log tagName, "def-pushed", "pushed #{tagName} definition to dict (id: #{@id})"
+                tag.log "def-pushed", tagName, "pushed #{tagName} definition to dict (id: #{@id})"
                 acceptDef()
             )
         )
@@ -227,169 +248,10 @@ class tag.Dictionary
                             @changed(key, old, value))
 
                         @["__" + key] = value
-                        tag.log tagName, "prop-changed", "#{tagName} #{key} changed from #{old} to #{value}"
+                        tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{old} to #{value}"
             })
 
             ## store our bound properties in a defaults obj (try and avoid overhead) 
             prototype.defaults[key] = value
 
         return prototype
-
-        
-
-class tag.StaticDictionary extends tag.Dictionary
-    """A dictionary that looks for definitions located in a
-       a directory structure. 
-    """
-    protocol: window.location.protocol ## http
-    hostname: window.location.hostname ## www.tag.to
-    port: window.location.port         ## 80  
-
-    dirName: "tags"                      ## /dir/
-    extensions: ['html', 'js']         ## [html, js]
-
-    constructor: (options) ->
-        super options
-
-        @defsEl = document.createElement("div")
-        @defsEl.id = "definitions"
-        document.body.appendChild(@defsEl)
-
-    lookUp: (tagName) =>
-        return new Promise((tagDefined, tagFailed) =>
-            urls = @nameToUrl(tagName)
-            tag.serialLoad(urls).then((link) =>
-                @appendDefinition(link).then(() =>
-                    super(tagName)
-                , (linkNotAppended) =>
-                    tagFailed(linkNotAppended)
-                )
-            , (loadRejected) =>
-                tagFailed(loadRejected)
-            )
-        )
-
-    appendDefinition: (link) =>
-        new Promise((defParsed, defNotParsed) =>
-            splitURL = link.href.split('.')
-            extension = splitURL[splitURL.length - 1]
-            if extension is "js"
-                script = document.createElement("script")
-                script.type = "text/javascript"
-                script.textContent = link.import.body.textContent
-                @defsEl.appendChild(script)
-                defParsed()
-
-            else if extension is "html"
-                importChildren = link.import.body.children
-                for child in importChildren
-                    @defsEl.appendChild(child)
-                defParsed()
-
-            else
-                defNotParsed(Error("#{link.href} wasn't an HTML or JS file"))
-        )
-
-    nameToUrl: (tagName) =>
-        """Map a tagName to an array of the potential locations
-           it could be.
-
-           tagName:  "a-partial"
-           return:  ["http://www.tag.to/a/file/to/a/partial.html", 
-                     "http://www.tag.to/a/file/to/a/partial.js", ]
-        """
-        path = "/" + tagName.replace(/\-/g, "/")
-
-        parser = document.createElement("a")
-        parser.href = path
-        path = parser.pathname
-
-        _no_extension = path.split('.').length <= 1
-        parser.protocol = @protocol
-        parser.hostname = @hostname
-        parser.port     = @port
-        parser.pathname = @dirName + path
-
-        ## CAN SPLIT OUT EXTENDING
-        urls = []
-        if _no_extension
-            for extension in @extensions
-                urls.push(parser.href + "." + extension)
-        else
-            urls.push(parser.href)
-
-        return urls
-
-
-class tag.FamilyDictionary extends tag.StaticDictionary
-    """A family dictionary acts like a collection of mini
-       static dictionaries. Each family acts as a mini static dictionary, allowing
-       hooks into identically named functions:
-
-       Family files are located in a "family" file. 
-       Like: /a/family.html
-
-       See tag.StaticDictionary for the default behavior
-       of these functions.
-    """
-    lookUp: (tagName) =>
-        return new Promise((defFound, defNotFound) =>
-            super(@familyName(tagName)).then((family) =>
-                if family.lookUp?
-                    family.lookUp(tagName).then((familyDef) =>
-                        defFound(familyDef)
-                    , (familyNotDef) =>
-                        defNotFound(familyNotDef)
-                    )
-                else
-                    ## defaults to super if it gets the chance
-                    ## how tags are pathed
-                    if family.nameToUrl?
-                        urls = family.nameToUrl(tagName)
-                    else
-                        ## should default to super if it gets the chance
-                        urls = @nameToUrl(tagName) 
-
-                    ## should default to super if it gets the chance
-                    tag.serialLoad(urls).then((tagLink) =>
-                        ## how to parse static definitions
-                        if family.appendDefinition?
-                            parsed = family.appendDefinition(tagLink.import)
-                        else
-                            ## should default to super if it gets the chance
-                            parsed = @appendDefinition(tagLink.import)
-
-                        ## should default to super if it gets the chance
-                        parsed.then((def) =>
-                            if @definitions[tagName]?
-                                tagDefined(@definitions[tagName])
-                            else
-                                tagFailed(Error("No valid definition found for #{tagName}"))
-                        , (defNotAppended) =>
-                            defNotFound(defNotAppended)
-                        )
-                    , (lookupFailed) =>
-                        defNotFound()
-                    )
-            , (noFamily) =>
-                defNotFound()
-            )
-        )
-
-    lookUpParent: (tagName) =>
-        return new Promise((parentFound, parentNotFound) =>
-            @lookUp(@familyName(tagName)).then((family) =>
-                if family.lookUpParent?
-                    parentFound(family.lookUpParent(tagName))
-                else ## should default to super if it gets the chance
-                    parentFound(super(tagName))
-            , (noFamily) =>
-                parentNotFound(noFamily)
-            )
-        )
-
-    familyName: (tagName) =>
-        tagParts = tagName.split('-')
-        familyName = tagParts[0] + "-" + "family"
-        return familyName
-        

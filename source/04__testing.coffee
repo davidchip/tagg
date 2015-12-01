@@ -83,7 +83,7 @@ tag.assert = (testingObj={}, delay=1000) ->
     )
 
 
-tag.log = (tagName, type, verbose, details={}) =>
+tag.log = (type, tagName, verbose, details={}) =>
     """Add event regarding a tagName the central log.
     """
     tagName = tagName.toLowerCase()
@@ -97,7 +97,7 @@ tag.log = (tagName, type, verbose, details={}) =>
     crumb = {
         short: type
         verbose: verbose
-        details: details
+        details: if typeof details is "array" then details.toString() else details
         datetime: datetime
         datetime_ms: datetime_ms
         tagName: tagName

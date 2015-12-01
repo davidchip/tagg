@@ -1,0 +1,19 @@
+<plum-fruit definition size="10">
+    <style>
+        plum-fruit {
+            background-color:purple;
+            border-radius:50%;
+            display:block;
+            height:20px;
+            position:absolute;
+            width:20px;
+        }
+    </style>
+
+    <definition-script>
+        this.created = function () {
+            this.style.top = Math.random() * 100 + "%";
+            this.style.left = Math.random() * 100 + "%";
+        };
+    </definition-script>
+</plum-fruit>
