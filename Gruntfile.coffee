@@ -10,6 +10,7 @@ module.exports = ->
         "concat:libsAndSource"
         "copy:sourceToWWW"
         "copy:testsToWWW"
+        "folder_list:tests"
     ])
 
 

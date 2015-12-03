@@ -39,9 +39,13 @@ tag.assert = (testingObj={}, delay=1000) ->
         )
 
         timeout.then(() =>
+            url = window.location.pathname;
+            filename = url.substring(url.lastIndexOf('/')+1)
+
             results = {
                 passed: []
                 failed: []
+                filename: filename
             }
 
             for tagName, tagCrumbs of testingObj
@@ -72,11 +76,11 @@ tag.assert = (testingObj={}, delay=1000) ->
                                     results.passed.push("#{tagName} had #{eventTest} instance(s) of #{eventType} event(s)")
                                 else
                                     results.failed.push("#{tagName} had #{event["_length"]} instance(s) of #{eventType} being called, not #{eventTest}")
-
+            
             if results.failed.length is 0
-                console.log("test(s) passed", results)
+                console.log("\nPASSED\n", results, "\n\n")
             else
-                console.log("test(s) failed", results)
+                console.log("\nFAILED\n", results, "\n\n")
 
             testsFinished(results)
         )

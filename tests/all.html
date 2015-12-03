@@ -1,0 +1,31 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <script>
+        link = document.createElement('link');
+        link.rel = "import";
+        link.href = "tests.json";
+
+        link.onload = function (e) {
+            json = link.import.body.textContent;
+            tests = JSON.parse(json);
+
+            for (var test = 0; test < tests.length; test++) {
+                iframe = document.createElement('iframe');
+                iframe.src = tests[test].filename;
+                iframe.height = "250px";
+                iframe.width = "250px";
+                iframe.style.display = "block";
+
+                document.body.appendChild(iframe);
+            } 
+        }
+
+        document.body.appendChild(link)
+    </script>
+</body>
+</html>
