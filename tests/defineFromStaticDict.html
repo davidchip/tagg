@@ -22,12 +22,18 @@
 
     <script>
         tag.assertEvents([
-            ["plum-tree", "def-pushed", 1],
+            ["plum-tree", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 50],
             ["plum-fruit", "prop-changed", 50],
-            ["plum-tree", "static-def-appended", 1],
-            ["plum-fruit", "static-def-appended", 1]
-        ]);
+            ["plum-tree", "static-def-load-succeeded", 1],
+            ["plum-fruit", "static-def-load-succeeded", 1]
+        ]).then(function() {
+            t.id("tree").fruits = 10
+
+            tag.assertEvents([
+                ["plum-fruit", "tag-removed", 40]
+            ])
+        });
     </script>
 
     <plum-tree fruits="50" id="tree">

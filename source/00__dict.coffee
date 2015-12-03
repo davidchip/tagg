@@ -6,7 +6,6 @@ class tag.Dictionary
     """
     definitions: {}
     prototypeBase: HTMLElement
-    opens: {}
 
     constructor: (options) ->
         @id = Math.ceil(Math.random() * 1000)
@@ -14,55 +13,18 @@ class tag.Dictionary
         for key, value of options
             @[key] = value
 
-    checkOpenDefinition: (tagName) ->
-        """Async, always resolve - 
-
-           If an open defintion exists, wait for it to be defined
-           and then return else.
-
-           If it doesn't exist, resolve and continue.
-        """
-        return new Promise((resolve, reject) =>
-            if @opens[tagName]?
-                tag.log "open-def-exists", tagName, "open definition found for #{tagName}, waiting until it's defined to return it"
-                @opens[tagName].then(() =>
-                    resolve()
-                , () =>
-                    tag.log "open-def-failed", tagName, "open definition for #{tagName} failed to complete"
-                    resolve()
-                )
-            else
-                tag.log "open-def-dne", tagName, "no open definition for #{tagName} found"
-                resolve()
-        )
-
-    getDefinition: (tagName) ->
-        """Sync, return the definition if it's stored.
-        """
-        def = @definitions[tagName]
-        if def?
-            tag.log "tag-found", tagName, "open definition found for #{tagName}, waiting until it's defined to return it"
-            return def
-        else
-            tag.log "tag-not-found", tagName, "#{tagName} not found in dict (id: #{@id})"
-            return undefined
-
     lookUp: (tagName) =>
         """Given the name of tag, return its definition.
 
            Should implement checkOpenDefinition() and getDefinition()
         """
         return new Promise((tagFound, tagNotFound) =>
-            @checkOpenDefinition(tagName).then(() =>
-                def = @getDefinition(tagName)
-                
-                if def?
-                    tagFound(def)
-                else
-                    tagNotFound()
-            , (noOpenDefinition) =>
+            if @definitions[tagName]?
+                @definitions[tagName].then((_tag) =>
+                    tagFound(_tag)
+                )
+            else
                 tagNotFound()
-            )
         )
 
     getParentName: (tagName) =>
@@ -79,7 +41,30 @@ class tag.Dictionary
                 parentFound(parentName)
         )
 
-    define: (tagName, definition={}) =>
+    define: (arg1, arg2, store=true) =>
+        if typeof arg1 is "string" and typeof arg2 is "object"
+            tagName = arg1
+            JSdef = arg2
+        else if typeof arg1 is "object" and arg1 instanceof HTMLElement
+            tagName = arg1.tagName
+            HTMLdef = arg1
+
+        tagName = tagName.toLowerCase()
+
+        if not @definitions[tagName]? or store is false
+            if JSdef?
+                def = @defineFromJS(tagName, JSdef)
+            else if HTMLdef?
+                def = @defineFromHTML(HTMLdef)
+
+        if store is false
+            return def
+        else
+            @definitions[tagName] = def
+
+        return @definitions[tagName]
+
+    defineFromJS: (tagName, definition={}) =>
         """Given the name of a tag, build its prototype using
            the passed in definition object.
 
@@ -90,12 +75,7 @@ class tag.Dictionary
 
            return: Promise(definition, definition error)
         """
-        if @opens[tagName]?
-            tag.log "def-found", tagName, "definition for #{tagName} already found, ignoring"
-            return @opens[tagName]
-
-        @opens[tagName] = new Promise((acceptDef, rejectDef) =>
-            tag.log "def-started", tagName, "starting a definition for #{tagName}"
+        new Promise((acceptDef, rejectDef) =>
             if typeof tagName isnt "string"
                 tag.log "def-failed", tagName, "#{tagName} tagName should be a string"
                 rejectDef()
@@ -107,6 +87,9 @@ class tag.Dictionary
             if typeof definition isnt "object"
                 tag.log "def-failed", tagName, "#{tagName} definition should be an object"
                 rejectDef()
+
+            tagName = tagName.toLowerCase()
+            tag.log "def-started", tagName, "starting a definition for #{tagName}"
 
             getParentName = new Promise((found, notFound) =>
                 if definition.extends?
@@ -212,13 +195,48 @@ class tag.Dictionary
                 Tag = document.registerElement(tagName, {
                     prototype: prototype })
 
-                @definitions[tagName] = Tag
-                tag.log "def-pushed", tagName, "pushed #{tagName} definition to dict (id: #{@id})"
-                acceptDef()
+                tag.log "def-accepted", tagName, "pushed #{tagName} definition to dict (id: #{@id})"
+                acceptDef(Tag)
             )
         )
-        
-        return @opens[tagName]
+
+    defineFromHTML: (element) ->
+        """Wraps a define call, parsing its elements.
+        """
+        return new Promise((defAccepted, defNotAccepted) =>
+            def = {}
+            for attr in element.attributes
+                if attr.name isnt "definition"
+                    def[attr.name] = element.getAttribute(attr.name)
+
+            childLookUps = []
+            for childEl in element.children
+                childName = childEl.tagName.toLowerCase()
+                childLookUp = new Promise((childParsed) =>
+                    ## bind childrens functions to parents
+                    tag.lookUp(childName).then((childClass) =>
+                        tag.log "child-def-found", element.tagName, "definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
+                        childPrototype = Object.create(childClass.prototype)
+                        def = childClass.prototype.mutateParentDefinition.call(childEl, def)
+                        childParsed()
+                    , (noDefinition) =>
+                        tag.log "no-child-not-def", element.tagName, "no definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
+                        childParsed()
+                    )
+                )
+
+                childLookUps.push(childLookUp)
+
+            Promise.all(childLookUps).then(() =>
+                document.head.appendChild(element)
+
+                @defineFromJS(element.tagName, def).then((_def) =>
+                    defAccepted(_def)
+                ).catch(() =>
+                    defNotAccepted()
+                )
+            )
+        )
 
     bind: (key, value, prototype, tagName) ->
         """If the value isnt a function, build a custom

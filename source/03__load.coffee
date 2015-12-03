@@ -5,12 +5,7 @@ tag.singleLoad = (url) ->
        url:     "http://www.path.to/tag/file.html"
        return:  Promise(file, error)
     """
-    # HACK: REMOVE ME
-    if tag._urls[url]?
-        return tag._urls[url]
-
-    tag._urls[url] = new Promise((resolve, reject) ->
-        
+    return new Promise((resolve, reject) ->
         try
             link = document.createElement('link')
             link.rel = "import"
@@ -27,8 +22,6 @@ tag.singleLoad = (url) ->
         catch error
             reject(Error("#{url} link couldn't be generated"))
     )
-
-    return tag._urls[url]
 
 
 tag.serialLoad = (urls) =>

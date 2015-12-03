@@ -61,7 +61,6 @@ tag.cycleDictsAndCache = (cacheName, cacheKey, cacheValue) =>
     return cache[cacheKey]
 
 
-tag.opens = {}
 tag.lookUp = (tagName) =>
     """Find the first tagDefinition across all dictionaries.
     """
@@ -70,36 +69,28 @@ tag.lookUp = (tagName) =>
         return new Promise((resolve, reject) =>
             reject())
 
-    return tag.cycleDictsAndCache("lookUps", tagName, (dict) =>
-        tag.opens[tagName] = dict
+    return tag.cycleDictsAsync((dict) =>
         return dict.lookUp(tagName))
 
 
 tag.lookUpParent = (tagName) =>
     """Find the parent definition of the passed in tagName.
     """
-    return tag.cycleDictsAndCache("parentLookUps", tagName, (dict) =>
+    return tag.cycleDictsAsync((dict) =>
         return dict.lookUpParent(tagName))
 
 
-tag.opens = {}
-tag.define = (tagName, definition) =>
+tag.define = (arg1, arg2) =>
     """Define a tag.
     """
-    openDict = tag.opens[tagName]
-    if openDict?
-        define = openDict.define(tagName, definition)
-    else
-        define = tag.cycleDictsAsync((dict) =>
-            return dict.define(tagName, definition))
-
-    return define
+    return tag.cycleDictsAsync((dict) =>
+        return dict.define(arg1, arg2))
 
 
 tag.create = (tagName, tagOptions={}) =>
     """Find the first tagDefinition across all dictionaries.
     """
-    return new Promise((tagFound, tagNotFound) =>
+    return new Promise((tagCreated, tagNotCreated) =>
         tag.cycleDictsAsync((dict) =>
             return dict.lookUp(tagName)
         ).then((tagDef) =>
@@ -108,26 +99,9 @@ tag.create = (tagName, tagOptions={}) =>
             for key, value of tagOptions
                 el[key] = value
 
-            tagFound(el)
+            tagCreated(el)
         , (tagNotFound) =>
             tag.log "tag-not-created", tagName, "tag #{tagName} had a failed lookup"
-            tagNotFound()
+            tagNotCreated()
         )
     )
-
-
-tag._create = (tagName, tagOptions={}) ->
-    """Create the specified tag with the passed in options.
-    """
-    return tag.cycleDicts((dict) ->
-        def = dict.getDefinition(tagName)
-        if def?
-            el = document.createElement(tagName)
-            for key, value of tagOptions
-                el[key] = value
-            
-            return el
-        else
-            return false
-    )
-

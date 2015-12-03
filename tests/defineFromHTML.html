@@ -39,8 +39,7 @@
 
                 if (remainingFruits > 0) {
                     while (remainingFruits > 0) {
-                        newFruit = tag._create("plum-fruit");
-                        this.appendChild(newFruit);
+                        this.drawFruit();
                         remainingFruits--;
                     }
                 } else if (remainingFruits < 0) {
@@ -49,6 +48,13 @@
                         remainingFruits++;
                     }
                 }
+            }
+
+            this.drawFruit = function() {
+                tree = this;
+                tag.create("plum-fruit").then(function (fruit) {
+                    tree.appendChild(fruit);
+                });
             }
         </definition-script>
     </plum-tree>
@@ -75,7 +81,10 @@
 
     <script>
         tag.assertEvents([
-            ["plum-tree", "def-pushed", 1],
+            ["definition-script", "def-started", 1],
+            ["definition-script", "def-accepted", 1],
+            ["plum-tree", "def-accepted", 1],
+            ["plum-fruit", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 50],
             ["plum-fruit", "prop-changed", 50]
         ]).then(function(){

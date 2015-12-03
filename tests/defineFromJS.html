@@ -39,9 +39,7 @@
 
                     if (remainingFruits > 0) {
                         while (remainingFruits > 0) {
-                            this.appendChild(tag._create("plum-fruit", {
-                                size: Math.ceil(Math.random() * 100)
-                            }));
+                            this.drawFruit();
                             remainingFruits--;
                         }
                     }
@@ -51,6 +49,12 @@
                             remainingFruits++;
                         }
                     }
+                },
+                drawFruit: function() {
+                    tree = this;
+                    tag.create("plum-fruit").then(function(fruit){
+                        tree.appendChild(fruit);
+                    });
                 }
             });
 

@@ -9,6 +9,8 @@ class tag.StaticDictionary extends tag.Dictionary
     dir: "tags"                        ## /dir/
     extensions: ['html', 'js']         ## [html, js]
 
+    jumps: {}
+
     constructor: (options) ->
         super options
 
@@ -16,52 +18,53 @@ class tag.StaticDictionary extends tag.Dictionary
         @importsEl.id = "static-import"
         document.body.appendChild(@importsEl)
 
+    define: (arg1, arg2, store=true) ->
+        if typeof arg1 is "string" and typeof arg2 is "object"
+            tagName = arg1
+        else if typeof arg1 is "object" and arg1 instanceof HTMLElement
+            tagName = arg1.tagName
+
+        if @jumps[tagName] is true
+            return super(arg1, arg2, false)
+        else
+            return super(arg1, arg2)
+
     lookUp: (tagName) =>
-        return new Promise((tagFound, tagNotFound) =>
-            @checkOpenDefinition(tagName).then(() =>
-                def = @getDefinition(tagName)
-                if def?
-                    tagFound(def)
-                else
-                    urls = @nameToUrls(tagName)
-                    tag.serialLoad(urls).then((link) =>
-                        tag.log "static-def-load-succeeded", tagName, "static-definition for #{tagName} was found at #{link.href}"
-                        @importDefinition(link).then(() =>
-                            tag.log "static-def-appended", tagName, "static definition for #{tagName} appended"
-                            tagFound(@getDefinition(tagName))
-                        , (linkNotAppended) =>
-                            tag.log "static-def-not-appended", tagName, "static definition for #{tagName} was not appended"
+        if not @definitions[tagName]?
+            @definitions[tagName] = new Promise((tagFound, tagNotFound) =>
+                urls = @nameToUrls(tagName)
+                tag.serialLoad(urls).then((link) =>
+                    tag.log "static-def-load-succeeded", tagName, "static-definition for #{tagName} was found at #{link.href}"
+                    
+                    splitURL = link.href.split('.')
+                    extension = splitURL[splitURL.length - 1]
+                    if extension is "js"
+                        @jumps[tagName] = true
+                        func = new Function("text", "return eval(text)") ## needs love
+                        def = func.apply(@, [link.import.body.textContent])
+                        def.then((_def) =>
+                            tagFound(_def)
+                        ).catch(() =>
+                            tagNotFound())
+
+                    else if extension is "html"
+                        _import = link.import.body.children[0]
+
+                        @defineFromHTML(_import).then((def) =>
+                            tag.log "def-accepted-html", tagName, "html def for #{tagName} was successfully defined"
+                            tagFound(def)
+                        (defNotSuccessful) =>
+                            tag.log "def-html-not-successful", tagName, "html def for #{tagName} was not successfully defined"
                             tagNotFound()
                         )
-                    , (loadRejected) =>
-                        tag.log "static-def-load-failed", tagName, "static definition for #{tagName} couldn't be found", urls
-                        tagNotFound()
-                    )
-            , (noOpenDefinition) =>
-                tagNotFound()
+
+                , (loadRejected) =>
+                    tag.log "static-def-load-failed", tagName, "static definition for #{tagName} couldn't be found", urls
+                    tagNotFound()
+                )
             )
-        )
 
-    importDefinition: (link) =>
-        new Promise((defParsed, defNotParsed) =>
-            splitURL = link.href.split('.')
-            extension = splitURL[splitURL.length - 1]
-            if extension is "js"
-                script = document.createElement("script")
-                script.type = "text/javascript"
-                script.textContent = link.import.body.textContent
-                @importsEl.appendChild(script)
-                defParsed()
-
-            else if extension is "html"
-                importChildren = link.import.body.children
-                for child in importChildren
-                    @importsEl.appendChild(child)
-                
-                defParsed()
-            else
-                defNotParsed()
-        )
+        return @definitions[tagName]
 
     nameToUrls: (tagName) =>
         """Map a tagName to an array of the potential locations
