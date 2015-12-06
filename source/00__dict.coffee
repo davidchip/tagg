@@ -1,8 +1,8 @@
 tag = {}
 
-tag.dicts = []
-class tag.Dictionary
-    """A dictionary stores the definitions of tags.
+tag.banks = []
+class tag.Bank
+    """A bank stores the definitions of tags.
     """
     definitions: {}
     prototypeBase: HTMLElement
@@ -71,7 +71,6 @@ class tag.Dictionary
            tagName (string):        the hyphenated name of the tag to register
            definitions (object):    the ways this tagName can be configured.
                extends:             defines what tag to extend
-           publish:                 post this definition to a remote dictionary
 
            return: Promise(definition, definition error)
         """
@@ -195,7 +194,7 @@ class tag.Dictionary
                 Tag = document.registerElement(tagName, {
                     prototype: prototype })
 
-                tag.log "def-accepted", tagName, "pushed #{tagName} definition to dict (id: #{@id})"
+                tag.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
                 acceptDef(Tag)
             )
         )

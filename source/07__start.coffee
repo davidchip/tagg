@@ -34,8 +34,8 @@ window.t = {
 }
 
 
-## push a sane default dictionary
-tag.dicts.push(new tag.Dictionary())
+## push a sane default bank
+tag.banks.push(new tag.Bank())
 
 
 ## hide definitions by default

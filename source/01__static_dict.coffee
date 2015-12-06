@@ -1,5 +1,5 @@
-class tag.StaticDictionary extends tag.Dictionary
-    """A dictionary that looks for definitions located in a
+class tag.FileBank extends tag.Bank
+    """A bank that looks for definitions located in a
        a directory structure. 
     """
     protocol: window.location.protocol ## http
@@ -13,10 +13,6 @@ class tag.StaticDictionary extends tag.Dictionary
 
     constructor: (options) ->
         super options
-
-        @importsEl = document.createElement("div")
-        @importsEl.id = "static-import"
-        document.body.appendChild(@importsEl)
 
     define: (arg1, arg2, store=true) ->
         if typeof arg1 is "string" and typeof arg2 is "object"
@@ -39,9 +35,9 @@ class tag.StaticDictionary extends tag.Dictionary
                     splitURL = link.href.split('.')
                     extension = splitURL[splitURL.length - 1]
                     if extension is "js"
-                        @jumps[tagName] = true
-                        func = new Function("text", "return eval(text)") ## needs love
-                        def = func.apply(@, [link.import.body.textContent])
+                        @jumps[tagName] = true                              ## needs love
+                        func = new Function("text", "return eval(text)")    ## needs love
+                        def = func.apply(@, [link.import.body.textContent]) ## needs love
                         def.then((_def) =>
                             tagFound(_def)
                         ).catch(() =>
@@ -97,15 +93,15 @@ class tag.StaticDictionary extends tag.Dictionary
         return urls
 
 
-class tag.FamilyDictionary extends tag.StaticDictionary
-    """A family dictionary acts like a collection of mini
-       static dictionaries. Each family acts as a mini static dictionary, allowing
-       hooks into identically named functions:
+class tag.FamilyBank extends tag.FileBank
+    """A family bank acts like a collection of mini
+       files banks. Each family acts as a mini static bank, 
+       allowing hooks into identically named functions:
 
        Family files are located in a "family" file. 
        Like: /a/family.html
 
-       See tag.StaticDictionary for the default behavior
+       See tag.FileBank for the default behavior
        of these functions.
     """
     lookUp: (tagName) =>
