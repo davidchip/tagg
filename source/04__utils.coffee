@@ -1,5 +1,5 @@
-tag._urls = {}
-tag.singleLoad = (url) ->
+tag.utils = {}
+tag.utils.singleLoad = (url) ->
     """Load a single file from a single precise URL
 
        url:     "http://www.path.to/tag/file.html"
@@ -24,7 +24,7 @@ tag.singleLoad = (url) ->
     )
 
 
-tag.serialLoad = (urls) =>
+tag.utils.serialLoad = (urls) =>
     """Pass in an array of URLs, and return the first link
        that is loaded successfully.
 
@@ -36,7 +36,7 @@ tag.serialLoad = (urls) =>
     return new Promise((resolve, reject) =>
         _loadURL = (i=0) =>
             if i < urls.length
-                tag.singleLoad(urls[i]).then((link) =>
+                tag.utils.singleLoad(urls[i]).then((link) =>
                     resolve(link)
                 , (error) =>
                     _loadURL(i+1)
@@ -46,3 +46,36 @@ tag.serialLoad = (urls) =>
 
         _loadURL()
     )
+
+
+tag.utils.crawl = (el) ->
+    """Parse an el, and fetch its definition if it has one
+    """
+    _crawl = (el) =>
+        return new Promise((crawled, failedCrawl) ->    
+            if not el? or not el.children? or not el.tagName?
+                return
+
+            tagName = el.tagName.toLowerCase()
+            for attribute in el.attributes
+                if attribute.name is "definition"
+                    tag.log "def-html-started", tagName, "definition attribute found on #{tagName}, starting definition"
+                    tag.define(el).then((def) =>
+                        crawled(def)
+                    ).catch(() =>
+                        crawled()
+                    )
+                    return 
+
+            tag.lookUp(tagName).then((tagDef) ->
+                crawled()
+            , (elFailedToLoad) ->
+                crawled()
+            )
+        )
+
+    _crawl(el).then(() =>
+        for child in el.children
+            tag.utils.crawl(child)
+    )
+    

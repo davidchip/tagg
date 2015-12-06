@@ -1,76 +1,43 @@
-## crawl any changes to document.body
-tag.loaded = new Promise((loaded) =>
-    document.addEventListener("DOMContentLoaded", (event) =>
-        observer = new MutationObserver((mutations) =>
-            for mutation in mutations
-                for child in mutation.addedNodes
-                    tag.crawl(child)
-        )
+# tag.cycleBanks = (func) =>
+#     """Pass in a function that cycles over tag.banks,
+#        running the passed in function over each bank.
+#     """
+#     bankLookUp = (i=0) =>
+#         if tag.banks.length is 0
+#             tag.log "bank-empty", tagName, "tag.banks is empty; push a bank before using any commands."
+#             return false
 
-        observer.observe(document.body, { 
-            childList: true, 
-            subtree: true
-        })
+#         if i < tag.banks.length
+#             bank = tag.banks[i]
+#             bankResponse = func(bank)
+#             if bankResponse is false
+#                 bankLookUp(i+1)
+#             else
+#                 return bankResponse
+#         else
+#             return false
 
-        tag.crawl(document.body)
-
-        console.log("lifecycle logs", tag.logs)
-        loaded()
-    )
-)
-
-
-## attach to window + basic aliases
-window.tag = tag
-window.t = {
-    id : (id) ->
-        return document.getElementById(id)
-
-    class: (className) ->
-        return document.getElementsByClassName(className)
-
-    name: (tagName) ->
-        return document.getElementsByTagName(tagName)
-}
+#     bankLookUp()
 
 
-## push a sane default bank
-tag._banks = []
-tag.banks.add = (bank) ->
-    tag._banks.push(bank)
-    tag.log "pushed-bank", "tag_bank", "pushed bank #{bank.id}"
-    tag.loaded.then(() =>
-        tag.crawl(document.body))
+# tag.caches = {}
+# tag.cycleBanksAndCache = (cacheName, cacheKey, cacheValue) =>
+#     """Cache a key/value pair in the passed in cache
+#        specified by cacheName.
+#     """
+#     if not tag.caches[cacheName]?
+#         tag.caches[cacheName] = {}
 
-basic_vocab = new tag.Bank()
-basic_vocab.define('tag-bank', {
-    path: "/"
-    type: ""
-    created: () ->
-        if @type is "file"
-            tag.banks.add(new tag.FileBank({
-                path: @path }))
-        else 
-            tag.banks.add(new tag.Bank())
-})
+#     cache = tag.caches[cacheName] 
 
-basic_vocab.define("definition-script", {
-    mutateParentDefinition: (def) ->
-        func = new Function(this.textContent)
-        func.call(def)
-        return def
-})
+#     if not cache[cacheKey]?
+#         cache[cacheKey] = tag.cycleBanks((bank) =>
+#             if typeof cacheValue is "function"
+#                 return cacheValue(bank)
+#             else
+#                 return cacheValue )
 
-tag.banks.add(basic_vocab)
-
-# tag.banks.push(vocab)
-
-
-## hide definitions by default
-style = document.createElement("style")
-style.type = "text/css"
-style.appendChild(document.createTextNode("*[definition]{display:none};"));
-document.head.appendChild(style)
+#     return cache[cacheKey]
 
 
 

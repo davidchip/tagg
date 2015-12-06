@@ -1,9 +1,0 @@
-{
-  "name": "helix-lib",
-  "root": "./target/",
-  "clean_urls": true,
-  "error_page": "error.html",
-  "routes": {
-  	"/*": "/helix.js"
-  }
-}
