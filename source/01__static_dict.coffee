@@ -6,7 +6,7 @@ class tag.FileBank extends tag.Bank
     hostname: window.location.hostname ## www.tag.to
     port: if window.location.port isnt "" then window.location.port else 80
 
-    dir: "tags"                        ## /dir/
+    path: "/"                          ## default to root of server
     extensions: ['html', 'js']         ## [html, js]
 
     jumps: {}
@@ -29,8 +29,9 @@ class tag.FileBank extends tag.Bank
         if not @definitions[tagName]?
             @definitions[tagName] = new Promise((tagFound, tagNotFound) =>
                 urls = @nameToUrls(tagName)
+                tag.log "loading-possible-tag-files", tagName, "loading files for #{tagName}", urls
                 tag.serialLoad(urls).then((link) =>
-                    tag.log "static-def-load-succeeded", tagName, "static-definition for #{tagName} was found at #{link.href}"
+                    tag.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found at #{link.href}"
                     
                     splitURL = link.href.split('.')
                     extension = splitURL[splitURL.length - 1]
@@ -39,8 +40,10 @@ class tag.FileBank extends tag.Bank
                         func = new Function("text", "return eval(text)")    ## needs love
                         def = func.apply(@, [link.import.body.textContent]) ## needs love
                         def.then((_def) =>
+                            tag.log "def-file-accepted-js", tagName, "tag #{tagName} was defined from JS file successffully"
                             tagFound(_def)
                         ).catch(() =>
+                            tag.log "def-file-not-accepted-js", tagName, "tag #{tagName} was not defined by JS file successffully"
                             tagNotFound())
 
                     else if extension is "html"
@@ -55,7 +58,7 @@ class tag.FileBank extends tag.Bank
                         )
 
                 , (loadRejected) =>
-                    tag.log "static-def-load-failed", tagName, "static definition for #{tagName} couldn't be found", urls
+                    tag.log "file-def-load-failed", tagName, "file definition for #{tagName} couldn't be found", urls
                     tagNotFound()
                 )
             )
@@ -70,19 +73,19 @@ class tag.FileBank extends tag.Bank
            return:  ["http://www.tag.to/a/file/to/a/partial.html", 
                      "http://www.tag.to/a/file/to/a/partial.js", ]
         """
-        path = "/" + tagName.replace(/\-/g, "/")
+        split_path = @path.split("")                    ## /a/path
+        if split_path.length > 0 and split_path[split_path.length - 1] isnt "/"
+            split_path.push("/")                        ## /a/path/
+
+        path = split_path.join("") + tagName.replace(/\-/g, "/")
+        _no_extension = path.split('.').length <= 1
 
         parser = document.createElement("a")
         parser.href = path
-        path = parser.pathname
-
-        _no_extension = path.split('.').length <= 1
         parser.protocol = @protocol
         parser.hostname = @hostname
         parser.port     = @port
-        parser.pathname = @dir + path
 
-        ## CAN SPLIT OUT EXTENDING
         urls = []
         if _no_extension
             for extension in @extensions
@@ -95,7 +98,7 @@ class tag.FileBank extends tag.Bank
 
 class tag.FamilyBank extends tag.FileBank
     """A family bank acts like a collection of mini
-       files banks. Each family acts as a mini static bank, 
+       files banks. Each family acts as a mini file bank, 
        allowing hooks into identically named functions:
 
        Family files are located in a "family" file. 
@@ -124,7 +127,7 @@ class tag.FamilyBank extends tag.FileBank
 
                     ## should default to super if it gets the chance
                     tag.serialLoad(urls).then((tagLink) =>
-                        ## how to parse static definitions
+                        ## how to parse file definitions
                         if family.importDefinition?
                             parsed = family.importDefinition(tagLink.import)
                         else

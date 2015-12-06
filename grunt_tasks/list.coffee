@@ -6,14 +6,14 @@ module.exports = ->
 
   @config "folder_list", {
 
-    tests: {
+    testsJSON: {
       options: {
         files: true,
         folders: true
       }
 
       files: {      
-        'tests/tests.json': ['tests/*.html', '!tests/all.html']
+        'tests/tests.json': ['tests/**/test_*.html']
       }  
     }
 

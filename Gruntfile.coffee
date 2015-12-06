@@ -9,8 +9,8 @@ module.exports = ->
         "coffee:compileSource"
         "concat:libsAndSource"
         "copy:sourceToWWW"
+        "folder_list:testsJSON"
         "copy:testsToWWW"
-        "folder_list:tests"
     ])
 
 

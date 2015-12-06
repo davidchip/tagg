@@ -57,10 +57,10 @@ class tag.Bank
             else if HTMLdef?
                 def = @defineFromHTML(HTMLdef)
 
-        if store is false
-            return def
-        else
-            @definitions[tagName] = def
+            if store is false
+                return def
+            else
+                @definitions[tagName] = def
 
         return @definitions[tagName]
 
@@ -138,24 +138,33 @@ class tag.Bank
                         if @getAttribute('definition') is ""
                             return
 
-                        for _default, defaultVal of @defaults
-                            if @getAttribute(_default)?
-                                @[_default] = @getAttribute(_default)
-                            else if not @[_default]?
-                                @[_default] = defaultVal
+                        ## iterate through underlying properties
+                        ## if an attribute is already set, update the
+                        ## property
+
+                        ## if the attr isn't set in the underlying properties, 
+                        ## update the property to the default underlying value
+                        for key, value of @properties
+                            if @hasAttribute(key) is true
+                                attrVal = @parseProperty(@getAttribute(key))
+                                if @[key] isnt attrVal
+                                    @[key] = attrVal
                             else
-                                @[_default] = @[_default]
+                                @[key] = value
 
                         ## template our tag
                         if @template?
                             @innerHTML = @template
 
                         ## watch our tag for any updates made to its attributes
-                        ## if an update occurs, update the underlying property
+                        ## if an update occurs, update the property
                         propWatcher = new MutationObserver((mutations) =>
                             for mutation in mutations
                                 propName = mutation.attributeName
-                                @[propName] = @getAttribute(propName))
+                                parsedVal = @parseProperty(@getAttribute(propName))
+                                if @[propName] isnt parsedVal
+                                    @[propName] = parsedVal
+                        )
 
                         propWatcher.observe(@, { 
                             attributes: true
@@ -185,9 +194,18 @@ class tag.Bank
                 prototype.template = definition.template
                 delete(definition.template)
 
+                ## add element parsing
+                prototype["parseProperty"] = (value) ->
+                    if value is ""
+                        value = value
+                    else if isNaN(Number(value)) is false
+                        value = Number(value)
+
+                    return value
+
                 ## bind definition properties and methods to prototype
                 ## shove them in defaults if applicable
-                prototype.defaults = {}
+                prototype.properties = {}
                 for key, value of definition
                     prototype = @bind(key, value, prototype, tagName)
 
@@ -248,27 +266,25 @@ class tag.Bank
         else
             Object.defineProperty(prototype, key, {
                 get: () ->
-                    return @["__" + key]
+                    return @["properties"][key]
                 set: (value) ->
-                    ## parse the property
-                    if Number(value) isnt NaN
-                        value = Number(value)
-
-                    ## don't update a property unless a change has occured
                     old = @[key]
-                    if old isnt value
-                        @attached.then(() =>
-                            if @getAttribute('definition') is ""
-                                return
+                    parsedVal = prototype.parseProperty(value)
 
-                            @setAttribute(key, value)
-                            @changed(key, old, value))
+                    @attached.then(() =>
+                        if @getAttribute('definition') is ""
+                            return
 
-                        @["__" + key] = value
+                        @setAttribute(key, value)
+                    )
+
+                    if old isnt parsedVal
+                        @["properties"][key] = value
+                        @changed(key, old, value)
                         tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{old} to #{value}"
             })
 
             ## store our bound properties in a defaults obj (try and avoid overhead) 
-            prototype.defaults[key] = value
+            prototype["properties"][key] = prototype.parseProperty(value)
 
         return prototype

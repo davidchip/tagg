@@ -8,14 +8,14 @@ module.exports = ->
 
     sourceToWWW: {
       files: [{
-        src: 'target/tag.js'
+        src: 'dist/tag.js'
         dest: '../www/tag.js',
       }]
     }
 
     minifiedToWWW: {
       files: [{
-        src: 'target/tag.min.js'
+        src: 'dist/tag.min.js'
         dest: '../www/tag.min.js',
       }]
     }

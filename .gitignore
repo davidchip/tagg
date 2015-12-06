@@ -3,3 +3,4 @@ node_modules/
 target/
 .divshot-cache/
 src/assets/theatre/theater_seats.mtl
+/dist

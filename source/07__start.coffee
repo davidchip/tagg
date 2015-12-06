@@ -35,7 +35,35 @@ window.t = {
 
 
 ## push a sane default bank
-tag.banks.push(new tag.Bank())
+tag._banks = []
+tag.banks.add = (bank) ->
+    tag._banks.push(bank)
+    tag.log "pushed-bank", "tag_bank", "pushed bank #{bank.id}"
+    tag.loaded.then(() =>
+        tag.crawl(document.body))
+
+basic_vocab = new tag.Bank()
+basic_vocab.define('tag-bank', {
+    path: "/"
+    type: ""
+    created: () ->
+        if @type is "file"
+            tag.banks.add(new tag.FileBank({
+                path: @path }))
+        else 
+            tag.banks.add(new tag.Bank())
+})
+
+basic_vocab.define("definition-script", {
+    mutateParentDefinition: (def) ->
+        func = new Function(this.textContent)
+        func.call(def)
+        return def
+})
+
+tag.banks.add(basic_vocab)
+
+# tag.banks.push(vocab)
 
 
 ## hide definitions by default

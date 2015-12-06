@@ -5,16 +5,6 @@
 </head>
 
 <body>
-    <script>
-        tag.define("definition-script", {
-            mutateParentDefinition: function (def) {
-                func = new Function(this.textContent)
-                func.call(def)
-                return def
-            }
-        })
-    </script>
-
     <plum-tree definition fruits="30">
         <style>
             plum-tree {
@@ -86,15 +76,15 @@
             ["plum-tree", "def-accepted", 1],
             ["plum-fruit", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 50],
-            ["plum-fruit", "prop-changed", 50]
-        ]).then(function(){
-            t.id("tree").fruits = 5
-            t.name("plum-fruit")[0].size = 20
-            t.name("plum-fruit")[0].size = 25
+            ["plum-fruit", "prop-changed", 1]
+        ], 1000).then(function(){
+            t.id("tree").fruits = 5;
+            t.name("plum-fruit")[0].size = 20;
+            t.name("plum-fruit")[0].size = 25;
 
             tag.assertEvents([
                 ["plum-fruit", "tag-removed", 45],
-                ["plum-fruit", "prop-changed", 52]
+                ["plum-fruit", "prop-changed", 3]
             ])
         });
     </script>
@@ -103,6 +93,6 @@
         <plum-fruit size="15"></plum-fruit>
         <div></div>
         <h1></h1>
-    </plum-tre>
+    </plum-tree>
 </body>
 </html>

@@ -16,12 +16,16 @@
 
             for (var test = 0; test < tests.length; test++) {
                 iframe = document.createElement('iframe');
-                iframe.src = tests[test].filename;
+                iframe.src = "/" + tests[test].location;
                 iframe.height = "250px";
                 iframe.width = "250px";
                 iframe.style.display = "block";
-
                 document.body.appendChild(iframe);
+
+                a = document.createElement("a")
+                a.href = iframe.src
+                a.innerHTML = iframe.src + "<br><br>"
+                document.body.appendChild(a)
             } 
         }
 

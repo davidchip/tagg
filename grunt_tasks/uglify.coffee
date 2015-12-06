@@ -8,15 +8,15 @@ module.exports = ->
 
     tagJS: {
       files: [{
-        src: 'target/tag.js'
-        dest: 'target/tag.min.js',
+        src: 'dist/tag.js'
+        dest: 'dist/tag.min.js',
       }]
     }
 
     sourceJS: {
       files: [{
-      	src: 'target/source.js'
-      	dest: 'target/source.min.js'
+      	src: 'dist/source.js'
+      	dest: 'dist/source.min.js'
       }]
     }
 

@@ -5,27 +5,27 @@ tag.logs = {
 }
 
 
-tag.assertEvent = (tagName, eventName, eventDetails) ->
+tag.assertEvent = (category, eventName, eventDetails) ->
     testingObj = {}
-    testingObj[tagName] = {}
-    testingObj[tagName][eventName] = eventDetails
+    testingObj[category] = {}
+    testingObj[category][eventName] = eventDetails
     return tag.assert(testingObj)
 
 
-tag.assertEvents = (events=[]) ->
+tag.assertEvents = (events=[], delay) ->
     testingObj = {}
 
     for event in events
-        tagName = event[0]
+        category = event[0]
         eventName = event[1]
         eventDetails = event[2]
         
-        if not testingObj[tagName]?
-            testingObj[tagName] = {}
+        if not testingObj[category]?
+            testingObj[category] = {}
 
-        testingObj[tagName][eventName] = eventDetails
+        testingObj[category][eventName] = eventDetails
     
-    return tag.assert(testingObj)
+    return tag.assert(testingObj, delay)
 
 
 tag.assert = (testingObj={}, delay=1000) ->
@@ -46,36 +46,37 @@ tag.assert = (testingObj={}, delay=1000) ->
                 passed: []
                 failed: []
                 filename: filename
+                logs: tag.logs
             }
 
-            for tagName, tagCrumbs of testingObj
-                if not tag.logs[tagName]?
-                    results.failed.push("#{tagName} has had no events at all")
+            for category, tagCrumbs of testingObj
+                if not tag.logs[category]?
+                    results.failed.push("#{category} has had no events at all")
                 else
                     for eventType, eventTest of tagCrumbs
-                        event = tag.logs[tagName][eventType]
+                        event = tag.logs[category][eventType]
                         if not event?
-                            results.failed.push("#{tagName} has had no events of type #{eventType}")
+                            results.failed.push("#{category} has had no events of type #{eventType}")
                         else
                             if typeof eventTest is "object"
                                 for testKey, testValue of eventTest
                                     eventValue = event[testKey]
                                     if eventValue is testValue
-                                        results.passed.push("#{tagName} had an event #{eventType} where #{testKey} equalled #{testValue}")
+                                        results.passed.push("#{category} had an event #{eventType} where #{testKey} equalled #{testValue}")
                                     else
-                                        results.failed.push("#{tagName} had an event #{eventType} where #{testKey} equalled #{eventValue} instead of #{testValue}")
+                                        results.failed.push("#{category} had an event #{eventType} where #{testKey} equalled #{eventValue} instead of #{testValue}")
                             else if typeof eventTest is "function"
                                 _eventTest = eventTest(event)
                                 if _eventTest is true
-                                    results.passed.push("#{tagName} function for #{eventType} passed")
+                                    results.passed.push("#{category} function for #{eventType} passed")
                                 else
-                                    results.failed.push("#{tagName} function for #{eventType} failed")
+                                    results.failed.push("#{category} function for #{eventType} failed")
                             else if typeof eventTest is "number"
                                 if event["_length"] is eventTest
                                     testLength = 
-                                    results.passed.push("#{tagName} had #{eventTest} instance(s) of #{eventType} event(s)")
+                                    results.passed.push("#{category} had #{eventTest} instance(s) of #{eventType} event(s)")
                                 else
-                                    results.failed.push("#{tagName} had #{event["_length"]} instance(s) of #{eventType} being called, not #{eventTest}")
+                                    results.failed.push("#{category} had #{event["_length"]} instance(s) of #{eventType} being called, not #{eventTest}")
             
             if results.failed.length is 0
                 console.log("\nPASSED\n", results, "\n\n")
@@ -87,40 +88,44 @@ tag.assert = (testingObj={}, delay=1000) ->
     )
 
 
-tag.log = (type, tagName, verbose, details={}) =>
-    """Add event regarding a tagName the central log.
+tag.log = (type, category, verbose, details={}) =>
+    """Add event regarding a category the central log.
     """
-    tagName = tagName.toLowerCase()
+    if not verbose?
+        verbose = type
+
+    category = "#{category}"
+    category = category.toLowerCase()
     today = new Date()
     date = today.toLocaleDateString()
     time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds()
     datetime = date + " " + time
     datetime_ms = Date.now()
 
-    key = "#{tag.trail_index} #{time}: #{tagName} / #{type}"
+    key = "#{tag.trail_index} #{time}: #{category} / #{type}"
     crumb = {
         short: type
         verbose: verbose
         details: if typeof details is "array" then details.toString() else details
         datetime: datetime
         datetime_ms: datetime_ms
-        tagName: tagName
+        category: category
     }
 
     ## track by tag
-    if not tag.logs[tagName]?
-        tag.logs[tagName] = {}
-        tag.logs[tagName]["_all"] = {}
-        tag.logs[tagName]["_verbose"] = {}
+    if not tag.logs[category]?
+        tag.logs[category] = {}
+        tag.logs[category]["_all"] = {}
+        tag.logs[category]["_verbose"] = {}
 
-    if not tag.logs[tagName][type]?
-        tag.logs[tagName][type] = {}
-        tag.logs[tagName][type]['_length'] = 0
+    if not tag.logs[category][type]?
+        tag.logs[category][type] = {}
+        tag.logs[category][type]['_length'] = 0
 
-    tag.logs[tagName][type][key] = crumb
-    tag.logs[tagName][type]['_length'] = Object.keys(tag.logs[tagName][type]).length - 1 ## - 1 for _length property
-    tag.logs[tagName]["_all"][key] = crumb
-    tag.logs[tagName]["_verbose"][tag.trail_index + " " + time] = verbose
+    tag.logs[category][type][key] = crumb
+    tag.logs[category][type]['_length'] = Object.keys(tag.logs[category][type]).length - 1 ## - 1 for _length property
+    tag.logs[category]["_all"][key] = crumb
+    tag.logs[category]["_verbose"][tag.trail_index + " " + time] = verbose
     
     ## track by time
     tag.logs["_all"][key] = crumb

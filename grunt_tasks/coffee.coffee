@@ -9,7 +9,7 @@ module.exports = ->
     compileSource: {
       files: [{
         src: 'source/**/*.coffee'
-        dest: 'target/source.js'
+        dest: 'dist/source.js'
       }]
       options: {
         join: true

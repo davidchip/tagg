@@ -27,6 +27,9 @@
         tag.loaded.then(function() {
             tag.define("plum-tree", {
                 fruits: "10",
+                created: function() {
+                    this.drawFruits();
+                },
                 changed: function(name, oldVal, newVal) {
                     if (name === "fruits") {
                         return this.drawFruits();

@@ -4,14 +4,15 @@ tag.cycleBanksAsync = (func) =>
     """
     return new Promise((resolve, reject) =>
         bankLookUp = (i=0) =>
-            if tag.banks.length is 0
-                reject("tag.banks is empty; push a bank before using any commands.")
-            if i < tag.banks.length
-                bank = tag.banks[i]
+            if tag._banks.length is 0
+                reject("tag._banks is empty; push a bank before using any commands.")
+            if i < tag._banks.length
+                bank = tag._banks[i]
                 func(bank).then((bankResolve) =>
                     resolve(bankResolve)
                 , (bankReject) =>
-                    bankLookUp(i+1))
+                    bankLookUp(i+1)
+                )
             else
                 reject(Error("promise #{func} failed across all bankionaries"))
 
@@ -68,7 +69,7 @@ tag.lookUp = (tagName) =>
     if tagParts.length < 2
         return new Promise((resolve, reject) =>
             reject())
-
+            
     return tag.cycleBanksAsync((bank) =>
         return bank.lookUp(tagName))
 
@@ -91,9 +92,7 @@ tag.create = (tagName, tagOptions={}) =>
     """Find the first tagDefinition across all bankionaries.
     """
     return new Promise((tagCreated, tagNotCreated) =>
-        tag.cycleBanksAsync((bank) =>
-            return bank.lookUp(tagName)
-        ).then((tagDef) =>
+        tag.lookUp(tagName).then((def) =>
             tag.log "tag-created", tagName, "tag #{tagName} was successfully created"
             el = document.createElement(tagName)
             for key, value of tagOptions

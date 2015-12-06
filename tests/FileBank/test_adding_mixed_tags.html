@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <tag-bank type="file" path=""></tag-bank>
+
+    <script>
+        tag.assertEvents([
+            ["plum-tree", "def-accepted", 1],
+            ["plum-fruit", "tag-attached", 50],
+            ["plum-fruit", "prop-changed", 1],
+            ["plum-tree", "prop-changed", 1],
+            ["plum-tree", "file-def-load-succeeded", 1],
+            ["plum-fruit", "file-def-load-succeeded", 1],
+            ["tag-bank", "def-accepted", 1],
+            ["tag_bank", "pushed-bank", 2]
+        ]).then(function() {
+            tree = t.id("tree");
+            tree.fruits = 10;
+
+            tag.assertEvents([
+                ["plum-tree", "prop-changed", 2],
+                ["plum-fruit", "tag-removed", 40]
+            ]);
+        });
+    </script>
+
+    <plum-tree fruits="50" id="tree">
+        <plum-fruit size="15"></plum-fruit>
+        <div></div>
+        <h1></h1>
+    </plum-tree>
+</body>
+</html>
