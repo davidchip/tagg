@@ -16,5 +16,17 @@ tag.loaded = new Promise((loaded) =>
 
         console.log("lifecycle logs", tag.logs)
         loaded()
+
+        tag.frame = 0
+        update = () ->
+            requestAnimationFrame(update)
+
+            for element in tag.updates
+                element.update(tag.frame)
+
+            tag.frame++
+
+        update()
+
     )
 )

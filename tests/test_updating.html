@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <plum-fruit definition size="5">
+        <style>
+            plum-fruit {
+                border-radius:50%;
+                background-color:purple;
+                height:30px; width:30px;
+                position:absolute;
+                -webkit-transition: all 1s ease-in-out;
+            }
+        </style>
+
+        <definition-script>
+            this.update = function(frame) {
+                if (frame % 50 == 0) {
+                    this.style.top = Math.random() * 100 + "%";
+                    this.style.left = Math.random() * 100 + "%";
+                }
+            }
+
+            this.changed = function(name, oldVal, newVal){
+                switch (name) {
+                    case "size":
+                        this.style.width = newVal + "px";
+                        this.style.height = newVal + "px";
+                }
+            }
+        </definition-script>
+    </plum-fruit>
+
+    <script>
+        tag.assertEvents([
+            ["plum-fruit", "tag-attached", 2]
+        ]).then(function() {
+            first = t.id("first");
+            second = t.id("second");
+            tree = t.id("tree");
+
+            tag.assertEqual(tag.updates.length, 2, "proper number of items to update")
+        });
+    </script>
+
+    <div id="tree">
+        <plum-fruit id="first"></plum-fruit>
+        <plum-fruit id="second" size="10"></plum-fruit>
+    </div>
+</body>
+</html>

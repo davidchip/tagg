@@ -29,9 +29,10 @@ tag.wrapTest = (test, delay=10) ->
             test(results)
 
             if results.failed.length is 0
-                console.log("\nPASSED\n", results, "\n\n")
+                console.log("%c PASSED ", "background-color:blue; color:white")
+                console.log("")
             else
-                console.log("\n %c FAILED \n", "background-color:red; color:white")
+                console.log("%c FAILED ", "background-color:red; color:white")
                 console.log(results)
 
             testsFinished(results)

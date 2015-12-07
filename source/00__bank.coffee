@@ -1,6 +1,6 @@
 tag = {}
 tag.defaults = {}
-
+tag.updates = []
 
 built_ins = {
 
@@ -12,7 +12,7 @@ built_ins = {
         return
 
     _attachedCallback: () ->
-        if @getAttribute('definition') is ""
+        if @hasAttribute('definition') is true
             return
 
         for key, value of tag.defaults[@tagName.toLowerCase()]
@@ -26,6 +26,7 @@ built_ins = {
         if @template?
             @innerHTML = @template
 
+        ## swap out or built in attribute watcher
         propWatcher = new MutationObserver((mutations) =>
             for mutation in mutations
                 propName = mutation.attributeName
@@ -40,17 +41,29 @@ built_ins = {
         })
 
         @created()
+
+        if @updates is true
+            tag.updates.push(@)
+
         tag.log "tag-attached", @tagName, "#{@tagName} was attached to the DOM"
 
     removed: () ->
         return
 
     _detachedCallback: () ->
-        if @getAttribute('definition') is ""
+        if @hasAttribute('definition') is true
             return
 
         @removed()
+
+        if @updates is true
+            tag.updates.splice(tag.updates.indexOf(@), 1)
+
         tag.log "tag-removed", @tagName, "#{@tagName} was removed from the DOM"
+
+    updates: true
+    update: (frame) ->
+        return
 
 
     ########################
@@ -82,7 +95,7 @@ built_ins = {
                     newVal = prototype.parseProperty(value)
 
                     @attached.then(() =>
-                        if @getAttribute('definition') is ""
+                        if @hasAttribute('definition') is true
                             return
 
                         if @getAttribute(key) isnt "#{newVal}"

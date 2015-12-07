@@ -22,7 +22,13 @@
             tag.assertEvents([
                 ["plum-tree", "prop-changed", 2],
                 ["plum-fruit", "tag-removed", 5]
-            ]);
+            ], 2000).then(function() {
+                tree.fruits = 100;
+
+                setTimeout(function(){
+                    tag.assertEqual(tag.updates.length, 101)
+                }, 1000)
+            });
         });
     </script>
 
