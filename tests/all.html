@@ -2,6 +2,18 @@
 
 <head>
     <script src="/tag.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, "Helvetica Neue", "Lucida Grande";
+        }
+
+        .test-suite {
+            display:inline-block;
+            margin:0 20px 20px 0;
+            width:250px;
+        }
+    </style>
 </head>
 
 <body>
@@ -15,17 +27,22 @@
             tests = JSON.parse(json);
 
             for (var test = 0; test < tests.length; test++) {
+                testSuite = document.createElement("div")
+                testSuite.className = "test-suite"
+
                 iframe = document.createElement('iframe');
                 iframe.src = "/" + tests[test].location;
                 iframe.height = "250px";
                 iframe.width = "250px";
                 iframe.style.display = "block";
-                document.body.appendChild(iframe);
+                testSuite.appendChild(iframe);
 
                 a = document.createElement("a")
                 a.href = iframe.src
-                a.innerHTML = iframe.src + "<br><br>"
-                document.body.appendChild(a)
+                a.innerHTML = tests[test].filename + ""
+                testSuite.appendChild(a)
+
+                document.body.appendChild(testSuite)
             } 
         }
 

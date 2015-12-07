@@ -1,9 +1,12 @@
 tag = {}
+tag.defaults = {}
 
 
 built_ins = {
 
-    ## LIFECYCLE FUNCTIONS
+    #########################
+    ## LIFECYCLE FUNCTIONS ##
+    #########################
 
     created: () ->
         return
@@ -12,7 +15,7 @@ built_ins = {
         if @getAttribute('definition') is ""
             return
 
-        for key, value of @properties
+        for key, value of tag.defaults[@tagName.toLowerCase()]
             if @hasAttribute(key) is true
                 attrVal = @parseProperty(@getAttribute(key))
                 if @[key] isnt attrVal
@@ -26,9 +29,8 @@ built_ins = {
         propWatcher = new MutationObserver((mutations) =>
             for mutation in mutations
                 propName = mutation.attributeName
-                parsedVal = @parseProperty(@getAttribute(propName))
-                if @[propName] isnt parsedVal
-                    @[propName] = parsedVal
+                val = @getAttribute(propName)
+                @[propName] = val
         )
 
         propWatcher.observe(@, { 
@@ -50,7 +52,10 @@ built_ins = {
         @removed()
         tag.log "tag-removed", @tagName, "#{@tagName} was removed from the DOM"
 
+
+    ########################
     ## PROPERTY FUNCTIONS ##
+    ########################
 
     properties: {}
 
@@ -71,29 +76,35 @@ built_ins = {
         else
             Object.defineProperty(prototype, key, {
                 get: () ->
-                    return @["properties"][key]
+                    return @["__" + key]
                 set: (value) ->
-                    old = @[key]
-                    parsedVal = prototype.parseProperty(value)
+                    oldVal = @[key]
+                    newVal = prototype.parseProperty(value)
 
                     @attached.then(() =>
                         if @getAttribute('definition') is ""
                             return
 
-                        @setAttribute(key, value)
+                        if @getAttribute(key) isnt "#{newVal}"
+                            @setAttribute(key, newVal)
                     )
 
-                    if old isnt parsedVal
-                        @["properties"][key] = value
-                        @changed(key, old, value)
-                        tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{old} to #{value}"
+                    if oldVal isnt newVal
+                        @["__" + key] = newVal
+                        @changed(key, oldVal, newVal)
+                        tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{oldVal} to #{newVal}"
             })
 
-            prototype["properties"][key] = prototype.parseProperty(value)
+            prototype["__" + key] = prototype.parseProperty(value)
+            tag.defaults[tagName][key] = prototype.parseProperty(value)
+
+            # prototype["__" + key] = prototype.parseProperty(value)
 
         return prototype
 
-    ## DEFINITION FUNCTIONS
+    ##########################
+    ## DEFINITION FUNCTIONS ##
+    ##########################
 
     bindToParent: (parentPrototype) ->
         return
@@ -107,8 +118,9 @@ class tag.Bank
 
     prototypeBase: () ->
         proto = Object.create(HTMLElement.prototype)
+        _built_ins = Object.create(built_ins)
 
-        for key, value of built_ins
+        for key, value of _built_ins
             proto[key] = value
 
         return proto
@@ -214,11 +226,11 @@ class tag.Bank
                         tag.log "parent-def-exists", tagName, "located #{tagName}'s parent definition, #{parentName}, extending from that"
                         classFound(_class.prototype)
                     , (classNotFound) =>
-                        tag.log "parent-def-dne", tagName, "could not find #{tagName}'s parent, #{parentName}, extending from #{@prototypeBase.name}"
+                        tag.log "parent-def-dne", tagName, "could not find #{tagName}'s parent, #{parentName}, extending from prototypeBase"
                         classFound(@prototypeBase())
                     )
                 , (noParentName) =>
-                    tag.log "parent-name-dne", tagName, "could not find #{tagName}'s parentName, extending from #{@prototypeBase.name}"
+                    tag.log "parent-name-dne", tagName, "could not find #{tagName}'s parentName, extending from prototypeBase"
                     classFound(@prototypeBase())
                 )
             )
@@ -245,8 +257,9 @@ class tag.Bank
                 prototype.template = definition.template
                 delete(definition.template)
 
+                tag.defaults[tagName] = {}
                 for key, value of definition
-                    bind = prototype.bindProperty(key, value, prototype, tagName)
+                    bind = prototype.bindProperty.apply(prototype, [key, value, prototype, tagName])
 
                 Tag = document.registerElement(tagName, {
                     prototype: prototype })

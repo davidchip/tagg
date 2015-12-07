@@ -5,10 +5,10 @@ window.t = {
         return document.getElementById(id)
 
     class: (className) ->
-        return document.getElementsByClassName(className)
+        return document.body.getElementsByClassName(className)
 
     name: (tagName) ->
-        return document.getElementsByTagName(tagName)
+        return document.body.getElementsByTagName(tagName)
 }
 
 

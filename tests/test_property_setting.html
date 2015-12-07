@@ -1,0 +1,79 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <tag-bank path=""></tag-bank>
+
+    <style>
+        plum-fruit {
+            border-radius:50%;
+            background-color:purple;
+            height:30px; width:30px;
+            position:absolute;
+        }
+    </style>
+
+    <script>
+        tag.loaded.then(function(){
+            tag.define("plum-fruit", {
+                size: "5", 
+                created: function() {
+                    this.style.top = Math.random() * 100 + "%";
+                    this.style.left = Math.random() * 100 + "%";
+                },
+                changed: function(name, oldVal, newVal){
+                    switch (name) {
+                        case "size":
+                            this.style.width = newVal + "px";
+                            this.style.height = newVal + "px";
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script>
+        tag.assertEvents([
+            ["plum-fruit", "tag-attached", 2]
+        ]).then(function() {
+            first = t.id("first");
+            second = t.id("second");
+            tree = t.id("tree");
+
+            // attr set from definition prop
+            tag.assertEqual(first.getAttribute("size"), "5", "attr set from def");
+            tag.assertEqual(first.parseProperty(first.getAttribute("size")), 5, "parsed attr is prop");
+            tag.assertEqual(first.size, 5, "prop is parsed");
+
+            // prop set from attr
+            first.setAttribute("size", "10");
+
+            // need to wait a beat for mutation to propagate - way around?
+            setTimeout(function(){
+                tag.assertEqual(first.size, 10, "prop updates from setting attr", 100);      
+            })
+
+            // definition prop overwritten by attribute
+            tag.assertEqual(second.getAttribute("size"), "10", "attr set by el, and remained");
+            second.setAttribute("size", "5");
+            setTimeout(function(){
+                tag.assertEqual(second.size, 5, "prop updated from attr");    
+                tag.create("plum-fruit", {size:50}).then(function(_fruit) {
+                    _fruit.id = "three";
+                    tree.appendChild(_fruit);
+                    tag.assertEqual(_fruit.size, 50, "prop set from tag created");
+                    tag.assertEqual(_fruit.getAttribute("size"), "50", "attr set from tag created");
+                });
+            }, 1000)
+        });
+    </script>
+
+    <div id="tree">
+        <plum-fruit id="first"></plum-fruit>
+        <plum-fruit id="second" size="10"></plum-fruit>
+    </div>
+</body>
+</html>
