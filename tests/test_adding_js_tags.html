@@ -12,15 +12,6 @@
             height:200px;
             width:200px;
         }
-
-        plum-fruit {
-            background-color:purple;
-            border-radius:50%;
-            display:block;
-            height:20px;
-            position:absolute;
-            width:20px;
-        }
     </style>
 
     <script>
@@ -66,7 +57,8 @@
                 created: function() {
                     this.style.top = Math.random() * 100 + "%";
                     this.style.left = Math.random() * 100 + "%";
-                }
+                },
+                style: "plum-fruit {background-color:purple; border-radius:50%; display:block; height:20px; position:absolute; width:20px; }"
             });
         });
     </script>
@@ -84,6 +76,8 @@
 
                 tag.assertEvent("plum-fruit", "tag-removed", 45)
             });
+
+            tag.assertEvent("plum-fruit", "js-styling-got-affixed", 1)
         });
     </script>
 

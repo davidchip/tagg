@@ -19,4 +19,22 @@ basic_vocab.define("definition-script", {
         return def
 })
 
+
+basic_vocab.define("fps-meter", {
+    
+    style: """
+        fps-meter {
+            position:fixed;
+            top:0px;
+            left:0px;
+            background-color:blue;
+            color:white;
+        }
+    """
+    
+    update: () ->
+        @innerHTML = Math.floor(tag.smooth)
+
+})
+
 tag.addBank(basic_vocab)

@@ -45,7 +45,7 @@ built_ins = {
         if @updates is true
             tag.updates.push(@)
 
-        tag.log "tag-attached", @tagName, "#{@tagName} was attached to the DOM"
+        tag.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
 
     removed: () ->
         return
@@ -59,7 +59,7 @@ built_ins = {
         if @updates is true
             tag.updates.splice(tag.updates.indexOf(@), 1)
 
-        tag.log "tag-removed", @tagName, "#{@tagName} was removed from the DOM"
+        tag.log "tag-removed", @tagName, "#{@tagName.toLowerCase()} was removed from the DOM"
 
     updates: true
     update: (frame) ->
@@ -110,8 +110,6 @@ built_ins = {
 
             prototype["__" + key] = prototype.parseProperty(value)
             tag.defaults[tagName][key] = prototype.parseProperty(value)
-
-            # prototype["__" + key] = prototype.parseProperty(value)
 
         return prototype
 
@@ -270,6 +268,13 @@ class tag.Bank
                 prototype.template = definition.template
                 delete(definition.template)
 
+                if definition.style?
+                    style = document.createElement("style")
+                    style.textContent = definition.style
+                    document.head.appendChild(style)
+                    tag.log "js-styling-got-affixed", tagName, "styling got affixed to head from JS def"
+                    delete(definition.style)
+
                 tag.defaults[tagName] = {}
                 for key, value of definition
                     bind = prototype.bindProperty.apply(prototype, [key, value, prototype, tagName])
@@ -293,20 +298,29 @@ class tag.Bank
 
             childLookUps = []
             for childEl in element.children
-                childName = childEl.tagName.toLowerCase()
-                childLookUp = new Promise((childParsed) =>
-                    tag.lookUp(childName).then((childClass) =>
-                        tag.log "child-def-found", element.tagName, "definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
-                        childPrototype = Object.create(childClass.prototype)
-                        def = childClass.prototype.bindToParent.call(childEl, def)
-                        childParsed()
-                    , (noDefinition) =>
-                        tag.log "no-child-not-def", element.tagName, "no definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
-                        childParsed()
-                    )
-                )
+                buildLookUps = (_childEl, lookUps) ->
+                    childName = _childEl.tagName.toLowerCase()
+                    if childName is "template"
+                        def.template = _childEl.innerHTML
+                        tag.log "tag-define-html-template", element.tagName, "template added during html def for tag #{element.tagName.toLowerCase()}"
+                    else
+                        childLookUp = new Promise((childParsed) =>
+                            tag.lookUp(childName).then((childClass) =>
+                                tag.log "child-def-found", element.tagName, "definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
+                                childPrototype = Object.create(childClass.prototype)
+                                def = childClass.prototype.bindToParent.call(_childEl, def)
+                                childParsed()
+                            , (noDefinition) =>
+                                tag.log "no-child-not-def", element.tagName, "no definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
+                                childParsed()
+                            )
+                        )
 
-                childLookUps.push(childLookUp)
+                        lookUps.push(childLookUp)
+
+                    return lookUps
+
+                childLookUps = buildLookUps(childEl, childLookUps)
 
             Promise.all(childLookUps).then(() =>
                 document.head.appendChild(element)

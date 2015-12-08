@@ -14,19 +14,9 @@ tag.loaded = new Promise((loaded) =>
 
         tag.utils.crawl(document.body)
 
-        console.log("lifecycle logs", tag.logs)
+        console.log("debug log", tag.logs)
         loaded()
 
-        tag.frame = 0
-        update = () ->
-            requestAnimationFrame(update)
-
-            for element in tag.updates
-                element.update(tag.frame)
-
-            tag.frame++
-
-        update()
-
+        tag.update()
     )
 )

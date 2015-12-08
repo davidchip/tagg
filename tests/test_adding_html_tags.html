@@ -52,21 +52,29 @@
     <plum-fruit definition size="10">
         <style>
             plum-fruit {
-                background-color:purple;
-                border-radius:50%;
-                display:block;
-                height:20px;
-                position:absolute;
-                width:20px;
+                background-color:   purple;
+                border-radius:      50%;
+                color:              #fff;
+                display:            block;
+                height:             20px;
+                line-height:        20px;
+                position:           absolute;
+                text-align:         center;
+                transition:         all 1s ease-in-out;
+                width:              20px;
             }
         </style>
 
         <definition-script>
-            this.created = function () {
-                this.style.top = Math.random() * 100 + "%";
-                this.style.left = Math.random() * 100 + "%";
+            this.update = function (frame) {
+                if(frame % 60 == 0) {
+                    this.style.top = Math.random() * 100 + "%";    
+                    this.style.left = Math.random() * 100 + "%";
+                }
             };
         </definition-script>
+
+        <template>o</template>
     </plum-fruit>
 
     <script>
@@ -81,6 +89,8 @@
             t.id("tree").fruits = 5;
             t.name("plum-fruit")[0].size = 20;
             t.name("plum-fruit")[0].size = 25;
+
+            tag.assertEqual(t.name("plum-fruit")[0].innerHTML, "o", "HTML template passed in and registered")
 
             tag.assertEvents([
                 ["plum-fruit", "tag-removed", 45],

@@ -29,8 +29,10 @@ tag.wrapTest = (test, delay=10) ->
             test(results)
 
             if results.failed.length is 0
-                console.log("%c PASSED ", "background-color:blue; color:white")
-                console.log("")
+                msg = " %c PASSED"
+                for space in [0..Math.ceil(Math.random() * 10)]
+                    msg = msg + " "
+                console.log(msg, "color:blue;")
             else
                 console.log("%c FAILED ", "background-color:red; color:white")
                 console.log(results)

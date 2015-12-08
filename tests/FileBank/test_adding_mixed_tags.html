@@ -26,11 +26,13 @@
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tag.assertEqual(tag.updates.length, 101)
+                    tag.assertEqual(tag.updates.length, 102)
                 }, 1000)
             });
         });
     </script>
+
+    <fps-meter></fps-meter>
 
     <plum-tree fruits="10" id="tree">
         <plum-fruit size="15"></plum-fruit>

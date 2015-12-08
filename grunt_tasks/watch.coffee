@@ -7,7 +7,7 @@ module.exports = ->
   @config "watch", {
 
     coffee: {
-      files: ['source/**/*.coffee', 'tests/**/*.html']
+      files: ['source/**/*.coffee', 'tests/**/*.html', 'tests/**/*.js']
       tasks: [
         'newer:coffee:compileSource',
         'compile',
