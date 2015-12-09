@@ -17,6 +17,7 @@
     <script>
         tag.loaded.then(function(){
             tag.define("plum-fruit", {
+                blinking: true,
                 size: "5", 
                 created: function() {
                     this.style.top = Math.random() * 100 + "%";
@@ -28,14 +29,21 @@
                             this.style.width = newVal + "px";
                             this.style.height = newVal + "px";
                     }
+                },
+                update: function(frame){
+                    if(this.blinking == true) {
+                        this.style.opacity = (frame % 2);
+                    }
                 }
             });
         });
     </script>
 
     <script>
+        tag.fps = 3;
+
         tag.assertEvents([
-            ["plum-fruit", "tag-attached", 2]
+            ["plum-fruit", "tag-attached", 3]
         ]).then(function() {
             first = t.id("first");
             second = t.id("second");
@@ -46,21 +54,28 @@
             tag.assertEqual(first.parseProperty(first.getAttribute("size")), 5, "parsed attr is prop");
             tag.assertEqual(first.size, 5, "prop is parsed");
 
+            first.setAttribute("blinking", "true")
+
             // prop set from attr
             first.setAttribute("size", "10");
 
             // need to wait a beat for mutation to propagate - way around?
             setTimeout(function(){
-                tag.assertEqual(first.size, 10, "prop updates from setting attr", 100);      
+                tag.assertEqual(first.size, 10, "prop updates from setting attr", 100);
+                tag.assertEqual(first.blinking, true, "prop was set from attr 'false' as boolean false");
+                first.blinking = true;
             })
 
             // definition prop overwritten by attribute
             tag.assertEqual(second.getAttribute("size"), "10", "attr set by el, and remained");
+
+            tag.assertEqual(t.id("third").getAttribute("size"), "5", "tag attribute with id successully got parsed as other tag property")
             second.setAttribute("size", "5");
             setTimeout(function(){
                 tag.assertEqual(second.size, 5, "prop updated from attr");    
+                tag.assertEqual(first.getAttribute("blinking"), "true", "prop of boolean true was set as attr 'true'");
                 tag.create("plum-fruit", {size:50}).then(function(_fruit) {
-                    _fruit.id = "three";
+                    _fruit.id = "fourth";
                     tree.appendChild(_fruit);
                     tag.assertEqual(_fruit.size, 50, "prop set from tag created");
                     tag.assertEqual(_fruit.getAttribute("size"), "50", "attr set from tag created");
@@ -72,6 +87,7 @@
     <div id="tree">
         <plum-fruit id="first"></plum-fruit>
         <plum-fruit id="second" size="10"></plum-fruit>
+        <plum-fruit id="third" size="#first.size"></plum-fruit>
     </div>
 </body>
 </html>

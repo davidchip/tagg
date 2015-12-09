@@ -1,3 +1,28 @@
+
+# basic_vocab.define("this-*", {
+
+#     eachName: (name) ->
+#         tag.define("this-#{name}", {
+
+#             value: undefined
+
+#             created: () ->
+#                 this.value = @parentElement[@tagName.split('-')[1].toLowerCase()]
+
+#             changed: (name, oldVal, newVal) ->
+#                 @innerHTML = newVal
+#         })
+
+#     created: (parentPrototype) ->
+#         name = _this
+#         @parentElement.name = @this[name]
+
+#         return parentPrototype
+
+
+
+# })
+
 # tag.cycleBanks = (func) =>
 #     """Pass in a function that cycles over tag.banks,
 #        running the passed in function over each bank.

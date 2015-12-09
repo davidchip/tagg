@@ -17,9 +17,13 @@ built_ins = {
 
         for key, value of tag.defaults[@tagName.toLowerCase()]
             if @hasAttribute(key) is true
+                ## BIND MUTATION OBSERVER TO SELECTED ATTRIBUTE
+                ## IF VALUE IS SET WITH SELECTOR
                 attrVal = @parseProperty(@getAttribute(key))
+                @setAttribute(key, attrVal)
                 if @[key] isnt attrVal
                     @[key] = attrVal
+
             else
                 @[key] = value
 
@@ -76,8 +80,31 @@ built_ins = {
         return
 
     parseProperty: (value) ->
-        if value is ""
+        if typeof value is "string"
+            splitVal = value.split("")
+            firstChar = splitVal[0]
+            
+            if firstChar in ["#", "."]
+                splitVal.shift()
+                selector = splitVal.join("")
+                splitSelector = selector.split(".")
+                
+                if firstChar is "#"
+                    target = document.getElementById(splitSelector[0])
+                
+                if splitVal.length > 1
+                    propName = splitSelector[1]
+                
+        if target? and propName?
+            value = target[propName]
+        else if target? and not propName?
+            value = target
+        else if value is ""
             value = value
+        else if value in ["True", "true", true]
+            value = true
+        else if value in ["False", "false", false]
+            value = false
         else if isNaN(Number(value)) is false
             value = Number(value)
 
