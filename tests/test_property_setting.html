@@ -47,6 +47,7 @@
         ]).then(function() {
             first = t.id("first");
             second = t.id("second");
+            third = t.id("third");
             tree = t.id("tree");
 
             // attr set from definition prop
@@ -64,6 +65,7 @@
                 tag.assertEqual(first.size, 10, "prop updates from setting attr", 100);
                 tag.assertEqual(first.blinking, true, "prop was set from attr 'false' as boolean false");
                 first.blinking = true;
+                first.size = 20;
             })
 
             // definition prop overwritten by attribute
@@ -79,6 +81,7 @@
                     tree.appendChild(_fruit);
                     tag.assertEqual(_fruit.size, 50, "prop set from tag created");
                     tag.assertEqual(_fruit.getAttribute("size"), "50", "attr set from tag created");
+                    tag.assertEqual(third.getAttribute("size"), "20", "attribute updated properly from linked tag")
                 });
             }, 1000)
         });

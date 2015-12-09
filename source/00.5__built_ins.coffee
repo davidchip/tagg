@@ -97,6 +97,20 @@ built_ins = {
                 
         if target? and propName?
             value = target[propName]
+
+            linkWatcher = new MutationObserver((mutations) =>
+                for mutation in mutations
+                    propName = mutation.attributeName
+                    val = target.getAttribute(propName)
+                    @[propName] = val
+            )
+
+            linkWatcher.observe(target, { 
+                attributes: true
+                attributeOldValue: true
+                attributeFilter: [propName]
+            })
+
         else if target? and not propName?
             value = target
         else if value is ""
