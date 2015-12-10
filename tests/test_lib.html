@@ -1,0 +1,19 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <script>
+        tag = 5;
+
+        tag.assertEqual(typeof tag.define, "function", "tag could not be overwritten")
+        tag.fps = 30;
+
+        tag.assertEqual(tag.fps, 30, "tag fps updated")
+    </script>
+
+    <fps-meter></fps-meter>
+</body>
+</html>

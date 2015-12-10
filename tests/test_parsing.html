@@ -1,0 +1,167 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <plum-fruit definition size="5">
+        <style>
+            plum-fruit {
+                border-radius:50%;
+                background-color:purple;
+                height:30px; width:30px;
+                position:absolute;
+                -webkit-transition: all 1s ease-in-out;
+            }
+        </style>
+
+        <definition-script>
+            this.update = function(frame) {
+                if (this.frame % 60 == 0) {
+                    this.style.top = Math.random() * 100 + "%";
+                    this.style.left = Math.random() * 100 + "%";
+                }
+            }
+
+            this.changed = function(name, oldVal, newVal){
+                switch (name) {
+                    case "size":
+                        this.style.width = newVal + "px";
+                        this.style.height = newVal + "px";
+                }
+            }
+        </definition-script>
+    </plum-fruit>
+
+    <script>
+        tag.loaded.then(function(){
+            setTimeout(function(){
+                first = t.id("first");
+
+                // NUMBER PARSING
+                tag.testAttr(first, "size", "5", 200)
+                tag.testProp(first, "size",  5 , 200).then(function(){
+                    first.setAttribute("size", "10")
+                });
+                
+                tag.testAttr(first, "size", "10", 400)
+                tag.testProp(first, "size",  10 , 400).then(function(){
+                    first.setAttribute("size", 15)
+                });
+
+                tag.testAttr(first, "size", "15", 600)
+                tag.testProp(first, "size",  15 , 600).then(function(){
+                    first.size = 20
+                })
+
+                tag.testAttr(first, "size", "20", 600)
+                tag.testProp(first, "size",  20 , 600).then(function(){
+                    first.size = "25"
+                })
+
+                tag.testAttr(first, "size", "25", 800)
+                tag.testProp(first, "size",  25 , 800)
+
+                // BOOLEAN PARSING
+                second = t.id("second")
+
+                tag.testAttr(second, "size", "true", 200)
+                tag.testProp(second, "size",  true , 200).then(function(){
+                    second.setAttribute("size", "false")
+                })
+
+                tag.testAttr(second, "size", "false", 400)
+                tag.testProp(second, "size",  false , 400).then(function(){
+                    second.setAttribute("size", "False")
+                })
+
+                tag.testAttr(second, "size", "false", 600)
+                tag.testProp(second, "size",  false , 600).then(function(){
+                    second.setAttribute("size", false)
+                })
+
+                tag.testAttr(second, "size", "false", 800)
+                tag.testProp(second, "size",  false , 800).then(function(){
+                    second.setAttribute("size", "true")
+                })
+
+                tag.testAttr(second, "size", "true", 1000)
+                tag.testProp(second, "size",  true , 1000).then(function(){
+                    second.setAttribute("size", "True")
+                })
+
+                tag.testAttr(second, "size", "true", 1200)
+                tag.testProp(second, "size",  true , 1200).then(function(){
+                    second.setAttribute("size", true)
+                })
+
+                tag.testAttr(second, "size", "true", 1400)
+                tag.testProp(second, "size",  true , 1400).then(function(){
+                    second.size = "true"
+                })
+
+                tag.testAttr(second, "size", "true", 1600)
+                tag.testProp(second, "size",  true , 1600).then(function(){
+                    second.size = "True"
+                })
+
+                tag.testAttr(second, "size", "true", 1800)
+                tag.testProp(second, "size",  true , 1800).then(function(){
+                    second.size = "true"
+                })
+
+                tag.testAttr(second, "size", "true", 2000)
+                tag.testProp(second, "size",  true , 2000).then(function(){
+                    second.size = "false"
+                })
+
+                tag.testAttr(second, "size", "false", 2200)
+                tag.testProp(second, "size",  false , 2200).then(function(){
+                    second.size = "False"
+                })
+
+                tag.testAttr(second, "size", "false", 2400)
+                tag.testProp(second, "size",  false , 2400).then(function(){
+                    second.size = false
+                })
+
+                tag.testAttr(second, "size", "false", 2600)
+                tag.testProp(second, "size",  false , 2600)
+
+                // undefined parsing
+
+                three = t.id("three")
+
+                tag.testAttr(three, "size", "", 200)
+                tag.testProp(three, "size", "", 200).then(function(){
+                    three.size = undefined;
+                })
+
+                tag.testAttr(three, "size", "", 400)
+                tag.testProp(three, "size", "", 400).then(function(){
+                    three.setAttribute("size", "")
+                })
+
+                tag.testAttr(three, "size", "", 600)
+                tag.testProp(three, "size", "", 600).then(function(){
+                    three.size = ""
+                })
+
+                tag.testAttr(three, "size", "", 800)
+                tag.testProp(three, "size", "", 800)
+
+            }, 1000)
+        });
+
+    </script>
+
+    <fps-meter></fps-meter>
+
+    <div id="tree">
+        <plum-fruit id="first"></plum-fruit>
+        <plum-fruit id="second" size="true"></plum-fruit>
+        <plum-fruit id="three" size></plum-fruit>
+    </div>
+</body>
+</html>

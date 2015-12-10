@@ -66,13 +66,35 @@ tag.assertEvents = (events=[], delay=1000) ->
     return tag.assertObj(testingObj, delay)
 
 
-tag.assertEqual = (arg1, arg2, msg='', delay=10) ->
+tag.assertEqual = (arg1, arg2, msg='', delay=100) ->
     return tag.wrapTest((results) =>
         if arg1 is arg2
             results.passed.push("#{arg1} equals #{arg2} for test #{msg}")
         else
             results.failed.push("#{arg1} does not equal #{arg2} for test #{msg}")
     , delay)
+
+
+tag.testAttr = (_tag, attrName, testVal, delay=100) ->
+    return tag.wrapTest((results) =>
+        attrVal = _tag.getAttribute(attrName)
+        tagName = _tag.tagName.toLowerCase()
+        if testVal is attrVal
+            results.passed.push("attr #{attrName} for #{tagName} equals #{testVal}")
+        else
+            results.failed.push("attr #{attrName} for #{tagName} does not equal #{testVal}, it equals #{attrVal}")
+    , delay)
+
+
+tag.testProp = (_tag, propName, testVal, delay=100) ->
+    return tag.wrapTest((results) =>
+        tagName = _tag.tagName.toLowerCase()
+        if _tag[propName] is testVal
+            results.passed.push("prop #{propName} for #{tagName} equals #{testVal}")
+        else
+            results.failed.push("prop #{propName} for #{tagName} does not equal #{testVal}, equals #{tag[propName]}")
+    , delay)
+
 
 
 tag.assertObj = (testingObj={}, delay=1000) ->

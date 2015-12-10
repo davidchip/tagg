@@ -1,4 +1,9 @@
 ## attach to window + basic aliases
+Object.defineProperty(window, "tag", {
+    value: tag
+    writable: false
+})
+
 window.tag = tag
 window.t = {
     id : (id) ->

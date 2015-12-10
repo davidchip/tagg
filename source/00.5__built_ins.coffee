@@ -109,10 +109,13 @@ built_ins = {
                 attributeOldValue: true
                 attributeFilter: [propName]
             })
+            
         else if target? and not propName?
             value = target
         else if value is ""
             value = value
+        else if not value?
+            value = ""
         else if value in ["True", "true", true]
             value = true
         else if value in ["False", "false", false]
