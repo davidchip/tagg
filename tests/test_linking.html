@@ -1,0 +1,81 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <plum-fruit definition size="5" brother>
+        <style>
+            plum-fruit {
+                border-radius:50%;
+                background-color:purple;
+                height:30px; width:30px;
+                position:absolute;
+                -webkit-transition: all 1s ease-in-out;
+            }
+        </style>
+
+        <definition-script>
+            this.update = function(frame) {
+                if (this.frame % 60 == 0) {
+                    this.style.top = Math.random() * 100 + "%";
+                    this.style.left = Math.random() * 100 + "%";
+                }
+            }
+
+            this.changed = function(name, oldVal, newVal){
+                switch (name) {
+                    case "size":
+                        this.style.width = newVal + "px";
+                        this.style.height = newVal + "px";
+                }
+            }
+        </definition-script>
+    </plum-fruit>
+
+    <script>
+        tag.loaded.then(function(){
+            setTimeout(function(){
+                first = t.id("first");
+                second = t.id("second");
+                third = t.id("third");
+                fourth = t.id("fourth");
+                fifth = t.id("fifth");
+
+                tag.assertEqual(first.size, 8, "first had prop set from attr")
+                tag.assertEqual(second.size, 8, "second had size set from first")
+                tag.assertEqual(third.size, 8, "third had size set from second")
+
+                second.size = 10;
+                setTimeout(function(){
+                    tag.assertEqual(third.size, 10, "third updated its size after second updated")
+
+                    third.size = 8;
+                }, 500)
+
+                setTimeout(function(){
+                    tag.assertEqual(third.getAttribute("size"), "8", "third size updated manually")
+                }, 750)
+
+                tag.assertEqual(fourth.brother.id, fifth.id, "fourth's brother is fifth")
+                tag.assertEqual(fifth.brother.id, fourth.id, "fifth's brother is fourth")
+                tag.assertEqual(fourth.getAttribute("brother"), "#fifth", "fourth's brother attr stayed as '#fifth'")
+
+            }, 1000)
+        });
+
+    </script>
+
+    <fps-meter></fps-meter>
+
+    <div id="tree">
+        <plum-fruit id="first" size="8"></plum-fruit>
+        <plum-fruit id="second" size="#first.size"></plum-fruit>
+        <plum-fruit id="third" size="#second.size"></plum-fruit>
+
+        <plum-fruit id="fourth" brother="#fifth"></plum-fruit>
+        <plum-fruit id="fifth" brother="#fourth"></plum-fruit>
+    </div>
+</body>
+</html>

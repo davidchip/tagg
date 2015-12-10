@@ -20,7 +20,8 @@ built_ins = {
                 ## BIND MUTATION OBSERVER TO SELECTED ATTRIBUTE
                 ## IF VALUE IS SET WITH SELECTOR
                 attrVal = @parseProperty(@getAttribute(key))
-                @setAttribute(key, attrVal)
+                if (attrVal instanceof HTMLElement) is false
+                    @setAttribute(key, attrVal)
                 if @[key] isnt attrVal
                     @[key] = attrVal
 
@@ -41,7 +42,6 @@ built_ins = {
         propWatcher.observe(@, { 
             attributes: true
             attributeOldValue: true
-            # attributeFilter: @defaults.keys()
         })
 
         @created()
@@ -101,8 +101,7 @@ built_ins = {
             linkWatcher = new MutationObserver((mutations) =>
                 for mutation in mutations
                     propName = mutation.attributeName
-                    val = target.getAttribute(propName)
-                    @[propName] = val
+                    @setAttribute(propName, target.getAttribute(propName))
             )
 
             linkWatcher.observe(target, { 
@@ -110,7 +109,6 @@ built_ins = {
                 attributeOldValue: true
                 attributeFilter: [propName]
             })
-
         else if target? and not propName?
             value = target
         else if value is ""
@@ -139,7 +137,7 @@ built_ins = {
                         if @hasAttribute('definition') is true
                             return
 
-                        if @getAttribute(key) isnt "#{newVal}"
+                        if @getAttribute(key) isnt "#{newVal}" and (newVal instanceof HTMLElement) is false
                             @setAttribute(key, newVal)
                     )
 
