@@ -43,38 +43,37 @@
                 fourth = t.id("fourth");
                 fifth = t.id("fifth");
 
-                tag.testProp(first, "size", 8, 200)
+                tag.testProp(first,  "size", 8, 200)
                 tag.testProp(second, "size", 8, 200)
-                // tag.testProp(third, "size", 8, 200).then(function(){
-                //     second.size = 10;
-                // })
+                tag.testProp(third,  "size", 8, 200).then(function(){
+                    second.size = 10;
+                })
                 
-                // tag.testProp(third, "size", 10, 400).then(function(){
-                //     // alert(third.size);
-                // })
+                tag.testProp(third, "size", 10, 400).then(function(){
+                    fourth.size = 100;    
+                })
+                
+                tag.testAttr(fourth, "size", "100", 600).then(function(){
+                    third.setAttribute("size", "#fourth.size")
+                    second.size = 20;
+                })
 
-                // fourth.size = 100;
-                // tag.testAttr(third, "size", "15", 600).then(function(){
-                //     third.setAttribute("size", "#fourth.size")
-                //     second.size = 20;
-                // })
+                tag.testAttr(third, "size", "100", 800).then(function(){
+                    fourth.size = "50";
+                })
 
-                // tag.testAttr(third, "size", "100", 800).then(function(){
-                //     fourth.size = "50";
-                // })
+                tag.testProp(third, "size", 50, 1000)
 
-                // tag.testProp(third, "size", 50, 1000)
+                // linking directly to elements
+                setTimeout(function(){
+                    tag.assertEqual(fourth.brother.id, fifth.id, "fourth's brother is fifth")
+                    tag.assertEqual(fifth.brother.id, fourth.id, "fifth's brother is fourth")
+                    tag.assertEqual(fourth.getAttribute("brother"), "#fifth", "fourth's brother attr stayed as '#fifth'")
 
-                // // linking directly to elements
-                // tag.assertEqual(fourth.brother.id, fifth.id, "fourth's brother is fifth")
-                // tag.assertEqual(fifth.brother.id, fourth.id, "fifth's brother is fourth")
-                // tag.assertEqual(fourth.getAttribute("brother"), "#fifth", "fourth's brother attr stayed as '#fifth'")
-
-                // sixth = t.id("sixth");
-                // fourth.brother = t.id("sixth");
-                // tag.assertEqual(fourth.brother.id, sixth.id, "fourth's brother updated to sixth")
-
-
+                    sixth = t.id("sixth");
+                    fourth.brother = t.id("sixth");
+                    tag.assertEqual(fourth.brother.id, sixth.id, "fourth's brother updated to sixth")
+                }, 1500)
             }, 1000)
         });
 
@@ -85,11 +84,11 @@
     <div id="tree">
         <plum-fruit id="first" size="8"></plum-fruit>
         <plum-fruit id="second" size="#first.size"></plum-fruit>
-<!--         <plum-fruit id="third" size="#second.size" brother="#first.size"></plum-fruit>
+        <plum-fruit id="third" size="#second.size" brother="#first.size"></plum-fruit>
 
         <plum-fruit id="fourth" brother="#fifth"></plum-fruit>
         <plum-fruit id="fifth" brother="#fourth"></plum-fruit>
-        <plum-fruit id="sixth"></plum-fruit> -->
+        <plum-fruit id="sixth"></plum-fruit>
     </div>
 </body>
 </html>

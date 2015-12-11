@@ -99,28 +99,28 @@ built_ins = {
                     oldVal = @[key]
                     newVal = @parseProperty(value)
 
+                    if typeof value is "string"
+                        splitVal = value.split("")
+                        firstChar = splitVal[0]
+                        
+                        if firstChar in ["#", "."]
+                            splitVal.shift()
+                            selector = splitVal.join("")
+                            splitSelector = selector.split(".")
+
+                            if firstChar is "#"
+                                target = document.getElementById(splitSelector[0])
+
+                            if splitVal.length > 1
+                                propName = splitSelector[1]
+
+                    if target? and not propName?
+                        newVal = target
+
                     @attached.then(() =>
                         if @hasAttribute('definition') is true
                             return
-
-                        if @getAttribute(key) isnt "#{newVal}" and (newVal instanceof HTMLElement) is false
-                            @setAttribute(key, newVal)
-
-                        if typeof value is "string"
-                            splitVal = value.split("")
-                            firstChar = splitVal[0]
-                            
-                            if firstChar in ["#", "."]
-                                splitVal.shift()
-                                selector = splitVal.join("")
-                                splitSelector = selector.split(".")
                                 
-                                if firstChar is "#"
-                                    target = document.getElementById(splitSelector[0])
-                                
-                                if splitVal.length > 1
-                                    propName = splitSelector[1]
-
                         ## if a link exists, disconnect it
                         if target? and propName?
                             if @links[key]?
@@ -140,6 +140,11 @@ built_ins = {
                             })
 
                             @links[key] = linkWatcher
+
+                            newVal = target.getAttribute(propName)
+                        
+                        if @getAttribute(key) isnt "#{newVal}" and (newVal instanceof HTMLElement) is false
+                            @setAttribute(key, newVal)
                     )
 
                     if oldVal isnt newVal
