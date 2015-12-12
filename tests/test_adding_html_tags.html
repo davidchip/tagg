@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+</head>
+
+<body>
+    <style>
+        plum-tree {
+            display:block;
+            position:relative;
+            height:200px;
+            width:200px;
+        }
+    </style>
+
+
+    <fps-meter></fps-meter>
+
+    <div>
+        <plum-fruit size="10" definition>
+            <div></div>
+            <div>
+                <definition-script>
+                    this.created = function () {
+                        this.size = 50;
+                    }
+                </definition-script>
+            </div>
+        </plum-fruit>
+    </div>
+
+    <div></div>
+    <plum-fruit size="20" id="first"></plum-fruit>
+    <plum-fruit size="25" id="second"></plum-fruit>
+    <h1></h1>
+
+    <script>
+        tag.assertEvent("plum-fruit", "tag-attached", 2);
+        tag.testAttr(t.id("first"), "size", "50", 500);
+        tag.testAttr(t.id("second"), "size", "50", 500);
+    </script>
+</body>
+</html>

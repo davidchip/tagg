@@ -172,33 +172,38 @@ class tag.Bank
                 if attr.name isnt "definition"
                     def[attr.name] = element.getAttribute(attr.name)
 
-            childLookUps = []
-            for childEl in element.children
-                buildLookUps = (_childEl, lookUps) ->
-                    childName = _childEl.tagName.toLowerCase()
-                    if childName is "template"
-                        def.template = _childEl.innerHTML
-                        tag.log "tag-define-html-template", element.tagName, "template added during html def for tag #{element.tagName.toLowerCase()}"
-                    else
-                        childLookUp = new Promise((childParsed) =>
-                            tag.lookUp(childName).then((childClass) =>
-                                tag.log "child-def-found", element.tagName, "definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
-                                childPrototype = Object.create(childClass.prototype)
-                                def = childClass.prototype.bindToParent.call(_childEl, def)
-                                childParsed()
-                            , (noDefinition) =>
-                                tag.log "no-child-not-def", element.tagName, "no definition for child, #{childEl.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
-                                childParsed()
+            search = tag.utils.depthSearch(element, (el) ->
+                return el.tagName.toLowerCase().indexOf("-") > -1)
+
+            search.shift()
+            innerLookUps = []
+            for innerTags, depth in search
+                for innerTag in innerTags
+                    buildLookUps = (el, lookUps) ->
+                        childName = el.tagName.toLowerCase()
+                        if childName is "template"
+                            def.template = el.innerHTML
+                            tag.log "tag-define-html-template", element.tagName, "template added during html def for tag #{element.tagName.toLowerCase()}"
+                        else
+                            childLookUp = new Promise((childParsed) =>
+                                tag.lookUp(childName).then((childClass) =>
+                                    tag.log "child-def-found", element.tagName, "definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
+                                    childPrototype = Object.create(childClass.prototype)
+                                    def = childClass.prototype.bindToParent.call(el, def)
+                                    childParsed()
+                                , (noDefinition) =>
+                                    tag.log "no-child-not-def", element.tagName, "no definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
+                                    childParsed()
+                                )
                             )
-                        )
 
-                        lookUps.push(childLookUp)
+                            lookUps.push(childLookUp)
 
-                    return lookUps
+                        return lookUps
 
-                childLookUps = buildLookUps(childEl, childLookUps)
+                    innerLookUps = buildLookUps(innerTag, innerLookUps)
 
-            Promise.all(childLookUps).then(() =>
+            Promise.all(innerLookUps).then(() =>
                 document.head.appendChild(element)
 
                 @defineFromJS(element.tagName, def).then((_def) =>

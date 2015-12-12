@@ -17,11 +17,9 @@
         </style>
 
         <definition-script>
-            this.update = function(frame) {
-                if (this.frame % 60 == 0) {
-                    this.style.top = Math.random() * 100 + "%";
-                    this.style.left = Math.random() * 100 + "%";
-                }
+            this.created = function() {
+                this.style.top = Math.random() * 100 + "%";
+                this.style.left = Math.random() * 100 + "%";
             }
 
             this.changed = function(name, oldVal, newVal){
@@ -50,6 +48,7 @@
                 })
                 
                 tag.testProp(third, "size", 10, 400).then(function(){
+                    tag.testAttr(third, "size", "10", 0)
                     fourth.size = 100;    
                 })
                 

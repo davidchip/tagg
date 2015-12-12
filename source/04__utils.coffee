@@ -78,4 +78,22 @@ tag.utils.crawl = (el) ->
         for child in el.children
             tag.utils.crawl(child)
     )
+
+tag.utils.depthSearch = (_el, _filter) ->
+    _depthArray = []
+    _crawl = (el, depth, depthArray, filter) =>
+        if depthArray.length <= depth
+            depthArray.push([])
+
+        if filter?
+            if filter(el) is true
+                depthArray[depth].push(el)
+        else
+            depthArray[depth].push(el)
+
+        for child in el.children
+            _crawl(child, depth+1, depthArray, filter)
+
+    _crawl(_el, 0, _depthArray, _filter)
+    return _depthArray
     

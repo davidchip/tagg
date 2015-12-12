@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <script src="/tag.js"></script>
+
+    <script type="text/javascript">
+        tag.loaded.then(function(){
+            crawl_obj = tag.utils.depthSearch(document.body);
+
+            tag.assertEqual(crawl_obj[0].length, 1);
+            tag.assertEqual(crawl_obj[1].length, 3);
+            tag.assertEqual(crawl_obj[2].length, 5);
+            tag.assertEqual(crawl_obj[3].length, 1);
+            tag.testAttr(crawl_obj[3][0], "id", "5");
+            tag.assertEqual(crawl_obj[4].length, 3);
+            tag.assertEqual(crawl_obj[5].length, 1);
+            tag.testAttr(crawl_obj[5][0], "id", "7");
+        });
+
+    </script>
+</head>
+
+<body>
+    <div id="1">
+        <div id="2"></div>
+        <div id="3"></div>
+        <div id="4">
+            <div id="5">
+                <div id="6">
+                    <div id="7"></div>
+                </div>
+                <div id="8"></div>
+                <div id="9"></div>
+            </div>
+        </div>
+        <div id="10"></div>
+    </div>
+    <div id="11">
+        <div id="12"></div>
+    </div>
+    <div id="13"></div>
+</body>
+</html>

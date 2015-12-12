@@ -4,7 +4,6 @@ Object.defineProperty(window, "tag", {
     writable: false
 })
 
-window.tag = tag
 window.t = {
     id : (id) ->
         return document.getElementById(id)
