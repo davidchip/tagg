@@ -21,11 +21,11 @@
         <plum-fruit size="10" definition>
             <div></div>
             <div>
-                <definition-script>
+                <this-script>
                     this.created = function () {
                         this.size = 50;
                     }
-                </definition-script>
+                </this-script>
             </div>
         </plum-fruit>
     </div>
@@ -36,7 +36,7 @@
     <h1></h1>
 
     <script>
-        tag.assertEvent("plum-fruit", "tag-attached", 2);
+        tag.testEvent("plum-fruit", "tag-attached", 2);
         tag.testAttr(t.id("first"), "size", "50", 500);
         tag.testAttr(t.id("second"), "size", "50", 500);
     </script>

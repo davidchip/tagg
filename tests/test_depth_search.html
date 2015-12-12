@@ -7,13 +7,13 @@
         tag.loaded.then(function(){
             crawl_obj = tag.utils.depthSearch(document.body);
 
-            tag.assertEqual(crawl_obj[0].length, 1);
-            tag.assertEqual(crawl_obj[1].length, 3);
-            tag.assertEqual(crawl_obj[2].length, 5);
-            tag.assertEqual(crawl_obj[3].length, 1);
+            tag.testEqual(crawl_obj[0].length, 1);
+            tag.testEqual(crawl_obj[1].length, 3);
+            tag.testEqual(crawl_obj[2].length, 5);
+            tag.testEqual(crawl_obj[3].length, 1);
             tag.testAttr(crawl_obj[3][0], "id", "5");
-            tag.assertEqual(crawl_obj[4].length, 3);
-            tag.assertEqual(crawl_obj[5].length, 1);
+            tag.testEqual(crawl_obj[4].length, 3);
+            tag.testEqual(crawl_obj[5].length, 1);
             tag.testAttr(crawl_obj[5][0], "id", "7");
         });
 

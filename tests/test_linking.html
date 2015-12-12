@@ -16,7 +16,7 @@
             }
         </style>
 
-        <definition-script>
+        <this-script>
             this.created = function() {
                 this.style.top = Math.random() * 100 + "%";
                 this.style.left = Math.random() * 100 + "%";
@@ -29,7 +29,7 @@
                         this.style.height = newVal + "px";
                 }
             }
-        </definition-script>
+        </this-script>
     </plum-fruit>
 
     <script>
@@ -65,13 +65,13 @@
 
                 // linking directly to elements
                 setTimeout(function(){
-                    tag.assertEqual(fourth.brother.id, fifth.id, "fourth's brother is fifth")
-                    tag.assertEqual(fifth.brother.id, fourth.id, "fifth's brother is fourth")
-                    tag.assertEqual(fourth.getAttribute("brother"), "#fifth", "fourth's brother attr stayed as '#fifth'")
+                    tag.testEqual(fourth.brother.id, fifth.id, "fourth's brother is fifth")
+                    tag.testEqual(fifth.brother.id, fourth.id, "fifth's brother is fourth")
+                    tag.testEqual(fourth.getAttribute("brother"), "#fifth", "fourth's brother attr stayed as '#fifth'")
 
                     sixth = t.id("sixth");
                     fourth.brother = t.id("sixth");
-                    tag.assertEqual(fourth.brother.id, sixth.id, "fourth's brother updated to sixth")
+                    tag.testEqual(fourth.brother.id, sixth.id, "fourth's brother updated to sixth")
                 }, 1500)
             }, 1000)
         });

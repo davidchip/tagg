@@ -11,7 +11,7 @@ basic_vocab.define('tag-bank', {
             tag.addBank(new tag.Bank())
 })
 
-basic_vocab.define("definition-script", {
+basic_vocab.define("this-script", {
     updates: false
     bindToParent: (def) ->
         func = new Function(this.textContent)

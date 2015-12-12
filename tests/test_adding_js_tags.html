@@ -64,20 +64,20 @@
     </script>
 
     <script>
-        tag.assertEvents([
+        tag.testEvents([
             ["plum-tree", "tag-attached", 1],
             ["plum-fruit", "tag-attached", 10]
         ]).then(function() {
             tree = document.getElementsByTagName("plum-tree")[0]
             tree.fruits = 50
 
-            tag.assertEvent("plum-fruit", "tag-attached", 50).then(function() {
+            tag.testEvent("plum-fruit", "tag-attached", 50).then(function() {
                 tree.fruits = 5
 
-                tag.assertEvent("plum-fruit", "tag-removed", 45)
+                tag.testEvent("plum-fruit", "tag-removed", 45)
             });
 
-            tag.assertEvent("plum-fruit", "js-styling-got-affixed", 1)
+            tag.testEvent("plum-fruit", "js-styling-got-affixed", 1)
         });
     </script>
 

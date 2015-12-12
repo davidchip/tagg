@@ -42,15 +42,15 @@ tag.wrapTest = (test, delay=10) ->
     )
 
 
-tag.assertEvent = (category, eventName, eventDetails) ->
+tag.testEvent = (category, eventName, eventDetails) ->
     testingObj = {}
     testingObj[category] = {}
     testingObj[category][eventName] = eventDetails
 
-    return tag.assertObj(testingObj)
+    return tag.testObj(testingObj)
 
 
-tag.assertEvents = (events=[], delay=1000) ->
+tag.testEvents = (events=[], delay=1000) ->
     testingObj = {}
 
     for event in events
@@ -63,10 +63,10 @@ tag.assertEvents = (events=[], delay=1000) ->
 
         testingObj[category][eventName] = eventDetails
     
-    return tag.assertObj(testingObj, delay)
+    return tag.testObj(testingObj, delay)
 
 
-tag.assertEqual = (arg1, arg2, msg='', delay=100) ->
+tag.testEqual = (arg1, arg2, msg='', delay=100) ->
     return tag.wrapTest((results) =>
         if arg1 is arg2
             results.passed.push("#{arg1} equals #{arg2} for test #{msg}")
@@ -97,7 +97,7 @@ tag.testProp = (_tag, propName, testVal, delay=100) ->
 
 
 
-tag.assertObj = (testingObj={}, delay=1000) ->
+tag.testObj = (testingObj={}, delay=1000) ->
     return tag.wrapTest((results) =>
         for category, tagCrumbs of testingObj
             if not tag.logs[category]?

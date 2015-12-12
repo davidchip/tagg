@@ -8,7 +8,7 @@
     <tag-bank type="file" path=""></tag-bank>
 
     <script>
-        tag.assertEvents([
+        tag.testEvents([
             ["plum-tree", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 10],
             ["plum-tree", "file-def-load-succeeded", 1],
@@ -19,14 +19,14 @@
             tree = t.id("tree");
             tree.fruits = 5;
 
-            tag.assertEvents([
+            tag.testEvents([
                 ["plum-tree", "prop-changed", 2],
                 ["plum-fruit", "tag-removed", 5]
             ], 2000).then(function() {
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tag.assertEqual(tag.updates.length, 102)
+                    tag.testEqual(tag.updates.length, 102)
                 }, 1000)
             });
         });
