@@ -41,11 +41,13 @@ built_ins = {
             attributeOldValue: true
         })
 
+        tag.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
+
         @created()
 
         tag.updates.push(@)
 
-        tag.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
+        
 
     removed: () ->
         return

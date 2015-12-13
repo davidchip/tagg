@@ -15,21 +15,21 @@ tag.utils.singleLoad = (url) ->
             xhr = new XDomainRequest()
             xhr.open('GET', url)
         else
-            reject(Error("couldn't create a XHR request"))
+            reject()
 
         xhr.onload = () ->
             if xhr.status is 404
-                reject(Error("#{url} returned a 404"))
+                reject()
             else
                 resolve(xhr)
 
         xhr.onerror = () ->
-            reject(Error("#{url} failed to load"))
+            reject()
 
         try
             xhr.send()
         catch error
-            reject(Error("#{url} XHR request failed to send"))
+            reject()
     )
 
 
@@ -51,7 +51,7 @@ tag.utils.serialLoad = (urls) =>
                     _loadURL(i+1)
                 )
             else
-                reject(Error("no successful load from urls #{urls}"))
+                reject()
 
         _loadURL()
     )
@@ -68,11 +68,14 @@ tag.utils.crawl = (el) ->
             tagName = el.tagName.toLowerCase()
             for attribute in el.attributes
                 if attribute.name is "definition"
-                    tag.log "def-html-started", tagName, "definition attribute found on #{tagName}, starting definition"
-                    tag.define(el).then((def) =>
-                        crawled(def)
-                    ).catch(() =>
-                        crawled()
+                    tag.lookUp(tagName).catch(() =>
+                        alert 'started'
+                        tag.log "def-html-started", tagName, "definition attribute found on #{tagName}, starting definition"
+                        tag.define(el).then((def) =>
+                            crawled(def)
+                        ).catch(() =>
+                            crawled()
+                        )
                     )
                     return 
 

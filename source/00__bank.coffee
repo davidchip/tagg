@@ -1,8 +1,6 @@
 class tag.Bank
     """A bank stores the definitions of tags.
     """
-    definitions: {}
-
     prototypeBase: () ->
         proto = Object.create(HTMLElement.prototype)
         _built_ins = Object.create(built_ins)
@@ -14,11 +12,12 @@ class tag.Bank
 
     constructor: (options) ->
         @id = Math.ceil(Math.random() * 1000)
+        @definitions = {}
 
         for key, value of options
             @[key] = value
 
-    lookUp: (tagName) =>
+    lookUp: (tagName) ->
         """Given the name of tag, return its definition.
 
            Should implement checkOpenDefinition() and getDefinition()
@@ -32,7 +31,7 @@ class tag.Bank
                 tagNotFound()
         )
 
-    getParentName: (tagName) =>
+    getParentName: (tagName) ->
         """Given the name of tag, return the name of its parent.
         """
         new Promise((parentFound, parentNotFound) =>
@@ -46,7 +45,7 @@ class tag.Bank
                 parentFound(parentName)
         )
 
-    define: (arg1, arg2, store=true) =>
+    define: (arg1, arg2, store=true) ->
         if typeof arg1 is "string" and typeof arg2 is "object"
             tagName = arg1
             JSdef = arg2
@@ -69,7 +68,7 @@ class tag.Bank
 
         return @definitions[tagName]
 
-    defineFromJS: (tagName, definition={}) =>
+    defineFromJS: (tagName, definition={}) ->
         """Given the name of a tag, build its prototype using
            the passed in definition object.
 
@@ -176,8 +175,9 @@ class tag.Bank
                     Tag = document.registerElement(tagName, {
                         prototype: prototype })
 
+                    acceptDef(Tag)    
+
                     tag.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
-                    acceptDef(Tag)
                 )
             )
         )

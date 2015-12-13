@@ -25,13 +25,13 @@ class tag.FileBank extends tag.Bank
         else
             return super(arg1, arg2)
 
-    lookUp: (tagName) =>
+    lookUp: (tagName) ->
         if not @definitions[tagName]?
             @definitions[tagName] = new Promise((tagFound, tagNotFound) =>
                 urls = @nameToUrls(tagName)
-                tag.log "loading-possible-tag-files", tagName, "loading files for #{tagName}", urls
+                tag.log "loading-possible-tag-files", tagName, "loading files for #{tagName} in bank #{@id}", urls
                 tag.utils.serialLoad(urls).then((request) =>
-                    tag.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found at #{request.responseURL}"
+                    tag.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found in bank #{@id} at #{request.responseURL}"
                     
                     splitURL = request.responseURL.split('.')
                     extension = splitURL[splitURL.length - 1]
@@ -40,10 +40,10 @@ class tag.FileBank extends tag.Bank
                         func = new Function("text", "return eval(text)")    ## needs love
                         def = func.apply(@, [request.response]) ## needs love
                         def.then((_def) =>
-                            tag.log "def-file-accepted-js", tagName, "tag #{tagName} was defined from JS file successffully"
+                            tag.log "def-file-accepted-js", tagName, "tag #{tagName} was defined from JS file successffully for dict #{@id}"
                             tagFound(_def)
                         ).catch(() =>
-                            tag.log "def-file-not-accepted-js", tagName, "tag #{tagName} was not defined by JS file successffully"
+                            tag.log "def-file-not-accepted-js", tagName, "tag #{tagName} was not defined by JS file successffully for dict #{@id}"
                             tagNotFound())
 
                     else if extension is "html"
@@ -63,14 +63,14 @@ class tag.FileBank extends tag.Bank
                         )
 
                 , (loadRejected) =>
-                    tag.log "file-def-load-failed", tagName, "file definition for #{tagName} couldn't be found", urls
+                    tag.log "file-def-load-failed", tagName, "file definition for #{tagName} couldn't be found for bank #{@id}", urls
                     tagNotFound()
                 )
             )
 
         return @definitions[tagName]
 
-    nameToUrls: (tagName) =>
+    nameToUrls: (tagName) ->
         """Map a tagName to an array of the potential locations
            it could be.
 
