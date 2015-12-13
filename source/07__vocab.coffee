@@ -2,7 +2,7 @@ basic_vocab = new tag.Bank()
 basic_vocab.define('tag-bank', {
     path: "/"
     type: ""
-    updates: false
+
     created: () ->
         if @type is "file"
             tag.addBank(new tag.FileBank({
@@ -11,8 +11,9 @@ basic_vocab.define('tag-bank', {
             tag.addBank(new tag.Bank())
 })
 
+
 basic_vocab.define("this-script", {
-    updates: false
+
     bindToParent: (def) ->
         func = new Function(this.textContent)
         func.call(def)

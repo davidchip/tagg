@@ -6,21 +6,30 @@ tag.utils.singleLoad = (url) ->
        return:  Promise(file, error)
     """
     return new Promise((resolve, reject) ->
+        xhr = new XMLHttpRequest()
+        if 'withCredentials' of xhr
+            ## Chrome/Firefox/Opera/Safari.
+            xhr.open('GET', url, true)
+        else if typeof XDomainRequest != 'undefined' 
+            # IE. God damn IE.
+            xhr = new XDomainRequest()
+            xhr.open('GET', url)
+        else
+            reject(Error("couldn't create a XHR request"))
+
+        xhr.onload = () ->
+            if xhr.status is 404
+                reject(Error("#{url} returned a 404"))
+            else
+                resolve(xhr)
+
+        xhr.onerror = () ->
+            reject(Error("#{url} failed to load"))
+
         try
-            link = document.createElement('link')
-            link.rel = "import"
-            link.href = url
-
-            link.onload = (e) ->
-                resolve(link)
-
-            link.onerror = (e) ->
-                document.head.removeChild(link)
-                reject(Error("#{url} failed to load"))
-
-            document.head.appendChild(link)
+            xhr.send()
         catch error
-            reject(Error("#{url} link couldn't be generated"))
+            reject(Error("#{url} XHR request failed to send"))
     )
 
 
@@ -96,4 +105,15 @@ tag.utils.depthSearch = (_el, _filter) ->
 
     _crawl(_el, 0, _depthArray, _filter)
     return _depthArray
+
+tag.utils.inDefinition = (_el) ->
+    _crawlUp = (el) ->
+        if not el.parentElement?
+            return false
+        else if el.parentElement.hasAttribute("definition")
+            return true
+        else
+            return _crawlUp(el.parentElement)
+
+    return _crawlUp(_el)
     

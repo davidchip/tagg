@@ -1,7 +1,7 @@
 tag.banks = []
 tag.addBank = (bank) ->
     tag.banks.push(bank)
-    tag.log "pushed-bank", "tag_bank", "pushed bank #{bank.id}"
+    tag.log "pushed-bank", "tagBank", "pushed bank #{bank.id}"
     tag.loaded.then(() =>
         tag.utils.crawl(document.body))
     

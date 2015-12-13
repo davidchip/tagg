@@ -30,15 +30,15 @@ class tag.FileBank extends tag.Bank
             @definitions[tagName] = new Promise((tagFound, tagNotFound) =>
                 urls = @nameToUrls(tagName)
                 tag.log "loading-possible-tag-files", tagName, "loading files for #{tagName}", urls
-                tag.utils.serialLoad(urls).then((link) =>
-                    tag.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found at #{link.href}"
+                tag.utils.serialLoad(urls).then((request) =>
+                    tag.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found at #{request.responseURL}"
                     
-                    splitURL = link.href.split('.')
+                    splitURL = request.responseURL.split('.')
                     extension = splitURL[splitURL.length - 1]
                     if extension is "js"
                         @jumps[tagName] = true                              ## needs love
                         func = new Function("text", "return eval(text)")    ## needs love
-                        def = func.apply(@, [link.import.body.textContent]) ## needs love
+                        def = func.apply(@, [request.response]) ## needs love
                         def.then((_def) =>
                             tag.log "def-file-accepted-js", tagName, "tag #{tagName} was defined from JS file successffully"
                             tagFound(_def)
@@ -47,12 +47,17 @@ class tag.FileBank extends tag.Bank
                             tagNotFound())
 
                     else if extension is "html"
-                        _import = link.import.body.children[0]
+                        importer = document.createElement("div")
+                        importer.innerHTML = request.response
 
-                        @defineFromHTML(_import).then((def) =>
+                        childDefs = []
+                        for child in importer.children
+                            childDefs.push(@defineFromHTML(child))
+
+                        Promise.all(childDefs).then((def) =>
                             tag.log "def-accepted-html", tagName, "html def for #{tagName} was successfully defined"
                             tagFound(def)
-                        (defNotSuccessful) =>
+                        , (defNotSuccessful) =>
                             tag.log "def-html-not-successful", tagName, "html def for #{tagName} was not successfully defined"
                             tagNotFound()
                         )

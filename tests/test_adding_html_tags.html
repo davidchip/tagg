@@ -6,11 +6,13 @@
 
 <body>
     <style>
-        plum-tree {
+        plum-fruit {
+            background-color:purple;
+            border-radius:50%;
             display:block;
             position:relative;
-            height:200px;
-            width:200px;
+            height:50px;
+            width:50px;
         }
     </style>
 
@@ -23,7 +25,8 @@
             <div>
                 <this-script>
                     this.created = function () {
-                        this.size = 50;
+                        this.style.height = this.size + "px";
+                        this.style.width = this.size + "px";
                     }
                 </this-script>
             </div>
@@ -32,13 +35,13 @@
 
     <div></div>
     <plum-fruit size="20" id="first"></plum-fruit>
-    <plum-fruit size="25" id="second"></plum-fruit>
+    <plum-fruit size="80" id="second"></plum-fruit>
     <h1></h1>
 
     <script>
         tag.testEvent("plum-fruit", "tag-attached", 2);
-        tag.testAttr(t.id("first"), "size", "50", 500);
-        tag.testAttr(t.id("second"), "size", "50", 500);
+        tag.testAttr(t.id("first"), "size", "20", 500);
+        tag.testAttr(t.id("second"), "size", "80", 500);
     </script>
 </body>
 </html>

@@ -14,20 +14,21 @@
             ["plum-tree", "file-def-load-succeeded", 1],
             ["plum-fruit", "file-def-load-succeeded", 1],
             ["tag-bank", "def-accepted", 1],
-            ["tag_bank", "pushed-bank", 2]
-        ], 2000).then(function() {
+            ["tagbank", "pushed-bank", 2]
+        ], 3000).then(function() {
             tree = t.id("tree");
             tree.fruits = 5;
 
             tag.testEvents([
                 ["plum-tree", "prop-changed", 2],
                 ["plum-fruit", "tag-removed", 5]
-            ], 2000).then(function() {
+            ], 3000).then(function() {
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tag.testEqual(tag.updates.length, 102)
-                }, 1000)
+                    tag.testEqual(tag.updates.length, 104, "proper number of tags to update")
+                }, 3000)
+                
             });
         });
     </script>

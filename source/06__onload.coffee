@@ -12,6 +12,11 @@ tag.loaded = new Promise((loaded) =>
             subtree: true
         })
 
+        observer.observe(document.head, { 
+            childList: true, 
+            subtree: true
+        })
+
         tag.utils.crawl(document.body)
 
         console.log("debug log", tag.logs)

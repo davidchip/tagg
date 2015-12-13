@@ -141,7 +141,12 @@ class tag.Bank
                     value: Object.create(parentPrototype)
                     writable: false })
 
-                prototype.template = definition.template
+                if definition.libs?
+                    prototype.libs = definition.libs
+                delete(definition.libs)
+
+                if definition.template?
+                    prototype.template = definition.template
                 delete(definition.template)
 
                 if definition.style?
@@ -151,15 +156,29 @@ class tag.Bank
                     tag.log "js-styling-got-affixed", tagName, "styling got affixed to head from JS def"
                     delete(definition.style)
 
+                loadedLibs = []
+                for lib in prototype.libs
+                    libLoad = tag.utils.singleLoad(lib)
+                    libLoad.then((request) =>
+                        script = document.createElement("script")
+                        script.type = "text/javascript"
+                        script.text = request.response
+                        document.head.appendChild(script)
+                    )
+
+                    loadedLibs.push(libLoad)
+
                 tag.defaults[tagName] = {}
                 for key, value of definition
                     bind = prototype.bindProperty.apply(prototype, [key, value, prototype, tagName])
 
-                Tag = document.registerElement(tagName, {
-                    prototype: prototype })
+                Promise.all(loadedLibs).then(() =>
+                    Tag = document.registerElement(tagName, {
+                        prototype: prototype })
 
-                tag.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
-                acceptDef(Tag)
+                    tag.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
+                    acceptDef(Tag)
+                )
             )
         )
 
@@ -186,7 +205,7 @@ class tag.Bank
                             tag.log "tag-define-html-template", element.tagName, "template added during html def for tag #{element.tagName.toLowerCase()}"
                         else
                             childLookUp = new Promise((childParsed) =>
-                                tag.lookUp(childName).then((childClass) =>
+                                tag.lookUp(childName).then((childClass) =>  
                                     tag.log "child-def-found", element.tagName, "definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
                                     childPrototype = Object.create(childClass.prototype)
                                     def = childClass.prototype.bindToParent.call(el, def)

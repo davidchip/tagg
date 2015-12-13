@@ -4,6 +4,10 @@ tag.updates = []
 
 built_ins = {
 
+    libs: []
+    properties: {}
+    links: {}
+
     #########################
     ## LIFECYCLE FUNCTIONS ##
     #########################
@@ -39,8 +43,7 @@ built_ins = {
 
         @created()
 
-        if @updates is true
-            tag.updates.push(@)
+        tag.updates.push(@)
 
         tag.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
 
@@ -53,26 +56,19 @@ built_ins = {
 
         @removed()
 
-        if @updates is true
-            tag.updates.splice(tag.updates.indexOf(@), 1)
+        tag.updates.splice(tag.updates.indexOf(@), 1)
 
         tag.log "tag-removed", @tagName, "#{@tagName.toLowerCase()} was removed from the DOM"
 
-    updates: true
     update: (frame) ->
         return
-
 
     ########################
     ## PROPERTY FUNCTIONS ##
     ########################
 
-    properties: {}
-
     changed: (key, oldVal, newVal) ->
         return
-
-    links: {}
 
     parseProperty: (value) ->
         if not value?
