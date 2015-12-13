@@ -47,8 +47,6 @@ built_ins = {
 
         tag.updates.push(@)
 
-        
-
     removed: () ->
         return
 
@@ -162,4 +160,11 @@ built_ins = {
 
     bindToParent: (parentPrototype) ->
         return
+
+    #############
+    ## HELPERS ##
+    #############
+
+    log: (eventName, details={}) ->
+        tag.log eventName, @tagName.toLowerCase(), '', details
 }

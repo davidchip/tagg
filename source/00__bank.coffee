@@ -192,7 +192,7 @@ class tag.Bank
                     def[attr.name] = element.getAttribute(attr.name)
 
             search = tag.utils.depthSearch(element, (el) ->
-                return el.tagName.toLowerCase().indexOf("-") > -1)
+                return el.tagName.toLowerCase().indexOf("-") > -1 or el.tagName.toLowerCase() is "template")
 
             search.shift()
             innerLookUps = []

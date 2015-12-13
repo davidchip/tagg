@@ -69,8 +69,7 @@ tag.utils.crawl = (el) ->
             for attribute in el.attributes
                 if attribute.name is "definition"
                     tag.lookUp(tagName).catch(() =>
-                        alert 'started'
-                        tag.log "def-html-started", tagName, "definition attribute found on #{tagName}, starting definition"
+                        tag.log "def-html-started", tagName, "definition attribute found on #{tagName}"
                         tag.define(el).then((def) =>
                             crawled(def)
                         ).catch(() =>
