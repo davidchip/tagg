@@ -6,24 +6,10 @@ module.exports = ->
 
   @config "copy", {
 
-    sourceToWWW: {
-      files: [{
-        src: 'dist/tag.js'
-        dest: '../www/tag.js',
-      }]
-    }
-
-    minifiedToWWW: {
-      files: [{
-        src: 'dist/tag.min.js'
-        dest: '../www/tag.min.js',
-      }]
-    }
-
-    testsToWWW: {
+    tests: {
       files: [{
         src: 'tests/**/*'
-        dest: '../www/'
+        dest: './dist/'
       }]
     }
 

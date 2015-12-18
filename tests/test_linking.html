@@ -53,7 +53,7 @@
                 })
                 
                 tag.testAttr(fourth, "size", "100", 600).then(function(){
-                    third.setAttribute("size", "#fourth.size")
+                    third.setAttribute("size", ">#fourth.size")
                     second.size = 20;
                 })
 
@@ -67,7 +67,7 @@
                 setTimeout(function(){
                     tag.testEqual(fourth.brother.id, fifth.id, "fourth's brother is fifth")
                     tag.testEqual(fifth.brother.id, fourth.id, "fifth's brother is fourth")
-                    tag.testEqual(fourth.getAttribute("brother"), "#fifth", "fourth's brother attr stayed as '#fifth'")
+                    tag.testEqual(fourth.getAttribute("brother"), ">#fifth", "fourth's brother attr stayed as '#fifth'")
 
                     sixth = t.id("sixth");
                     fourth.brother = t.id("sixth");
@@ -82,11 +82,11 @@
 
     <div id="tree">
         <plum-fruit id="first" size="8"></plum-fruit>
-        <plum-fruit id="second" size="#first.size"></plum-fruit>
-        <plum-fruit id="third" size="#second.size" brother="#first.size"></plum-fruit>
+        <plum-fruit id="second" size=">#first.size"></plum-fruit>
+        <plum-fruit id="third" size=">#second.size" brother=">#first.size"></plum-fruit>
 
-        <plum-fruit id="fourth" brother="#fifth"></plum-fruit>
-        <plum-fruit id="fifth" brother="#fourth"></plum-fruit>
+        <plum-fruit id="fourth" brother=">#fifth"></plum-fruit>
+        <plum-fruit id="fifth" brother=">#fourth"></plum-fruit>
         <plum-fruit id="sixth"></plum-fruit>
     </div>
 </body>

@@ -98,14 +98,22 @@ built_ins = {
                     if typeof value is "string"
                         splitVal = value.split("")
                         firstChar = splitVal[0]
+                        secondChar = splitVal[1]
                         
-                        if firstChar in ["#", "."]
+                        if firstChar is ">"
                             splitVal.shift()
+                            if secondChar in ["#", "."]
+                                splitVal.shift()
+
                             selector = splitVal.join("")
                             splitSelector = selector.split(".")
 
-                            if firstChar is "#"
+                            if secondChar is "#"
                                 target = document.getElementById(splitSelector[0])
+                            else if secondChar is "."
+                                target = document.getElementsByClassName(splitSelector[0])
+                            else
+                                target = document.getElementsByTagName(splitSelector[0])
 
                             if splitVal.length > 1
                                 propName = splitSelector[1]

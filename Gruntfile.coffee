@@ -8,9 +8,8 @@ module.exports = ->
     @registerTask("compile", [
         "coffee:compileSource"
         "concat:libsAndSource"
-        "copy:sourceToWWW"
         "folder_list:testsJSON"
-        "copy:testsToWWW"
+        "copy:tests"
     ])
 
 
@@ -19,7 +18,6 @@ module.exports = ->
         "compile"
         "uglify:tagJS"
         "uglify:sourceJS"
-        "copy:minifiedToWWW"
     ])
 
 
