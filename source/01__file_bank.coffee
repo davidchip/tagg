@@ -2,17 +2,27 @@ class tag.FileBank extends tag.Bank
     """A bank that looks for definitions located in a
        a directory structure. 
     """
-    protocol: window.location.protocol ## http
-    hostname: window.location.hostname ## www.tag.to
-    port: if window.location.port isnt "" then window.location.port else 80
-
-    path: "/"                          ## default to root of server
-    extensions: ['html', 'js']         ## [html, js]
-
-    jumps: {}
-
     constructor: (options) ->
         super options
+
+        {@protocol, @hostname, @port, @path, @extensions} = options
+        
+        if not @protocol?
+            @protocol = window.location.protocol
+
+        if not @hostname?
+            @hostname = window.location.hostname
+
+        if not @port?
+            @port = window.location.port
+
+        if not @path?
+            @path = "/"
+
+        if not @extensions?
+            @extensions = ['html', 'js']
+
+        @_jumps = {}
 
     define: (arg1, arg2, store=true) ->
         if typeof arg1 is "string" and typeof arg2 is "object"
@@ -20,7 +30,7 @@ class tag.FileBank extends tag.Bank
         else if typeof arg1 is "object" and arg1 instanceof HTMLElement
             tagName = arg1.tagName
 
-        if @jumps[tagName] is true
+        if @_jumps[tagName] is true
             return super(arg1, arg2, false)
         else
             return super(arg1, arg2)
@@ -36,7 +46,7 @@ class tag.FileBank extends tag.Bank
                     splitURL = request.responseURL.split('.')
                     extension = splitURL[splitURL.length - 1]
                     if extension is "js"
-                        @jumps[tagName] = true                              ## needs love
+                        @_jumps[tagName] = true                              ## needs love
                         func = new Function("text", "return eval(text)")    ## needs love
                         def = func.apply(@, [request.response]) ## needs love
                         def.then((_def) =>

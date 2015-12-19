@@ -115,18 +115,21 @@ built_ins = {
                             else
                                 target = document.getElementsByTagName(splitSelector[0])
 
-                            if splitVal.length > 1
+                            if splitSelector.length > 1
                                 propName = splitSelector[1]
 
                     if target? and not propName?
                         newVal = target
+
+                    if target? and propName is "children"
+                        newVal = target.children
 
                     @attached.then(() =>
                         if @hasAttribute('definition') is true
                             return
                                 
                         ## if a link exists, disconnect it
-                        if target? and propName?
+                        if target? and propName? and propName isnt "children"
                             if @links[key]?
                                 @links[key].disconnect()
                                 delete @links[key]
@@ -145,13 +148,15 @@ built_ins = {
 
                             @links[key] = linkWatcher
 
+
                             newVal = target.getAttribute(propName)
                         
-                        if @getAttribute(key) isnt "#{newVal}" and (newVal instanceof HTMLElement) is false
+                        if @getAttribute(key) isnt "#{newVal}" and (newVal instanceof HTMLElement) is false and (newVal instanceof HTMLCollection) is false
                             @setAttribute(key, newVal)
                     )
 
                     if oldVal isnt newVal
+                        # console.log newVal
                         @["__" + key] = newVal
                         @changed(key, oldVal, newVal)
                         tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{oldVal} to #{newVal}"

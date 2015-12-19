@@ -1,14 +1,19 @@
 basic_vocab = new tag.Bank()
 basic_vocab.define('tag-bank', {
-    path: "/"
-    type: ""
+    protocol: undefined
+    hostname: undefined
+    port: undefined
+    path: undefined
+    extensions: undefined
 
     created: () ->
-        if @type is "file"
-            tag.addBank(new tag.FileBank({
-                path: @path }))
-        else 
-            tag.addBank(new tag.Bank())
+        options = {}
+        for key in ['protocol', 'hostname', 'port', 'path', 'extensions']
+            if @[key] isnt ""
+                options[key] = @[key]
+
+        tag.addBank(new tag.FileBank(options))
+
 })
 
 
