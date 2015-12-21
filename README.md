@@ -1,183 +1,236 @@
-helix
-========
-
-
-a fast way to start making VR environments
-
-_created by david and alex chippendale_
-
-
-Installation Guide (_from helix/ folder_):
---------
-    
-    ## make sure brew is installed
-    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-
-    ## same with install npm
-    brew install npm
-
-    ## install Grunt dependencies
-    sudo npm install
-
-    ## install Bower dependencies
-    bower install
-
-    ## compile to a target/ folder, and serve that to the web browser
-    grunt serve
-
-
-Access
---------
-
-Local Access: connect to 0.0.0.0:9000 from a WebVR browser (with an attached oculus)
-
-Chromium download link
-
-    https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list
-    
-Firefox download link
-
-    http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/
-
-Mobile: from your phone, connect to port 9000 of your computer's IP address (192.168.1.145:9000 for example)
-
-
-Bugs:
---------
-- Add head rotation (using mouse) to Safari
-- Fix AudioContext choppiness on Android
-- Fix script/lib loading for elements
-- Fix AudioContext not playing in Firefox
-
-
-Beta: Concrete To-Dos
---------
-- <s>Add dynamic loading of scripts based on elements in world</s>
-- Introduce ability to make complex particles (ie, particles that use multiple meshses to be constructed)
-- Rev 1.5 on b-frame
-  - Fix camera angle in stereo
-  - Don't render 2 CSSRenderers. Figure out a better way.
-  - Fix scaling of innerHTML
-  - Add src tag like <iframe> to load in external frames
-  - Add proper renderer sizing/resizing on window change
-- Rev 2 on audio-jump
-  - Add proper support for .ogg, .mp3, .m4a
-  - Be more sophisticated about reading frequencies, generating movement
-  - Allow volume to modulate based on camera distance (tie audio-file gain to distance from observer)
-  - Add handling of pausing/stopping audio
-  - Split audio processing into other JS worker (is this possible?)
-- Add native headtracking back to iOS and/or Android Apps
-- Add looping to object creation
-- Create proper Prototype representation of each Firecracker element 
-- Prevent screen dimming on iOS / Android
-- Move attribute declaration to created function in Polymer
-- Behavior group - affects the same attributes of the objects within it
-- Complex particle - uses multiple particles that move in conjunction to a master/center particle
-- Build drag and drop interface on the dom. Build a manipulatable map of how code is laid out. Show layout of how code looks. Show rendering of code (world-core).
-- Build a demo - 'take a seat'
-- Add tweening to update functions
-- Add <sky-box> particle
-- Need smarter loading of scripts.
-  - Catch if an item has already been registered in a file with multiple registrations.
-- <s>Properly do DOM attribute binding. If attribute on parent is changed, change child.</s>
-  - Maybe add getters/setters to attributes so that they can be calcuated, and changes in the parent can propagate down to its children.
-
-
-DC
---------
-- <s>Build out support for returning array of meshes from a particle's create func</s>
-- <s>Have world-core extend particle-core (define grouping paradigm). Scene should just be a particle.</s>
-- <s>All: add initial rotation (call them turnx, turny, turnz, have them be out of 1)</s>
-- <s>Particle: add basic 2d browser plane (window)</s>
-- <s>Particle: Add basic sound element</s>
-- <s>Add native 'video' support for iphone app</s>
-- <s>Figure out quaternion math for iphone app</s>
-- <s>Add support for template property when declaring Firecracker Element</s>
-  - Should work like Polymer <template> tag. Should allow:
-    - <s>Interpolation of attributes
-- <s>BUG: Remove double loading of atoms within template tags</s>
-- build template grouping. should remove all child elements  
-
-
-
-AC:
---------
-- <s>Desktop: have pointer tracking</s>
-- <s>Desktop: add oculus support</s>
-- <s>Video Particle (material mapped to a plane). Theatre experience.</s>
-- All: add lighting
-- Positional tracking (accelerometer)
-
-
-Beta: Needs Some Time
---------
-- Collision detection between families of particles, and or groups of particles
-<s>- Movement of particles</s>
-    - movement could represent basic physics (gravity)
-- Environmental construction (tango) 
-- Basic ambient effects (lens flare, fog, space, glowing, etc.)
-- Visual effects to all particles, renderer (build a visualizer for music)
-- All: add definition of a foot
-- Multi user worlds
-- Add double click gesture/tap
-- Add jQuery esc interface to manipulate objects and there attributes easily.
-- Need to figure out how to promote people to download app
-
-
-Other repos
---------
-- Build Polymer Loading Engine
-  - Loads in polymer elements just be declaring them on the page.
-  - Should search distributed places to pull in elements.
-  - Should accept list of places to search for
-- Polymer app to navigate between hyperlinked experiences. Narnia? 
-  - Render sortable collection of models (environment)
-- Presentation website of us
-- API docs for Firecracker
-  - on the left: code
-  - on the right: low cpu renderings
-- Shareable, shortened URL to experience world. 
-  - When clicked on, bring user to xp that teaches them about 
-    what this thing is.
-- Backend to store repos of environments that can be collaborated on
-  - Repo, with branches
-  - Collaborators (people who have contributed to this, ie, a model ws used)
-- Build an app that uses 3-4 panels of modular width, height
-  - One for preview
-  - One for library of particles
-  - One for code generated
-  - One for publishing content, generating a link to it, selling it?
+Overview
+----
+Taggs are defined by three components:
   
+  - **a name**, the thing to call them (`<an-orange>`)
+
+  - **options**, how to customize them (`<an-orange age="25d">`)
+
+  - **functions**, that govern how they should act (`grow()`, `pick()`)
 
 
-Bullet points
---------
-- Easy to build. Easy to share. Easy to sell.
-- General users: Try it on Safari if you're on iOS, Chrome if you're on Android
-- Devs: The environment you're manipulating is mirrored in the DOM
-  - In short, you're able to manipulate 3d space using jQuery
-- Devs: Build 1 environemnt and package it for every device. Phonegap for VR. (Every iPhone, Every Android Device, Gear VR, Oculus)
-- Build environments in minutes:
-  - We fuel creation
-- Make environments from other environments:
-  - Share environments and the particles you used, and access other makers particles.
-- Experience VR for <$20
-- Import 3d models
-- The next generation of HTML
+Defining a tagg
+----
+Definitions can be declared in HTML, by using a `definition` attribute, or in javascript:
+
+```html
+<an-orange definition>
+  <template>
+    i'm an orange!
+  </template>
+</an-orange>
+```
+
+```javascript
+tagg.define("an-orange", {
+  template: "i'm an orange"
+})
+```
 
 
-Future
---------
-- Encourage collaboration above all else. Allow all sorts of content creators to work together to create worlds.
-- A git repo for everyone else.
-- Pay up front for models, or do a rev split with model makers for whatever you sell your game for
-  - If it's free, than you pay nothing to model makers
-  - Every purchase goes to the content makers who made this
-- Pay to host larger experience
-- Build a collapsible headset holder
-- Repurpose as code educational software
-- Make every user become a maker  
-- Fuel creation
-- Point cloud rendering
-- Something with robots way afer this
-- CSS type language: be descriptive of an objects geometries, textures, rather than asset based. Difference between producting photoshop buttons and CSS buttons.
+Adding options:
+----
+Taggs can be defined with options that represent how they can be customized, they represent the state of the tagg. These options are set as attributes in HTML or as fields in javasript:
+
+```html
+<orange-tree definition fruits="20"></orange-tree>
+```
+
+```javascript
+tagg.define("orange-tree", {
+  fruits: 20
+})
+```
+
+
+Adding functions
+----
+Each tagg has a set built in-functions. These are 
+  
+  - `created`: fired for each instance of the tagg found
+  - `changed(option, oldVal, newVal)`:  called everytime an attribute is changed 
+  - `update(frameNum)`: called every frame, allows you to update behavior based on attributes
+  - `removed`: called when an instance is removed
+  
+When an instance of a tagg is found, it's `created` function is called. In this case, such behavior 
+Each tagg has attributes, and life cycle functions. These attributes can be set arbitrarily (`size, color`), and functions can be attached as well (`expand`, `minimize`). Some functions are built in:
+
+```javascript
+tagg.define('hello-world', {
+  created: function () {
+    alert('hello world');
+  }
+})
+```
+
+Tagg naming
+----
+The name of a tagg, tells you where to find it:
+
+```html
+<hello-world></hello-world>
+<hello-sunshine></hello-sunshine>
+```
+
+is structured, by default, in these files.
+
+```
+hello/
+  |-----world.html
+  |-----sunshine.html
+```
+
+HTML definitions
+----
+Each tagg has the ability in it's definition, to bind to an enclosing definition if it finds itself in. The `function-` family, for instance, binds functions to its parentTagg. 
+
+```html
+<hello-world definition>
+  <function-created>
+    alert('hello world');
+  </function-created>
+</hello-world>
+```
+
+
+Using a tagg
+----
+After a tagg has been defined, it can be invoked by attaching an HTML element of it to your page.
+
+```html
+  <ul>
+    <some-tagg></some-tagg>
+    <some-tagg></some-tagg>
+  </ul>
+```
+
+produces:
+
+```html
+  <ul>
+    <some-tagg>
+      <li>An item</li>
+    </some-tagg>
+    <some-tagg>
+      <li>An item</li>
+    </some-tagg>
+  <ul>
+```
+
+
+Loading a tagg
+----
+The tagg library keeps an eye on everything going on a page, and attempts to track down its definition.
+
+```html
+<html>
+    <body>
+        <script src="//tagg.to/go.js"></script>
+        <hello-world></hello-world>
+    </body>
+</html>
+```
+
+Tagg banks
+----
+Tagg banks are nothing more than a collection of definitions, and machinery to find definitions. A `FileBank`, for instance, searches files with similar names:
+
+```
+hello/
+  |-----world.html
+  |-----sunshine.html
+```
+
+The above would be the directory structure for `<hello-world>` and `<hello-sunshine>`.
+
+Family banks
+----
+Family banks are the default bank in Tagg. They allow for a `family.html` to be placed at the root of a family. This file can then control the behavior of the whole family.
+
+```
+hello/
+  |-----family.html
+  |-----world.html
+  |-----sunshine.html
+```
+
+
+Tagg attributes
+----
+Tagg's can have attributes set in their definitions.
+
+```html
+<another-tagg definition size="20">
+</another-tagg>
+```
+
+Whenever an instance of `<another-tagg>` was created, its size would, by default, be set to 20. But this could be overwritten.
+
+```html
+<another-tagg size="10">
+</another-tagg>
+```
+
+These attributes can be accessed in JS.
+
+```javascript
+  anotherTagg = document.getElementsByTagName("another-tagg")[0];
+  anotherTagg.size = 100;
+```
+
+API
+----
+```javascript
+tagg.define(taggName, {
+
+  // built in properties
+  style: ""
+  libs: ""
+  extends: ""
+  template: ""
+
+  // custom properties
+  size: 40
+
+  // built in functions
+  created: function () {} 
+  removed: function () {}
+  changed: function (attribute, oldVal, newVal) {}
+  update: function (frameNum) {}
+  bindToParent: function (def) {}
+
+});
+```
+
+Allow for the splicing of HTML + JS + CSS. Use HTML as vessel to object orient, to structure, and carry snippets of JS + CSS.
+
+
+Stream
+----
+Falls back to the tagg stream
+Repos are connected to the tagg stream, or hosted on it.
+After searching locally for a definition, Tagg will fall back to tagg stream, connected open-source repos. Definitions, such as `hello-world`can be found at tagg.to/hello/world/
+
+```html
+<html>
+  <body>
+    <script src="http//tagg.to/go.js"></script>
+    <hello-world></hello-world>
+  </body>
+</html>
+```
+
+
+```html
+<chartjs-pi slice-1="40%" slice-2="30%" slice-3="30%">
+</chartjs-pi>
+```
+
+or
+
+```html
+<three-scene>
+  <three-cube>
+  </three-cube>
+</three-scene>
+```

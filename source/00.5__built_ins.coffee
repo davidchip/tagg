@@ -67,7 +67,7 @@ built_ins = {
     ## PROPERTY FUNCTIONS ##
     ########################
 
-    changed: (key, oldVal, newVal) ->
+    changed: (name, oldVal, newVal) ->
         return
 
     parseProperty: (value) ->
@@ -159,6 +159,8 @@ built_ins = {
                         # console.log newVal
                         @["__" + key] = newVal
                         @changed(key, oldVal, newVal)
+                        if @['changed_' + key]?
+                            @['changed_' + key](oldVal, newVal)
                         tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{oldVal} to #{newVal}"
             })
 
@@ -180,4 +182,7 @@ built_ins = {
 
     log: (eventName, details={}) ->
         tag.log eventName, @tagName.toLowerCase(), '', details
+
+    inDefinition: () ->
+        return tag.utils.inDefinition(@)
 }

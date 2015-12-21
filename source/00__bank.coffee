@@ -97,6 +97,7 @@ class tag.Bank
             getParentName = new Promise((found, notFound) =>
                 if definition.extends?
                     found(definition.extends)
+                    delete definition.extends
                 else
                     @getParentName(tagName).then((parentName) =>
                         found(parentName)
@@ -138,6 +139,10 @@ class tag.Bank
 
                 Object.defineProperty(prototype, "parentTag", {
                     value: Object.create(parentPrototype)
+                    writable: false })
+
+                Object.defineProperty(prototype, "secondName", {
+                    value: tagName.split("-")[1]
                     writable: false })
 
                 if definition.libs?

@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    <tag-bank path="/tests/FileBank/" type="file"></tag-bank>
+    <tag-bank path="/tests/FamilyBank/"></tag-bank>
 
     <script>
         tag.testEvents([
@@ -19,6 +19,8 @@
             tree = t.id("tree");
             tree.fruits = 5;
 
+            tag.testEvent("changed-fruits", "auto-defining")
+
             tag.testEvents([
                 ["plum-tree", "prop-changed", 2],
                 ["plum-fruit", "tag-removed", 5]
@@ -26,7 +28,7 @@
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tag.testEqual(tag.updates.length, 104, "proper number of tags to update")
+                    tag.testEqual(tag.updates.length, 108, "proper number of tags to update")
                 }, 3000)
                 
             });
@@ -36,9 +38,9 @@
     <fps-meter></fps-meter>
 
     <plum-tree fruits="10" id="tree">
-        <plum-fruit size="15"></plum-fruit>
-        <div></div>
-        <h1></h1>
+        <div>
+            <plum-fruit size="15"></plum-fruit>
+        </div>
     </plum-tree>
 </body>
 </html>

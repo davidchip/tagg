@@ -1,0 +1,17 @@
+<function-family definition wildcard="true">
+    
+    <this-script>
+        this.bindToParent = function (def) {
+            if (tag.utils.inDefinition(this) == true) {
+                args = [];
+                for (var i = 0; i < this.attributes.length; i++) {
+                    args.push(this.attributes[i].name) }
+
+                func = new Function(args, this.textContent)
+                def[this.secondName] = func
+                return def
+            }
+        }
+    </this-script>
+
+</function-family>

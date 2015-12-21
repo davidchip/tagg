@@ -1,0 +1,45 @@
+<plum-tree definition fruits="30">
+    <style>
+        plum-fruit {
+            background-color:purple;
+            border-radius:50%;
+            display:block;
+            height:10px;
+            position:absolute;
+            width:10px;
+            -webkit-transition: all 1s ease-in-out;
+        }
+    
+        plum-tree {
+            display:block;
+            position:relative;
+            height:250px;
+            width:250px;
+        }
+    </style>
+
+    <function-drawfruits>
+        var plums, remainingFruits, size;
+        plums = this.getElementsByTagName("plum-fruit");
+        remainingFruits = this.fruits - (plums.length);
+
+        if (remainingFruits > 0) {
+            while (remainingFruits > 0) {
+                el = this;
+                tag.create("plum-fruit").then(function(fruit){
+                    el.appendChild(fruit);
+                });
+                remainingFruits--;
+            }
+        } else if (remainingFruits < 0) {
+            while (remainingFruits < 0) {
+                this.removeChild(plums[0])
+                remainingFruits++;
+            }
+        }
+    </function-drawfruits>
+
+    <changed-fruits>
+        this.drawfruits()
+    </changed-fruits>
+</plum-tree>

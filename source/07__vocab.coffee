@@ -6,13 +6,18 @@ basic_vocab.define('tag-bank', {
     path: undefined
     extensions: undefined
 
+    type: "family"
+
     created: () ->
         options = {}
         for key in ['protocol', 'hostname', 'port', 'path', 'extensions']
             if @[key] isnt ""
                 options[key] = @[key]
 
-        tag.addBank(new tag.FileBank(options))
+        if @type is "family"
+            tag.addBank(new tag.FamilyBank(options))
+        else if @type is "file"
+            tag.addBank(new tag.FileBank(options))
 
 })
 

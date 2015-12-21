@@ -9,64 +9,89 @@ class tag.FamilyBank extends tag.FileBank
        See tag.FileBank for the default behavior
        of these functions.
     """
-    lookUp: (tagName) =>
-        return new Promise((defFound, defNotFound) =>
-            super(@familyName(tagName)).then((family) =>
-                if family.lookUp?
-                    family.lookUp(tagName).then((familyDef) =>
-                        defFound(familyDef)
-                    , (familyNotDef) =>
-                        defNotFound(familyNotDef)
-                    )
-                else
-                    ## defaults to super if it gets the chance
-                    ## how tags are pathed
-                    if family.nameToUrls?
-                        urls = family.nameToUrls(tagName)
-                    else
-                        ## should default to super if it gets the chance
-                        urls = @nameToUrls(tagName) 
+    getFamilyName: (tagName) ->
+        return tagName.split("-")[0] + "-" + "family"
 
-                    ## should default to super if it gets the chance
-                    tag.utils.serialLoad(urls).then((tagLink) =>
-                        ## how to parse file definitions
-                        if family.importDefinition?
-                            parsed = family.importDefinition(tagLink.import)
-                        else
-                            ## should default to super if it gets the chance
-                            parsed = @importDefinition(tagLink.import)
-
-                        ## should default to super if it gets the chance
-                        parsed.then((def) =>
-                            if @definitions[tagName]?
-                                tagDefined(@definitions[tagName])
-                            else
-                                tagFailed(Error("No valid definition found for #{tagName}"))
-                        , (defNotAppended) =>
-                            defNotFound(defNotAppended)
-                        )
-                    , (lookupFailed) =>
-                        defNotFound()
-                    )
-            , (noFamily) =>
-                defNotFound()
-            )
-        )
-
-    lookUpParent: (tagName) =>
+    getParentName: (tagName) ->
         return new Promise((parentFound, parentNotFound) =>
-            @lookUp(@familyName(tagName)).then((family) =>
-                if family.lookUpParent?
-                    parentFound(family.lookUpParent(tagName))
-                else ## should default to super if it gets the chance
-                    parentFound(super(tagName))
-            , (noFamily) =>
-                parentNotFound(noFamily)
+            getFamilyParentName = new Promise((familyParent, familyParentNotFound) =>
+                if tagName is @getFamilyName(tagName)
+                    familyParentNotFound()
+                else
+                    @lookUp(@getFamilyName(tagName)).then((familyDef) =>
+                        tag.log "family-file-exists", @getFamilyName(tagName), "the family file #{@getFamilyName(tagName)} exists for #{tagName}"
+                        _familyDef = familyDef[0].prototype
+
+                        if _familyDef.wildcard? and _familyDef.wildcard is true
+                            tag.log "family-file-wildcard", @getFamilyName(tagName), "family file had a wildcard attr specfied"
+                            familyParent(@getFamilyName(tagName))
+                        else if _familyDef.getParentName?
+                            tag.log "family-file-getParentName-exists", tagName, "the family file #{@getFamilyName(tagName)} contained a getParentName() func"
+                            familyParent(familyDef[0].prototype.getParentName)
+                        else
+                            tag.log "family-file-no-getParentName", tagName, "the family file #{@getFamilyName(tagName)} did not contain getParentName() func"
+                            familyParentNotFound()
+                    , (failed) =>
+                        familyParentNotFound()
+                    )
+            )
+
+            getFamilyParentName.then((familyParent) =>
+                parentFound(familyParent)
+            , () =>
+                super(tagName).then((parentName) =>
+                    parentFound(parentName)
+                , () =>
+                    parentNotFound()
+                )
             )
         )
 
-    familyName: (tagName) =>
-        tagParts = tagName.split('-')
-        familyName = tagParts[0] + "-" + "family"
-        return familyName
+    lookUpFamily: (tagName) ->
+        familyName = @getFamilyName(tagName)
+        if not @definitions[familyName]?
+            @definitions[familyName] = new Promise((familyFound, familyNotFound) =>
+                @loadFileAndDefine(familyName).then((familyDef) =>
+                    _familyDef = familyDef[0]
+                    familyFound(_familyDef)
+                , () =>
+                    familyNotFound()
+                )
+            )
+
+        return @definitions[familyName]
+
+    lookUp: (tagName) ->
+        if not @definitions[tagName]?
+            @definitions[tagName] = new Promise((tagFound, tagNotFound) =>
+                tag.log "started-lookup", tagName, "started lookup of #{tagName}"
+                @lookUpFamily(tagName).then((familyDef) =>
+                    tag.log "started-lookup", tagName, "family def found for #{tagName}"
+                    if familyDef.prototype.wildcard? and familyDef.prototype.wildcard is true
+                        tag.log "auto-defining", tagName, "auto defining tagName from #{@getFamilyName(tagName)} def"
+                        @defineFromJS(tagName, {
+                            extends: @getFamilyName(tagName)
+                        }).then((autoDef) =>
+                            tagFound(autoDef)
+                        , () =>
+                            tagNotFound())
+                    else
+                        tag.log "loading-definition", tagName, "familyFile (#{@getFamilyName}) of #{tagName} has no wildcard specified"
+                        @loadFileAndDefine(tagName).then((def) =>
+                            tagFound(def)
+                        , () =>
+                            tagNotFound()
+                        )
+                , () =>
+                    @loadFileAndDefine(tagName).then((def) =>
+                        tagFound(def)
+                    , () =>
+                        tagNotFound
+                    )
+
+                )
+            )
+
+        return @definitions[tagName]
+
         
