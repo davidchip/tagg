@@ -6,17 +6,10 @@ module.exports = ->
 
   @config "notify", {
 
-    coffee: {
+    compiled: {
       options: {
-        title: 'coffee joined/combined'
+        title: 'coffee compiled + tests copied'
         message: 'nice job! :D'
-      }
-    }
-
-    tests: {
-      options: {
-        title: 'tests updated'
-        message: 'little bit stronger!'
       }
     }
     

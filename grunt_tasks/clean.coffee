@@ -6,6 +6,6 @@ module.exports = ->
 
   @config "clean", {
 
-    everything: ["/dist"],
+    everything: ["./dist"],
 
   }

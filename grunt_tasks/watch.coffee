@@ -11,7 +11,7 @@ module.exports = ->
       tasks: [
         'newer:coffee:compileSource',
         'compile',
-        'notify:coffee'
+        'notify:compiled'
       ]
     }
     
