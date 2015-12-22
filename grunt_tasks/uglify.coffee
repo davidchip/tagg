@@ -8,8 +8,8 @@ module.exports = ->
 
     tagJS: {
       files: [{
-        src: 'dist/tag.js'
-        dest: 'dist/tag.min.js',
+        src: 'dist/tagg.js'
+        dest: 'dist/tagg.min.js',
       }]
     }
 
