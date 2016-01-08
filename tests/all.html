@@ -1,8 +1,6 @@
 <html>
 
 <head>
-    <script src="/tagg.js"></script>
-
     <style>
         body {
             font-family: -apple-system, "Helvetica Neue", "Lucida Grande";
@@ -26,24 +24,31 @@
             json = link.import.body.textContent;
             tests = JSON.parse(json);
 
-            for (var test = 0; test < tests.length; test++) {
+            loadTest = function (i) {
                 testSuite = document.createElement("div")
                 testSuite.className = "test-suite"
 
                 iframe = document.createElement('iframe');
-                iframe.src = "/" + tests[test].location;
+                iframe.src = "/" + tests[i].location;
                 iframe.height = "250px";
                 iframe.width = "250px";
                 iframe.style.display = "block";
+                iframe.onload = function () {
+                    if(i < (tests.length - 1)) {
+                        loadTest(i+1)
+                    }
+                }
                 testSuite.appendChild(iframe);
 
                 a = document.createElement("a")
                 a.href = iframe.src
-                a.innerHTML = tests[test].filename + ""
+                a.innerHTML = tests[i].filename + ""
                 testSuite.appendChild(a)
 
                 document.body.appendChild(testSuite)
             } 
+
+            loadTest(0)
         }
 
         document.body.appendChild(link)

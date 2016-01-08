@@ -19,7 +19,6 @@ tagg.loaded = new Promise((loaded) =>
 
         tagg.utils.crawl(document.body)
 
-        console.log("debug log", tagg.logs)
         loaded()
 
         tagg.update()

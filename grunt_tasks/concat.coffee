@@ -16,7 +16,7 @@ module.exports = ->
         dest: 'dist/tagg.js',
       }]
       options: {
-        banner: 'console.log("last built: <%= grunt.template.today("yyyy-mm-dd h:MM:sstt") %>");'
+        banner: '/* last built: <%= grunt.template.today("yyyy-mm-dd h:MM:sstt") %> */ \n'
       }
     }
 
