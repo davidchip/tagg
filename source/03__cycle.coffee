@@ -1,21 +1,21 @@
-tag.banks = []
-tag.addBank = (bank) ->
-    tag.banks.push(bank)
-    tag.log "pushed-bank", "tagBank", "pushed bank #{bank.id}"
-    tag.loaded.then(() =>
-        tag.utils.crawl(document.body))
+tagg.banks = []
+tagg.addBank = (bank) ->
+    tagg.banks.push(bank)
+    tagg.log "pushed-bank", "tagBank", "pushed bank #{bank.id}"
+    tagg.loaded.then(() =>
+        tagg.utils.crawl(document.body))
     
 
-tag.cycleBanks = (func) =>
-    """Pass in a function that cycles over tag.banks,
+tagg.cycleBanks = (func) =>
+    """Pass in a function that cycles over tagg.banks,
        running the passed in function over each bank.
     """
     return new Promise((resolve, reject) =>
         bankLookUp = (i=0) =>
-            if tag.banks.length is 0
-                reject("tag.banks.stored is empty; push a bank before using any commands.")
-            if i < tag.banks.length
-                bank = tag.banks[i]
+            if tagg.banks.length is 0
+                reject("tagg.banks.stored is empty; push a bank before using any commands.")
+            if i < tagg.banks.length
+                bank = tagg.banks[i]
                 func(bank).then((bankResolve) =>
                     resolve(bankResolve)
                 , (bankReject) =>
@@ -28,7 +28,7 @@ tag.cycleBanks = (func) =>
     )
 
 
-tag.lookUp = (tagName) =>
+tagg.lookUp = (tagName) =>
     """Find the first tagDefinition across all bankionaries.
     """
     tagParts = tagName.split('-')
@@ -36,37 +36,37 @@ tag.lookUp = (tagName) =>
         return new Promise((resolve, reject) =>
             reject())
             
-    return tag.cycleBanks((bank) =>
+    return tagg.cycleBanks((bank) =>
         return bank.lookUp(tagName))
 
 
-tag.lookUpParent = (tagName) =>
+tagg.lookUpParent = (tagName) =>
     """Find the parent definition of the passed in tagName.
     """
-    return tag.cycleBanks((bank) =>
+    return tagg.cycleBanks((bank) =>
         return bank.lookUpParent(tagName))
 
 
-tag.define = (arg1, arg2) =>
-    """Define a tag.
+tagg.define = (arg1, arg2) =>
+    """Define a tagg.
     """
-    return tag.cycleBanks((bank) =>
+    return tagg.cycleBanks((bank) =>
         return bank.define(arg1, arg2))
 
 
-tag.create = (tagName, tagOptions={}) =>
+tagg.create = (tagName, tagOptions={}) =>
     """Find the first tagDefinition across all bankionaries.
     """
     return new Promise((tagCreated, tagNotCreated) =>
-        tag.lookUp(tagName).then((def) =>
-            tag.log "tag-created", tagName, "tag #{tagName} was successfully created"
+        tagg.lookUp(tagName).then((def) =>
+            tagg.log "tag-created", tagName, "tag #{tagName} was successfully created"
             el = document.createElement(tagName)
             for key, value of tagOptions
                 el[key] = value
 
             tagCreated(el)
         , (tagNotFound) =>
-            tag.log "tag-not-created", tagName, "tag #{tagName} had a failed lookup"
+            tagg.log "tag-not-created", tagName, "tag #{tagName} had a failed lookup"
             tagNotCreated()
         )
     )

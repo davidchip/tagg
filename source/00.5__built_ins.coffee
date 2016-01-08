@@ -1,6 +1,6 @@
 tag = {}
-tag.defaults = {}
-tag.updates = []
+tagg.defaults = {}
+tagg.updates = []
 
 built_ins = {
 
@@ -19,7 +19,7 @@ built_ins = {
         if @hasAttribute('definition') is true
             return
 
-        for key, value of tag.defaults[@tagName.toLowerCase()]
+        for key, value of tagg.defaults[@tagName.toLowerCase()]
             if @hasAttribute(key) is true
                 @[key] = @getAttribute(key)
             else
@@ -41,11 +41,11 @@ built_ins = {
             attributeOldValue: true
         })
 
-        tag.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
+        tagg.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
 
         @created()
 
-        tag.updates.push(@)
+        tagg.updates.push(@)
 
     removed: () ->
         return
@@ -56,9 +56,9 @@ built_ins = {
 
         @removed()
 
-        tag.updates.splice(tag.updates.indexOf(@), 1)
+        tagg.updates.splice(tagg.updates.indexOf(@), 1)
 
-        tag.log "tag-removed", @tagName, "#{@tagName.toLowerCase()} was removed from the DOM"
+        tagg.log "tag-removed", @tagName, "#{@tagName.toLowerCase()} was removed from the DOM"
 
     update: (frame) ->
         return
@@ -161,11 +161,11 @@ built_ins = {
                         @changed(key, oldVal, newVal)
                         if @['changed_' + key]?
                             @['changed_' + key](oldVal, newVal)
-                        tag.log "prop-changed", tagName, "#{tagName} #{key} changed from #{oldVal} to #{newVal}"
+                        tagg.log "prop-changed", tagName, "#{tagName} #{key} changed from #{oldVal} to #{newVal}"
             })
 
             prototype["__" + key] = prototype.parseProperty(value)
-            tag.defaults[tagName][key] = prototype.parseProperty(value)
+            tagg.defaults[tagName][key] = prototype.parseProperty(value)
 
         return prototype
 
@@ -181,8 +181,8 @@ built_ins = {
     #############
 
     log: (eventName, details={}) ->
-        tag.log eventName, @tagName.toLowerCase(), '', details
+        tagg.log eventName, @tagName.toLowerCase(), '', details
 
     inDefinition: () ->
-        return tag.utils.inDefinition(@)
+        return tagg.utils.inDefinition(@)
 }

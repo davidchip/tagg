@@ -1,4 +1,4 @@
-class tag.FileBank extends tag.Bank
+class tagg.FileBank extends tagg.Bank
     """A bank that looks for definitions located in a
        a directory structure. 
     """
@@ -38,10 +38,10 @@ class tag.FileBank extends tag.Bank
     loadFileAndDefine: (tagName) ->
         return new Promise((tagFound, tagNotFound) =>
             urls = @nameToUrls(tagName)
-            tag.log "loading-possible-tag-files", tagName, "loading files for #{tagName} in bank #{@id}", urls
+            tagg.log "loading-possible-tag-files", tagName, "loading files for #{tagName} in bank #{@id}", urls
             
-            tag.utils.serialLoad(urls).then((request) =>
-                tag.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found in bank #{@id} at #{request.responseURL}"
+            tagg.utils.serialLoad(urls).then((request) =>
+                tagg.log "file-def-load-succeeded", tagName, "file-definition for #{tagName} was found in bank #{@id} at #{request.responseURL}"
                 
                 splitURL = request.responseURL.split('.')
                 extension = splitURL[splitURL.length - 1]
@@ -50,10 +50,10 @@ class tag.FileBank extends tag.Bank
                     func = new Function("text", "return eval(text)")    ## needs love
                     def = func.apply(@, [request.response]) ## needs love
                     def.then((_def) =>
-                        tag.log "def-file-accepted-js", tagName, "tag #{tagName} was defined from JS file successffully for dict #{@id}"
+                        tagg.log "def-file-accepted-js", tagName, "tag #{tagName} was defined from JS file successffully for dict #{@id}"
                         tagFound(_def)
                     , () =>
-                        tag.log "def-file-not-accepted-js", tagName, "tag #{tagName} was not defined by JS file successffully for dict #{@id}"
+                        tagg.log "def-file-not-accepted-js", tagName, "tag #{tagName} was not defined by JS file successffully for dict #{@id}"
                         tagNotFound()
                     )
 
@@ -66,15 +66,15 @@ class tag.FileBank extends tag.Bank
                         childDefs.push(@defineFromHTML(child))
 
                     Promise.all(childDefs).then((def) =>
-                        tag.log "def-accepted-html", tagName, "html def for #{tagName} was successfully defined"
+                        tagg.log "def-accepted-html", tagName, "html def for #{tagName} was successfully defined"
                         tagFound(def)
                     , (defNotSuccessful) =>
-                        tag.log "def-html-not-successful", tagName, "html def for #{tagName} was not successfully defined"
+                        tagg.log "def-html-not-successful", tagName, "html def for #{tagName} was not successfully defined"
                         tagNotFound()
                     )
 
             , (loadRejected) =>
-                tag.log "file-def-load-failed", tagName, "file definition for #{tagName} couldn't be found for bank #{@id}", urls
+                tagg.log "file-def-load-failed", tagName, "file definition for #{tagName} couldn't be found for bank #{@id}", urls
                 tagNotFound()
             )
         )
@@ -96,8 +96,8 @@ class tag.FileBank extends tag.Bank
            it could be.
 
            tagName:  "a-partial"
-           return:  ["http://www.tag.to/a/file/to/a/partial.html", 
-                     "http://www.tag.to/a/file/to/a/partial.js", ]
+           return:  ["http://www.tagg.to/a/file/to/a/partial.html", 
+                     "http://www.tagg.to/a/file/to/a/partial.js", ]
         """
         split_path = @path.split("")                    ## /a/path
         if split_path.length > 0 and split_path[split_path.length - 1] isnt "/"

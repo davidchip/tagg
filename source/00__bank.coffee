@@ -1,4 +1,4 @@
-class tag.Bank
+class tagg.Bank
     """A bank stores the definitions of tags.
     """
     prototypeBase: () ->
@@ -80,19 +80,19 @@ class tag.Bank
         """
         new Promise((acceptDef, rejectDef) =>
             if typeof tagName isnt "string"
-                tag.log "def-failed", tagName, "#{tagName} tagName should be a string"
+                tagg.log "def-failed", tagName, "#{tagName} tagName should be a string"
                 rejectDef()
 
             if not tagName.split('-').length >= 2
-                tag.log "def-failed", tagName, "#{tagName} needs a hyphen"
+                tagg.log "def-failed", tagName, "#{tagName} needs a hyphen"
                 rejectDef()
 
             if typeof definition isnt "object"
-                tag.log "def-failed", tagName, "#{tagName} definition should be an object"
+                tagg.log "def-failed", tagName, "#{tagName} definition should be an object"
                 rejectDef()
 
             tagName = tagName.toLowerCase()
-            tag.log "def-started", tagName, "starting a definition for #{tagName}"
+            tagg.log "def-started", tagName, "starting a definition for #{tagName}"
 
             getParentName = new Promise((found, notFound) =>
                 if definition.extends?
@@ -108,16 +108,16 @@ class tag.Bank
 
             getParentPrototype = new Promise((classFound, classNotFound) =>
                 getParentName.then((parentName) =>
-                    tag.log "parent-name-exists", tagName, "#{tagName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
+                    tagg.log "parent-name-exists", tagName, "#{tagName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
                     @lookUp(parentName).then((_class) =>
-                        tag.log "parent-def-exists", tagName, "located #{tagName}'s parent definition, #{parentName}, extending from that"
+                        tagg.log "parent-def-exists", tagName, "located #{tagName}'s parent definition, #{parentName}, extending from that"
                         classFound(_class.prototype)
                     , (classNotFound) =>
-                        tag.log "parent-def-dne", tagName, "could not find #{tagName}'s parent, #{parentName}, extending from prototypeBase"
+                        tagg.log "parent-def-dne", tagName, "could not find #{tagName}'s parent, #{parentName}, extending from prototypeBase"
                         classFound(@prototypeBase())
                     )
                 , (noParentName) =>
-                    tag.log "parent-name-dne", tagName, "could not find #{tagName}'s parentName, extending from prototypeBase"
+                    tagg.log "parent-name-dne", tagName, "could not find #{tagName}'s parentName, extending from prototypeBase"
                     classFound(@prototypeBase())
                 )
             )
@@ -157,12 +157,12 @@ class tag.Bank
                     style = document.createElement("style")
                     style.textContent = definition.style
                     document.head.appendChild(style)
-                    tag.log "js-styling-got-affixed", tagName, "styling got affixed to head from JS def"
+                    tagg.log "js-styling-got-affixed", tagName, "styling got affixed to head from JS def"
                     delete(definition.style)
 
                 loadedLibs = []
                 for lib in prototype.libs
-                    libLoad = tag.utils.singleLoad(lib)
+                    libLoad = tagg.utils.singleLoad(lib)
                     libLoad.then((request) =>
                         script = document.createElement("script")
                         script.type = "text/javascript"
@@ -172,7 +172,7 @@ class tag.Bank
 
                     loadedLibs.push(libLoad)
 
-                tag.defaults[tagName] = {}
+                tagg.defaults[tagName] = {}
                 for key, value of definition
                     bind = prototype.bindProperty.apply(prototype, [key, value, prototype, tagName])
 
@@ -182,7 +182,7 @@ class tag.Bank
 
                     acceptDef(Tag)    
 
-                    tag.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
+                    tagg.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
                 )
             )
         )
@@ -196,7 +196,7 @@ class tag.Bank
                 if attr.name isnt "definition"
                     def[attr.name] = element.getAttribute(attr.name)
 
-            search = tag.utils.depthSearch(element, (el) ->
+            search = tagg.utils.depthSearch(element, (el) ->
                 return el.tagName.toLowerCase().indexOf("-") > -1 or el.tagName.toLowerCase() is "template")
 
             search.shift()
@@ -207,16 +207,16 @@ class tag.Bank
                         childName = el.tagName.toLowerCase()
                         if childName is "template"
                             def.template = el.innerHTML
-                            tag.log "tag-define-html-template", element.tagName, "template added during html def for tag #{element.tagName.toLowerCase()}"
+                            tagg.log "tag-define-html-template", element.tagName, "template added during html def for tag #{element.tagName.toLowerCase()}"
                         else
                             childLookUp = new Promise((childParsed) =>
-                                tag.lookUp(childName).then((childClass) =>  
-                                    tag.log "child-def-found", element.tagName, "definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
+                                tagg.lookUp(childName).then((childClass) =>  
+                                    tagg.log "child-def-found", element.tagName, "definition for child, #{innertagg.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
                                     childPrototype = Object.create(childClass.prototype)
                                     def = childClass.prototype.bindToParent.call(el, def)
                                     childParsed()
                                 , (noDefinition) =>
-                                    tag.log "no-child-not-def", element.tagName, "no definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
+                                    tagg.log "no-child-not-def", element.tagName, "no definition for child, #{innertagg.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
                                     childParsed()
                                 )
                             )

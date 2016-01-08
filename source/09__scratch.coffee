@@ -2,7 +2,7 @@
 # basic_vocab.define("this-*", {
 
 #     eachName: (name) ->
-#         tag.define("this-#{name}", {
+#         tagg.define("this-#{name}", {
 
 #             value: undefined
 
@@ -23,17 +23,17 @@
 
 # })
 
-# tag.cycleBanks = (func) =>
-#     """Pass in a function that cycles over tag.banks,
+# tagg.cycleBanks = (func) =>
+#     """Pass in a function that cycles over tagg.banks,
 #        running the passed in function over each bank.
 #     """
 #     bankLookUp = (i=0) =>
-#         if tag.banks.length is 0
-#             tag.log "bank-empty", tagName, "tag.banks is empty; push a bank before using any commands."
+#         if tagg.banks.length is 0
+#             tagg.log "bank-empty", tagName, "tagg.banks is empty; push a bank before using any commands."
 #             return false
 
-#         if i < tag.banks.length
-#             bank = tag.banks[i]
+#         if i < tagg.banks.length
+#             bank = tagg.banks[i]
 #             bankResponse = func(bank)
 #             if bankResponse is false
 #                 bankLookUp(i+1)
@@ -45,18 +45,18 @@
 #     bankLookUp()
 
 
-# tag.caches = {}
-# tag.cycleBanksAndCache = (cacheName, cacheKey, cacheValue) =>
+# tagg.caches = {}
+# tagg.cycleBanksAndCache = (cacheName, cacheKey, cacheValue) =>
 #     """Cache a key/value pair in the passed in cache
 #        specified by cacheName.
 #     """
-#     if not tag.caches[cacheName]?
-#         tag.caches[cacheName] = {}
+#     if not tagg.caches[cacheName]?
+#         tagg.caches[cacheName] = {}
 
-#     cache = tag.caches[cacheName] 
+#     cache = tagg.caches[cacheName] 
 
 #     if not cache[cacheKey]?
-#         cache[cacheKey] = tag.cycleBanks((bank) =>
+#         cache[cacheKey] = tagg.cycleBanks((bank) =>
 #             if typeof cacheValue is "function"
 #                 return cacheValue(bank)
 #             else

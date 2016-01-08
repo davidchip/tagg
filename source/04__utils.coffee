@@ -1,5 +1,5 @@
-tag.utils = {}
-tag.utils.singleLoad = (url) ->
+tagg.utils = {}
+tagg.utils.singleLoad = (url) ->
     """Load a single file from a single precise URL
 
        url:     "http://www.path.to/tag/file.html"
@@ -33,19 +33,19 @@ tag.utils.singleLoad = (url) ->
     )
 
 
-tag.utils.serialLoad = (urls) =>
+tagg.utils.serialLoad = (urls) =>
     """Pass in an array of URLs, and return the first link
        that is loaded successfully.
 
        urls:    ["http://www.path.to/tag/file.html",
-                 "http://www.path.to/another/tag.html", ]
+                 "http://www.path.to/another/tagg.html", ]
        
        return:  Promise(link, error)
     """
     return new Promise((resolve, reject) =>
         _loadURL = (i=0) =>
             if i < urls.length
-                tag.utils.singleLoad(urls[i]).then((link) =>
+                tagg.utils.singleLoad(urls[i]).then((link) =>
                     resolve(link)
                 , (error) =>
                     _loadURL(i+1)
@@ -57,7 +57,7 @@ tag.utils.serialLoad = (urls) =>
     )
 
 
-tag.utils.crawl = (el) ->
+tagg.utils.crawl = (el) ->
     """Parse an el, and fetch its definition if it has one
     """
     _crawl = (el) =>
@@ -68,9 +68,9 @@ tag.utils.crawl = (el) ->
             tagName = el.tagName.toLowerCase()
             for attribute in el.attributes
                 if attribute.name is "definition"
-                    tag.lookUp(tagName).catch(() =>
-                        tag.log "def-html-started", tagName, "definition attribute found on #{tagName}"
-                        tag.define(el).then((def) =>
+                    tagg.lookUp(tagName).catch(() =>
+                        tagg.log "def-html-started", tagName, "definition attribute found on #{tagName}"
+                        tagg.define(el).then((def) =>
                             crawled(def)
                         ).catch(() =>
                             crawled()
@@ -78,7 +78,7 @@ tag.utils.crawl = (el) ->
                     )
                     return 
 
-            tag.lookUp(tagName).then((tagDef) ->
+            tagg.lookUp(tagName).then((tagDef) ->
                 crawled()
             , (elFailedToLoad) ->
                 crawled()
@@ -87,10 +87,10 @@ tag.utils.crawl = (el) ->
 
     _crawl(el).then(() =>
         for child in el.children
-            tag.utils.crawl(child)
+            tagg.utils.crawl(child)
     )
 
-tag.utils.depthSearch = (_el, _filter) ->
+tagg.utils.depthSearch = (_el, _filter) ->
     _depthArray = []
     _crawl = (el, depth, depthArray, filter) =>
         if depthArray.length <= depth
@@ -108,7 +108,7 @@ tag.utils.depthSearch = (_el, _filter) ->
     _crawl(_el, 0, _depthArray, _filter)
     return _depthArray
 
-tag.utils.inDefinition = (_el) ->
+tagg.utils.inDefinition = (_el) ->
     _crawlUp = (el) ->
         if not el.parentElement?
             return false

@@ -1,10 +1,10 @@
 ## crawl any changes to document.body
-tag.loaded = new Promise((loaded) =>
+tagg.loaded = new Promise((loaded) =>
     document.addEventListener("DOMContentLoaded", (event) =>
         observer = new MutationObserver((mutations) =>
             for mutation in mutations
                 for child in mutation.addedNodes
-                    tag.utils.crawl(child)
+                    tagg.utils.crawl(child)
         )
 
         observer.observe(document.body, { 
@@ -17,11 +17,11 @@ tag.loaded = new Promise((loaded) =>
             subtree: true
         })
 
-        tag.utils.crawl(document.body)
+        tagg.utils.crawl(document.body)
 
-        console.log("debug log", tag.logs)
+        console.log("debug log", tagg.logs)
         loaded()
 
-        tag.update()
+        tagg.update()
     )
 )

@@ -1,4 +1,4 @@
-basic_vocab = new tag.Bank()
+basic_vocab = new tagg.Bank()
 basic_vocab.define('tag-bank', {
     protocol: undefined
     hostname: undefined
@@ -15,9 +15,9 @@ basic_vocab.define('tag-bank', {
                 options[key] = @[key]
 
         if @type is "family"
-            tag.addBank(new tag.FamilyBank(options))
+            tagg.addBank(new tagg.FamilyBank(options))
         else if @type is "file"
-            tag.addBank(new tag.FileBank(options))
+            tagg.addBank(new tagg.FileBank(options))
 
 })
 
@@ -44,8 +44,8 @@ basic_vocab.define("fps-meter", {
     """
     
     update: () ->
-        @innerHTML = Math.floor(tag.smooth)
+        @innerHTML = Math.floor(tagg.smooth)
 
 })
 
-tag.addBank(basic_vocab)
+tagg.addBank(basic_vocab)

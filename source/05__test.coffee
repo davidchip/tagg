@@ -1,14 +1,14 @@
-tag.trail_index = 0
-tag.logs = {
+tagg.trail_index = 0
+tagg.logs = {
     _all: {}
     _verbose: {}
 }
 
 
-tag.wrapTest = (test, delay=10) ->
+tagg.wrapTest = (test, delay=10) ->
     return new Promise((testsFinished) =>
         timeout = new Promise ((timeoutCompleted) =>
-            tag.loaded.then(() =>
+            tagg.loaded.then(() =>
                 setTimeout (() =>
                     timeoutCompleted()
                 ), delay
@@ -23,7 +23,7 @@ tag.wrapTest = (test, delay=10) ->
                 passed: []
                 failed: []
                 filename: filename
-                logs: tag.logs
+                logs: tagg.logs
             }
 
             test(results)
@@ -42,15 +42,15 @@ tag.wrapTest = (test, delay=10) ->
     )
 
 
-tag.testEvent = (category, eventName, eventDetails) ->
+tagg.testEvent = (category, eventName, eventDetails) ->
     testingObj = {}
     testingObj[category] = {}
     testingObj[category][eventName] = eventDetails
 
-    return tag.testObj(testingObj)
+    return tagg.testObj(testingObj)
 
 
-tag.testEvents = (events=[], delay=1000) ->
+tagg.testEvents = (events=[], delay=1000) ->
     testingObj = {}
 
     for event in events
@@ -63,11 +63,11 @@ tag.testEvents = (events=[], delay=1000) ->
 
         testingObj[category][eventName] = eventDetails
     
-    return tag.testObj(testingObj, delay)
+    return tagg.testObj(testingObj, delay)
 
 
-tag.testEqual = (arg1, arg2, msg='', delay=100) ->
-    return tag.wrapTest((results) =>
+tagg.testEqual = (arg1, arg2, msg='', delay=100) ->
+    return tagg.wrapTest((results) =>
         if arg1 is arg2
             results.passed.push("#{arg1} equals #{arg2} for test #{msg}")
         else
@@ -75,10 +75,10 @@ tag.testEqual = (arg1, arg2, msg='', delay=100) ->
     , delay)
 
 
-tag.testAttr = (_tag, attrName, testVal, delay=100) ->
-    return tag.wrapTest((results) =>
-        attrVal = _tag.getAttribute(attrName)
-        tagName = _tag.tagName.toLowerCase()
+tagg.testAttr = (_tag, attrName, testVal, delay=100) ->
+    return tagg.wrapTest((results) =>
+        attrVal = _tagg.getAttribute(attrName)
+        tagName = _tagg.tagName.toLowerCase()
         if testVal is attrVal
             results.passed.push("attr #{attrName} for #{tagName} equals #{testVal}")
         else
@@ -86,9 +86,9 @@ tag.testAttr = (_tag, attrName, testVal, delay=100) ->
     , delay)
 
 
-tag.testProp = (_tag, propName, testVal, delay=100) ->
-    return tag.wrapTest((results) =>
-        tagName = _tag.tagName.toLowerCase()
+tagg.testProp = (_tag, propName, testVal, delay=100) ->
+    return tagg.wrapTest((results) =>
+        tagName = _tagg.tagName.toLowerCase()
         if _tag[propName] is testVal
             results.passed.push("prop #{propName} for #{tagName} equals #{testVal}")
         else
@@ -97,14 +97,14 @@ tag.testProp = (_tag, propName, testVal, delay=100) ->
 
 
 
-tag.testObj = (testingObj={}, delay=1000) ->
-    return tag.wrapTest((results) =>
+tagg.testObj = (testingObj={}, delay=1000) ->
+    return tagg.wrapTest((results) =>
         for category, tagCrumbs of testingObj
-            if not tag.logs[category]?
+            if not tagg.logs[category]?
                 results.failed.push("#{category} has had no events at all")
             else
                 for eventType, eventTest of tagCrumbs
-                    event = tag.logs[category][eventType]
+                    event = tagg.logs[category][eventType]
                     if not event?
                         results.failed.push("#{category} has had no events of type #{eventType}")
                     else
@@ -130,7 +130,7 @@ tag.testObj = (testingObj={}, delay=1000) ->
     , delay)
 
 
-tag.log = (type, category, verbose, details={}) =>
+tagg.log = (type, category, verbose, details={}) =>
     """Add event regarding a category the central log.
     """
     if not verbose?
@@ -144,7 +144,7 @@ tag.log = (type, category, verbose, details={}) =>
     datetime = date + " " + time
     datetime_ms = Date.now()
 
-    key = "#{tag.trail_index} #{time}: #{category} / #{type}"
+    key = "#{tagg.trail_index} #{time}: #{category} / #{type}"
     crumb = {
         short: type
         verbose: verbose
@@ -155,22 +155,22 @@ tag.log = (type, category, verbose, details={}) =>
     }
 
     ## track by tag
-    if not tag.logs[category]?
-        tag.logs[category] = {}
-        tag.logs[category]["_all"] = {}
-        tag.logs[category]["_verbose"] = {}
+    if not tagg.logs[category]?
+        tagg.logs[category] = {}
+        tagg.logs[category]["_all"] = {}
+        tagg.logs[category]["_verbose"] = {}
 
-    if not tag.logs[category][type]?
-        tag.logs[category][type] = {}
-        tag.logs[category][type]['_length'] = 0
+    if not tagg.logs[category][type]?
+        tagg.logs[category][type] = {}
+        tagg.logs[category][type]['_length'] = 0
 
-    tag.logs[category][type][key] = crumb
-    tag.logs[category][type]['_length'] = Object.keys(tag.logs[category][type]).length - 1 ## - 1 for _length property
-    tag.logs[category]["_all"][key] = crumb
-    tag.logs[category]["_verbose"][tag.trail_index + " " + time] = verbose
+    tagg.logs[category][type][key] = crumb
+    tagg.logs[category][type]['_length'] = Object.keys(tagg.logs[category][type]).length - 1 ## - 1 for _length property
+    tagg.logs[category]["_all"][key] = crumb
+    tagg.logs[category]["_verbose"][tagg.trail_index + " " + time] = verbose
     
     ## track by time
-    tag.logs["_all"][key] = crumb
-    tag.logs["_verbose"][tag.trail_index + " " + time] = verbose
+    tagg.logs["_all"][key] = crumb
+    tagg.logs["_verbose"][tagg.trail_index + " " + time] = verbose
     
-    tag.trail_index++
+    tagg.trail_index++

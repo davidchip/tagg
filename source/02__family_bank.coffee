@@ -1,4 +1,4 @@
-class tag.FamilyBank extends tag.FileBank
+class tagg.FamilyBank extends tagg.FileBank
     """A family bank acts like a collection of mini
        files banks. Each family acts as a mini file bank, 
        allowing hooks into identically named functions:
@@ -6,7 +6,7 @@ class tag.FamilyBank extends tag.FileBank
        Family files are located in a "family" file. 
        Like: /a/family.html
 
-       See tag.FileBank for the default behavior
+       See tagg.FileBank for the default behavior
        of these functions.
     """
     getFamilyName: (tagName) ->
@@ -19,17 +19,17 @@ class tag.FamilyBank extends tag.FileBank
                     familyParentNotFound()
                 else
                     @lookUp(@getFamilyName(tagName)).then((familyDef) =>
-                        tag.log "family-file-exists", @getFamilyName(tagName), "the family file #{@getFamilyName(tagName)} exists for #{tagName}"
+                        tagg.log "family-file-exists", @getFamilyName(tagName), "the family file #{@getFamilyName(tagName)} exists for #{tagName}"
                         _familyDef = familyDef[0].prototype
 
                         if _familyDef.wildcard? and _familyDef.wildcard is true
-                            tag.log "family-file-wildcard", @getFamilyName(tagName), "family file had a wildcard attr specfied"
+                            tagg.log "family-file-wildcard", @getFamilyName(tagName), "family file had a wildcard attr specfied"
                             familyParent(@getFamilyName(tagName))
                         else if _familyDef.getParentName?
-                            tag.log "family-file-getParentName-exists", tagName, "the family file #{@getFamilyName(tagName)} contained a getParentName() func"
+                            tagg.log "family-file-getParentName-exists", tagName, "the family file #{@getFamilyName(tagName)} contained a getParentName() func"
                             familyParent(familyDef[0].prototype.getParentName)
                         else
-                            tag.log "family-file-no-getParentName", tagName, "the family file #{@getFamilyName(tagName)} did not contain getParentName() func"
+                            tagg.log "family-file-no-getParentName", tagName, "the family file #{@getFamilyName(tagName)} did not contain getParentName() func"
                             familyParentNotFound()
                     , (failed) =>
                         familyParentNotFound()
@@ -64,11 +64,11 @@ class tag.FamilyBank extends tag.FileBank
     lookUp: (tagName) ->
         if not @definitions[tagName]?
             @definitions[tagName] = new Promise((tagFound, tagNotFound) =>
-                tag.log "started-lookup", tagName, "started lookup of #{tagName}"
+                tagg.log "started-lookup", tagName, "started lookup of #{tagName}"
                 @lookUpFamily(tagName).then((familyDef) =>
-                    tag.log "started-lookup", tagName, "family def found for #{tagName}"
+                    tagg.log "started-lookup", tagName, "family def found for #{tagName}"
                     if familyDef.prototype.wildcard? and familyDef.prototype.wildcard is true
-                        tag.log "auto-defining", tagName, "auto defining tagName from #{@getFamilyName(tagName)} def"
+                        tagg.log "auto-defining", tagName, "auto defining tagName from #{@getFamilyName(tagName)} def"
                         @defineFromJS(tagName, {
                             extends: @getFamilyName(tagName)
                         }).then((autoDef) =>
@@ -76,7 +76,7 @@ class tag.FamilyBank extends tag.FileBank
                         , () =>
                             tagNotFound())
                     else
-                        tag.log "loading-definition", tagName, "familyFile (#{@getFamilyName}) of #{tagName} has no wildcard specified"
+                        tagg.log "loading-definition", tagName, "familyFile (#{@getFamilyName}) of #{tagName} has no wildcard specified"
                         @loadFileAndDefine(tagName).then((def) =>
                             tagFound(def)
                         , () =>
