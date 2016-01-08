@@ -1,5 +1,0 @@
-{
-  "name": "helix-lib",
-  "root": "./dist/",
-  "error_page": "error.html"
-}

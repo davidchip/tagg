@@ -13,7 +13,7 @@ module.exports = ->
           './bower_components/webcomponentsjs/webcomponents-lite.min.js',
           'dist/source.js'
         ]
-        dest: 'dist/tag.js',
+        dest: 'dist/tagg.js',
       }]
       options: {
         banner: 'console.log("last built: <%= grunt.template.today("yyyy-mm-dd h:MM:sstt") %>");'
