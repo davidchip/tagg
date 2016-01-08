@@ -26,14 +26,14 @@
         if (remainingFruits > 0) {
             while (remainingFruits > 0) {
                 el = this;
-                tag.create("plum-fruit").then(function(fruit){
+                tagg.create("plum-fruit").then(function(fruit){
                     el.appendChild(fruit);
                 });
                 remainingFruits--;
             }
         } else if (remainingFruits < 0) {
             while (remainingFruits < 0) {
-                this.removeChild(plums[0])
+                plums[0].remove()
                 remainingFruits++;
             }
         }

@@ -211,12 +211,12 @@ class tagg.Bank
                         else
                             childLookUp = new Promise((childParsed) =>
                                 tagg.lookUp(childName).then((childClass) =>  
-                                    tagg.log "child-def-found", element.tagName, "definition for child, #{innertagg.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
+                                    tagg.log "child-def-found", element.tagName, "definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} was found"
                                     childPrototype = Object.create(childClass.prototype)
                                     def = childClass.prototype.bindToParent.call(el, def)
                                     childParsed()
                                 , (noDefinition) =>
-                                    tagg.log "no-child-not-def", element.tagName, "no definition for child, #{innertagg.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
+                                    tagg.log "no-child-not-def", element.tagName, "no definition for child, #{innerTag.tagName.toLowerCase()}, of #{element.tagName.toLowerCase()} found"
                                     childParsed()
                                 )
                             )

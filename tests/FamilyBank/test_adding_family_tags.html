@@ -1,14 +1,14 @@
 <html>
 
 <head>
-    <script src="/tag.js"></script>
+    <script src="/tagg.js"></script>
 </head>
 
 <body>
     <tag-bank path="/tests/FamilyBank/"></tag-bank>
 
     <script>
-        tag.testEvents([
+        tagg.testEvents([
             ["plum-tree", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 10],
             ["plum-tree", "file-def-load-succeeded", 1],
@@ -19,16 +19,16 @@
             tree = t.id("tree");
             tree.fruits = 5;
 
-            tag.testEvent("changed-fruits", "auto-defining")
+            tagg.testEvent("changed-fruits", "auto-defining")
 
-            tag.testEvents([
+            tagg.testEvents([
                 ["plum-tree", "prop-changed", 2],
                 ["plum-fruit", "tag-removed", 5]
             ], 3000).then(function() {
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tag.testEqual(tag.updates.length, 108, "proper number of tags to update")
+                    tagg.testEqual(tagg.updates.length, 108, "proper number of tags to update")
                 }, 3000)
                 
             });

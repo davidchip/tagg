@@ -77,8 +77,8 @@ tagg.testEqual = (arg1, arg2, msg='', delay=100) ->
 
 tagg.testAttr = (_tag, attrName, testVal, delay=100) ->
     return tagg.wrapTest((results) =>
-        attrVal = _tagg.getAttribute(attrName)
-        tagName = _tagg.tagName.toLowerCase()
+        attrVal = _tag.getAttribute(attrName)
+        tagName = _tag.tagName.toLowerCase()
         if testVal is attrVal
             results.passed.push("attr #{attrName} for #{tagName} equals #{testVal}")
         else
@@ -88,7 +88,7 @@ tagg.testAttr = (_tag, attrName, testVal, delay=100) ->
 
 tagg.testProp = (_tag, propName, testVal, delay=100) ->
     return tagg.wrapTest((results) =>
-        tagName = _tagg.tagName.toLowerCase()
+        tagName = _tag.tagName.toLowerCase()
         if _tag[propName] is testVal
             results.passed.push("prop #{propName} for #{tagName} equals #{testVal}")
         else

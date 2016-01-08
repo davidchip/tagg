@@ -1,4 +1,4 @@
-tag = {}
+tagg = {}
 tagg.defaults = {}
 tagg.updates = []
 
@@ -147,7 +147,6 @@ built_ins = {
                             })
 
                             @links[key] = linkWatcher
-
 
                             newVal = target.getAttribute(propName)
                         

@@ -1,6 +1,6 @@
 ## attach to window + basic aliases
-Object.defineProperty(window, "tag", {
-    value: tag
+Object.defineProperty(window, "tagg", {
+    value: tagg
     writable: false
 })
 

@@ -15,8 +15,8 @@
     </style>
 
     <script>
-        tag.loaded.then(function() {
-            tag.define("plum-tree", {
+        tagg.loaded.then(function() {
+            tagg.define("plum-tree", {
                 fruits: "10",
                 created: function() {
                     this.drawFruits();
@@ -46,13 +46,13 @@
                 },
                 drawFruit: function() {
                     tree = this;
-                    tag.create("plum-fruit").then(function(fruit){
+                    tagg.create("plum-fruit").then(function(fruit){
                         tree.appendChild(fruit);
                     });
                 }
             });
 
-            tag.define("plum-fruit", {
+            tagg.define("plum-fruit", {
                 size: "5",
                 created: function() {
                     this.style.top = Math.random() * 100 + "%";
@@ -64,20 +64,20 @@
     </script>
 
     <script>
-        tag.testEvents([
+        tagg.testEvents([
             ["plum-tree", "tag-attached", 1],
             ["plum-fruit", "tag-attached", 10]
         ]).then(function() {
             tree = document.getElementsByTagName("plum-tree")[0]
             tree.fruits = 50
 
-            tag.testEvent("plum-fruit", "tag-attached", 50).then(function() {
+            tagg.testEvent("plum-fruit", "tag-attached", 50).then(function() {
                 tree.fruits = 5
 
-                tag.testEvent("plum-fruit", "tag-removed", 45)
+                tagg.testEvent("plum-fruit", "tag-removed", 45)
             });
 
-            tag.testEvent("plum-fruit", "js-styling-got-affixed", 1)
+            tagg.testEvent("plum-fruit", "js-styling-got-affixed", 1)
         });
     </script>
 

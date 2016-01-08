@@ -4,7 +4,7 @@
 
 tagg.smooths = new Uint8Array(120);
 tagg.smooth_index = 0
-Object.defineProperty(tag, "smooth", {
+Object.defineProperty(tagg, "smooth", {
     get: () ->
         total = 0                    
         values = tagg.smooths.values()
@@ -20,7 +20,7 @@ Object.defineProperty(tag, "smooth", {
 ## FPS SETTER ##
 #################
 
-Object.defineProperty(tag, "fps", {
+Object.defineProperty(tagg, "fps", {
     get: () ->
         return tagg._fps
     set: (newFPS) ->

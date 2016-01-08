@@ -35,14 +35,14 @@
     </plum-fruit>
 
     <script>
-        tag.testEvents([
+        tagg.testEvents([
             ["plum-fruit", "tag-attached", 2]
         ]).then(function() {
             first = t.id("first");
             second = t.id("second");
             tree = t.id("tree");
 
-            tag.testEqual(tag.updates.length, 4, "proper number of items to update")
+            tagg.testEqual(tagg.updates.length, 4, "proper number of items to update")
         });
     </script>
 
