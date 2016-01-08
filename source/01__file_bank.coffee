@@ -104,7 +104,7 @@ class tagg.FileBank extends tagg.Bank
             split_path.push("/")                        ## /a/path/
 
         path = split_path.join("") + tagName.replace(/\-/g, "/")
-        _no_extension = path.split('.').length <= 1
+        _no_extension = (path.split('.').length <= 1) or (@path == ".")
 
         parser = document.createElement("a")
         parser.href = path

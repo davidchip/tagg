@@ -29,7 +29,7 @@
                 testSuite.className = "test-suite"
 
                 iframe = document.createElement('iframe');
-                iframe.src = "/" + tests[i].location;
+                iframe.src = "../" + tests[i].location;
                 iframe.height = "250px";
                 iframe.width = "250px";
                 iframe.style.display = "block";
@@ -46,7 +46,7 @@
                 testSuite.appendChild(a)
 
                 document.body.appendChild(testSuite)
-            } 
+            }
 
             loadTest(0)
         }
