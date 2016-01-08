@@ -5,16 +5,16 @@ class tagg.FileBank extends tagg.Bank
     constructor: (options) ->
         super options
 
-        {@protocol, @hostname, @port, @path, @extensions} = options
+        {@protocol, @hostname, @path, @extensions} = options
+
+        if options.port?
+            @port = options.port
         
         if not @protocol?
             @protocol = window.location.protocol
 
         if not @hostname?
             @hostname = window.location.hostname
-
-        if not @port?
-            @port = window.location.port
 
         if not @path?
             @path = "/"
@@ -110,7 +110,9 @@ class tagg.FileBank extends tagg.Bank
         parser.href = path
         parser.protocol = @protocol
         parser.hostname = @hostname
-        parser.port     = @port
+
+        if @port?
+            parser.port = @port
 
         urls = []
         if _no_extension
