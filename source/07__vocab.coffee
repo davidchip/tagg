@@ -1,5 +1,5 @@
 basic_vocab = new tagg.Bank()
-basic_vocab.define('tag-bank', {
+basic_vocab.define('tagg-bank', {
     protocol: undefined
     hostname: undefined
     port: undefined
@@ -8,7 +8,7 @@ basic_vocab.define('tag-bank', {
 
     type: "family"
 
-    created: () ->
+    setup: () ->
         options = {}
         for key in ['protocol', 'hostname', 'port', 'path', 'extensions']
             if @[key] isnt ""
@@ -49,3 +49,15 @@ basic_vocab.define("fps-meter", {
 })
 
 tagg.addBank(basic_vocab)
+
+
+autoload = document.querySelectorAll('[data-autoload="false"]')
+if autoload.length is 0
+    tagg.addBank(new tagg.FamilyBank({path:"."}))
+
+    tagg.addBank(new tagg.FamilyBank({
+        protocol: "https",
+        hostname: "tagg.to",
+        path: "/tree/",
+        port: "443"
+    }))

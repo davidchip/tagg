@@ -12,7 +12,7 @@ built_ins = {
     ## LIFECYCLE FUNCTIONS ##
     #########################
 
-    created: () ->
+    setup: () ->
         return
 
     _attachedCallback: () ->
@@ -43,7 +43,7 @@ built_ins = {
 
         tagg.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"
 
-        @created()
+        @setup()
 
         tagg.updates.push(@)
 

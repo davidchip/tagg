@@ -14,6 +14,7 @@ tagg.cycleBanks = (func) =>
         bankLookUp = (i=0) =>
             if tagg.banks.length is 0
                 reject("tagg.banks.stored is empty; push a bank before using any commands.")
+
             if i < tagg.banks.length
                 bank = tagg.banks[i]
                 func(bank).then((bankResolve) =>
@@ -22,7 +23,7 @@ tagg.cycleBanks = (func) =>
                     bankLookUp(i+1)
                 )
             else
-                reject(Error("promise #{func} failed across all bankionaries"))
+                reject(Error("promise #{func} failed across all dictionaries"))
 
         bankLookUp()
     )

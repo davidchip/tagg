@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <script src="../tagg.js"></script>
+    <script src="../tagg.js" data-autoload="false"></script>
 </head>
 
 <body>
@@ -16,7 +16,6 @@
         }
     </style>
 
-
     <fps-meter></fps-meter>
 
     <div>
@@ -24,7 +23,7 @@
             <div></div>
             <div>
                 <this-script>
-                    this.created = function () {
+                    this.setup = function () {
                         this.style.height = this.size + "px";
                         this.style.width = this.size + "px";
                     }

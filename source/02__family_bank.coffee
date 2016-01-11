@@ -86,7 +86,7 @@ class tagg.FamilyBank extends tagg.FileBank
                     @loadFileAndDefine(tagName).then((def) =>
                         tagFound(def)
                     , () =>
-                        tagNotFound
+                        tagNotFound()
                     )
 
                 )

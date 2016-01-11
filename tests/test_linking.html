@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <script src="../tagg.js"></script>
+    <script src="../tagg.js" data-autoload="false"></script>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
         </style>
 
         <this-script>
-            this.created = function() {
+            this.setup = function() {
                 this.style.top = Math.random() * 100 + "%";
                 this.style.left = Math.random() * 100 + "%";
             }
@@ -73,7 +73,7 @@
                     fourth.brother = t.id("sixth");
                     tagg.testEqual(fourth.brother.id, sixth.id, "fourth's brother updated to sixth")
                 }, 1500)
-            }, 1000)
+            }, 3000)
         });
 
     </script>

@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <script src="../tagg.js"></script>
+    <script src="../tagg.js" data-autoload="false"></script>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
             tagg.define("plum-fruit", {
                 blinking: true,
                 size: "5", 
-                created: function() {
+                setup: function() {
                     this.style.top = Math.random() * 100 + "%";
                     this.style.left = Math.random() * 100 + "%";
                 },

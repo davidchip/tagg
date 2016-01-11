@@ -1,11 +1,11 @@
 <html>
 
 <head>
-    <script src="../../tagg.js"></script>
+    <script src="../../tagg.js" data-autoload="false"></script>
 </head>
 
 <body>
-    <tag-bank path="." type="file"></tag-bank>
+    <tagg-bank path="." type="file"></tag-bank>
 
     <script>
         tagg.testEvents([
@@ -13,7 +13,7 @@
             ["plum-fruit", "tag-attached", 10],
             ["plum-tree", "file-def-load-succeeded", 1],
             ["plum-fruit", "file-def-load-succeeded", 1],
-            ["tag-bank", "def-accepted", 1],
+            ["tagg-bank", "def-accepted", 1],
             ["tagbank", "pushed-bank", 2]
         ], 3000).then(function() {
             tree = t.id("tree");

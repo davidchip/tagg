@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <script src="../tagg.js"></script>
+    <script src="../tagg.js" data-autoload="false"></script>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
         tagg.loaded.then(function() {
             tagg.define("plum-tree", {
                 fruits: "10",
-                created: function() {
+                setup: function() {
                     this.drawFruits();
                 },
                 changed: function(name, oldVal, newVal) {
@@ -54,7 +54,7 @@
 
             tagg.define("plum-fruit", {
                 size: "5",
-                created: function() {
+                setup: function() {
                     this.style.top = Math.random() * 100 + "%";
                     this.style.left = Math.random() * 100 + "%";
                 },
