@@ -50,7 +50,6 @@ basic_vocab.define("fps-meter", {
 
 tagg.addBank(basic_vocab)
 
-
 autoload = document.querySelectorAll('[data-autoload="false"]')
 if autoload.length is 0
     tagg.addBank(new tagg.FamilyBank({path:"."}))

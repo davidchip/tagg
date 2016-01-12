@@ -4,6 +4,7 @@ tagg.updates = []
 
 built_ins = {
 
+    content: ""
     libs: []
     properties: {}
     links: {}
@@ -26,6 +27,7 @@ built_ins = {
                 @[key] = value
 
         if @template?
+            @content = @innerHTML
             @innerHTML = @template
 
         ## swap out or built in attribute watcher
@@ -128,8 +130,8 @@ built_ins = {
                         if @hasAttribute('definition') is true
                             return
                                 
-                        ## if a link exists, disconnect it
                         if target? and propName? and propName isnt "children"
+                            ## if a link exists, disconnect it
                             if @links[key]?
                                 @links[key].disconnect()
                                 delete @links[key]

@@ -137,7 +137,7 @@ class tagg.Bank
                         @_detachedCallback()
                         detached())
 
-                Object.defineProperty(prototype, "parentTag", {
+                Object.defineProperty(prototype, "parentTagg", {
                     value: Object.create(parentPrototype)
                     writable: false })
 
