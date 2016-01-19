@@ -50,10 +50,12 @@ basic_vocab.define("fps-meter", {
 
 tagg.addBank(basic_vocab)
 
-autoload = document.querySelectorAll('[data-autoload="false"]')
-if autoload.length is 0
+load_local = document.querySelectorAll('[data-local-loading="false"]')
+if load_local.length is 0
     tagg.addBank(new tagg.FamilyBank({path:"."}))
 
+load_remote = document.querySelectorAll('[data-remote-loading="false"]')
+if load_remote.length is 0
     tagg.addBank(new tagg.FamilyBank({
         protocol: "https",
         hostname: "storage.googleapis.com",
