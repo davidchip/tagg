@@ -56,7 +56,7 @@ if autoload.length is 0
 
     tagg.addBank(new tagg.FamilyBank({
         protocol: "https",
-        hostname: "tree.tagg.to",
-        path: "/"
+        hostname: "storage.googleapis.com",
+        path: "/tree.tagg.to/"
         port: "443"
     }))
