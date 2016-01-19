@@ -50,11 +50,11 @@ basic_vocab.define("fps-meter", {
 
 tagg.addBank(basic_vocab)
 
-load_local = document.querySelectorAll('[data-local-loading="false"]')
+load_local = document.querySelectorAll('[data-local="false"]')
 if load_local.length is 0
     tagg.addBank(new tagg.FamilyBank({path:"."}))
 
-load_remote = document.querySelectorAll('[data-remote-loading="false"]')
+load_remote = document.querySelectorAll('[data-remote="false"]')
 if load_remote.length is 0
     tagg.addBank(new tagg.FamilyBank({
         protocol: "https",
