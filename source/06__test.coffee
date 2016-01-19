@@ -92,7 +92,7 @@ tagg.testProp = (_tag, propName, testVal, delay=100) ->
         if _tag[propName] is testVal
             results.passed.push("prop #{propName} for #{tagName} equals #{testVal}")
         else
-            results.failed.push("prop #{propName} for #{tagName} does not equal #{testVal}, equals #{tag[propName]}")
+            results.failed.push("prop #{propName} for #{tagName} does not equal #{testVal}, equals #{_tag[propName]}")
     , delay)
 
 

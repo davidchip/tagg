@@ -104,12 +104,12 @@ class tagg.FileBank extends tagg.Bank
             split_path.push("/")                        ## /a/path/
 
         path = split_path.join("") + tagName.replace(/\-/g, "/")
-        _no_extension = (path.split('.').length <= 1) or (@path == ".")
+        _no_extension = (path.split('.').length <= 1) or (@path in [".", "/"])
 
         parser = document.createElement("a")
         parser.href = path
-        parser.protocol = @protocol
         parser.hostname = @hostname
+        parser.protocol = @protocol
 
         if @port?
             parser.port = @port

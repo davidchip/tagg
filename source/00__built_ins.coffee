@@ -5,6 +5,7 @@ tagg.updates = []
 built_ins = {
 
     content: ""
+    istagg: true
     libs: []
     properties: {}
     links: {}
@@ -22,7 +23,11 @@ built_ins = {
 
         for key, value of tagg.defaults[@tagName.toLowerCase()]
             if @hasAttribute(key) is true
-                @[key] = @getAttribute(key)
+                attrVal = @getAttributeNode(key).value
+                if attrVal is ""
+                    attrVal = "true"
+
+                @[key] = attrVal
             else
                 @[key] = value
 
@@ -73,11 +78,7 @@ built_ins = {
         return
 
     parseProperty: (value) ->
-        if not value?
-            value = ""
-        else if value is ""
-            value = value
-        else if value in ["True", "true", true]
+        if value in ["True", "true", true]
             value = true
         else if value in ["False", "false", false]
             value = false

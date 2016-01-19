@@ -129,27 +129,27 @@
                 tagg.testAttr(second, "size", "false", 2600)
                 tagg.testProp(second, "size",  false , 2600)
 
-                // undefined parsing
-
                 three = t.id("three")
 
-                tagg.testAttr(three, "size", "", 200)
-                tagg.testProp(three, "size", "", 200).then(function(){
-                    three.size = undefined;
+                tagg.testAttr(three, "size", "true", 200)
+                tagg.testProp(three, "size", true, 200).then(function(){
+                    three.size = null;
                 })
 
-                tagg.testAttr(three, "size", "", 400)
-                tagg.testProp(three, "size", "", 400).then(function(){
-                    three.setAttribute("size", "")
-                })
+                // null parsing
 
-                tagg.testAttr(three, "size", "", 600)
-                tagg.testProp(three, "size", "", 600).then(function(){
-                    three.size = ""
-                })
+                // tagg.testAttr(three, "size", "null", 400)
+                // tagg.testProp(three, "size", null, 400).then(function(){
+                //     three.setAttribute("size", "null")
+                // })
 
-                tagg.testAttr(three, "size", "", 800)
-                tagg.testProp(three, "size", "", 800)
+                // tagg.testAttr(three, "size", "null", 600)
+                // tagg.testProp(three, "size", null, 600).then(function(){
+                //     three.size = ""
+                // })
+
+                // tagg.testAttr(three, "size", "true", 800)
+                // tagg.testProp(three, "size", true, 800)
 
             }, 1000)
         });
