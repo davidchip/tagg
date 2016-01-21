@@ -14,6 +14,9 @@ built_ins = {
     ## LIFECYCLE FUNCTIONS ##
     #########################
 
+    defined: () ->
+        return
+
     setup: () ->
         return
 

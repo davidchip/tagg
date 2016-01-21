@@ -180,7 +180,9 @@ class tagg.Bank
                     Tag = document.registerElement(tagName, {
                         prototype: prototype })
 
-                    acceptDef(Tag)    
+                    acceptDef(Tag)
+
+                    prototype.defined()
 
                     tagg.log "def-accepted", tagName, "pushed #{tagName} definition to bank (id: #{@id})"
                 )
