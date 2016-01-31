@@ -2,7 +2,7 @@ module.exports = ->
 
 
     ## grunt tasks are located in grunt_tasks/
-    @loadTasks("grunt_tasks")
+    @loadTasks("tasks")
 
 
     @registerTask("compile", [

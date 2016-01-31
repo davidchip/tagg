@@ -1,7 +1,0 @@
-{
-  "name": "helix",
-  "dependencies": {
-  	"es6-promise": "latest",
-    "webcomponentsjs": "latest"
-  }
-}

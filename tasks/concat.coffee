@@ -9,8 +9,8 @@ module.exports = ->
     libsAndSource: {
       files: [{
         src: [ 
-          './es6-promise/promise.min.js',
-          './bower_components/webcomponentsjs/webcomponents-lite.min.js',
+          './node_modules/es6-promise/dist/es6-promise.min.js',
+          './node_modules/webcomponents.js/webcomponents-lite.min.js',
           'dist/source.js'
         ]
         dest: 'dist/tagg.js',
