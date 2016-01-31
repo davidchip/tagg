@@ -6,7 +6,7 @@ module.exports = ->
 
   @config "uglify", {
 
-    tagJS: {
+    taggJS: {
       files: [{
         src: 'dist/tagg.js'
         dest: 'dist/tagg.min.js',

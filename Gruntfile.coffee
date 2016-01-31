@@ -9,14 +9,13 @@ module.exports = ->
         "coffee:compileSource"
         "concat:libsAndSource"
         "folder_list:testsJSON"
-        "copy:tests"
     ])
 
 
     @registerTask("release", [
         "clean:everything"
         "compile"
-        "uglify:tagJS"
+        "uglify:taggJS"
         "uglify:sourceJS"
     ])
 
