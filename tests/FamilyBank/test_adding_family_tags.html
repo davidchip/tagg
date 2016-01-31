@@ -1,11 +1,11 @@
 <html>
 
 <head>
-    <script src="../../tagg.js" data-autoload="false"></script>
+    <script src="../../tagg.js" data-auto="false"></script>
 </head>
 
 <body>
-    <tagg-bank path="."></tag-bank>
+    <tagg-bank path="."></tagg-bank>
 
     <script>
         tagg.testEvents([
@@ -28,8 +28,8 @@
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tagg.testEqual(tagg.updates.length, 108, "proper number of tags to update")
-                }, 3000)
+                    tagg.testEqual(tagg.updates.length, 108, "proper number of taggs to update")
+                }, 4000)
                 
             });
         });

@@ -1,4 +1,4 @@
-<function-family definition wildcard="true">
+<function-family wildcard definition>
     
     <this-script>
         this.bindToParent = function (def) {
@@ -8,7 +8,7 @@
                     args.push(this.attributes[i].name) }
 
                 func = new Function(args, this.textContent)
-                def[this.secondName] = func
+                def[this.names[1]] = func
                 return def
             }
         }

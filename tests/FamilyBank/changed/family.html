@@ -1,4 +1,4 @@
-<changed-family definition wildcard="true">
+<changed-family wildcard definition>
     
     <this-script>
         this.bindToParent = function (def) {
@@ -7,7 +7,8 @@
                 args.push(this.attributes[i].name) }
 
             func = new Function(args, this.textContent)
-            def["changed_" + this.secondName] = func
+
+            def["changed_" + this.names[1]] = func
             return def
         }
     </this-script>

@@ -22,7 +22,7 @@ class tagg.FamilyBank extends tagg.FileBank
                         tagg.log "family-file-exists", @getFamilyName(tagName), "the family file #{@getFamilyName(tagName)} exists for #{tagName}"
                         _familyDef = familyDef[0].prototype
 
-                        if _familyDef.wildcard? and _familyDef.wildcard is true
+                        if _familyDef.wildcard?
                             tagg.log "family-file-wildcard", @getFamilyName(tagName), "family file had a wildcard attr specfied"
                             familyParent(@getFamilyName(tagName))
                         else if _familyDef.getParentName?
@@ -67,7 +67,7 @@ class tagg.FamilyBank extends tagg.FileBank
                 tagg.log "started-lookup", tagName, "started lookup of #{tagName}"
                 @lookUpFamily(tagName).then((familyDef) =>
                     tagg.log "started-lookup", tagName, "family def found for #{tagName}"
-                    if familyDef.prototype.wildcard? and familyDef.prototype.wildcard is true
+                    if familyDef.prototype.wildcard?
                         tagg.log "auto-defining", tagName, "auto defining tagName from #{@getFamilyName(tagName)} def"
                         @defineFromJS(tagName, {
                             extends: @getFamilyName(tagName)
@@ -83,6 +83,7 @@ class tagg.FamilyBank extends tagg.FileBank
                             tagNotFound()
                         )
                 , () =>
+                    tagg.log "family-lookup-failed", tagName, "lookup of family name failed"
                     @loadFileAndDefine(tagName).then((def) =>
                         tagFound(def)
                     , () =>

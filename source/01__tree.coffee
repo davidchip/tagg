@@ -107,24 +107,31 @@ class tagg.Bank
             )
 
             getParentPrototype = new Promise((classFound, classNotFound) =>
-                getParentName.then((parentName) =>
+                getParentName.then((_parentName) =>
+                    parentName = _parentName
                     tagg.log "parent-name-exists", tagName, "#{tagName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
                     @lookUp(parentName).then((_class) =>
                         tagg.log "parent-def-exists", tagName, "located #{tagName}'s parent definition, #{parentName}, extending from that"
-                        classFound(_class.prototype)
+                        if Array.isArray(_class) is true
+                            proto = _class[0].prototype
+                        else
+                            proto = _class.prototype
+
+                        classFound({parentPrototype:proto, parentName:parentName})
                     , (classNotFound) =>
                         tagg.log "parent-def-dne", tagName, "could not find #{tagName}'s parent, #{parentName}, extending from prototypeBase"
-                        classFound(@prototypeBase())
+                        classFound({parentPrototype:@prototypeBase(), parentName:parentName})
                     )
                 , (noParentName) =>
                     tagg.log "parent-name-dne", tagName, "could not find #{tagName}'s parentName, extending from prototypeBase"
-                    classFound(@prototypeBase())
+                    classFound({parentPrototype:@prototypeBase()})
                 )
             )
 
             ## attach options and tasks to its 
             ## parents prototype, and register the custom element
-            getParentPrototype.then((parentPrototype) => 
+            getParentPrototype.then((protoObj) => 
+                {parentPrototype, parentName} = protoObj
                 prototype = Object.create(parentPrototype)
 
                 prototype["attached"] = new Promise((attached) =>
@@ -141,8 +148,8 @@ class tagg.Bank
                     value: Object.create(parentPrototype)
                     writable: false })
 
-                Object.defineProperty(prototype, "secondName", {
-                    value: tagName.split("-")[1]
+                Object.defineProperty(prototype, "names", {
+                    value: tagName.split("-")
                     writable: false })
 
                 if definition.libs?
@@ -172,7 +179,15 @@ class tagg.Bank
 
                     loadedLibs.push(libLoad)
 
-                tagg.defaults[tagName] = {}
+                ## extend parent attributes if available
+                if parentName? and tagg.defaults[parentName]?
+                    tagg.defaults[tagName] = tagg.defaults[parentName]
+                    for parentKey, parentValue of tagg.defaults[parentName]
+                        if not definition[parentKey]?
+                            definition[parentKey] = parentValue
+                else
+                    tagg.defaults[tagName] = {}
+
                 for key, value of definition
                     bind = prototype.bindProperty.apply(prototype, [key, value, prototype, tagName])
 

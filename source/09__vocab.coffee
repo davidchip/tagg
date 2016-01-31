@@ -50,15 +50,17 @@ basic_vocab.define("fps-meter", {
 
 tagg.addBank(basic_vocab)
 
-load_local = document.querySelectorAll('[data-local="false"]')
-if load_local.length is 0
-    tagg.addBank(new tagg.FamilyBank({path:"."}))
+auto_load = document.querySelectorAll('[data-auto="false"]')
+if auto_load.length is 0
+    load_local = document.querySelectorAll('[data-local="false"]')
+    if load_local.length is 0
+        tagg.addBank(new tagg.FamilyBank({path:"."}))
 
-load_remote = document.querySelectorAll('[data-remote="false"]')
-if load_remote.length is 0
-    tagg.addBank(new tagg.FamilyBank({
-        protocol: "https",
-        hostname: "storage.googleapis.com",
-        path: "/tree.tagg.to/"
-        port: "443"
-    }))
+    load_remote = document.querySelectorAll('[data-remote="false"]')
+    if load_remote.length is 0
+        tagg.addBank(new tagg.FamilyBank({
+            protocol: "https",
+            hostname: "storage.googleapis.com",
+            path: "/tree.tagg.to/"
+            port: "443"
+        }))

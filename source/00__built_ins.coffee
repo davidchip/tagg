@@ -24,15 +24,17 @@ built_ins = {
         if @hasAttribute('definition') is true
             return
 
-        for key, value of tagg.defaults[@tagName.toLowerCase()]
-            if @hasAttribute(key) is true
-                attrVal = @getAttributeNode(key).value
-                if attrVal is ""
-                    attrVal = "true"
+        defaults = tagg.defaults[@tagName.toLowerCase()]
+        for key, value of defaults
+            if key isnt "wildcard"
+                if @hasAttribute(key) is true
+                    attrVal = @getAttributeNode(key).value
+                    if attrVal is ""
+                        attrVal = "true"
 
-                @[key] = attrVal
-            else
-                @[key] = value
+                    @[key] = attrVal
+                else
+                    @[key] = value
 
         if @template?
             @content = @innerHTML
@@ -46,9 +48,14 @@ built_ins = {
                 @[propName] = val
         )
 
+        attributeFilter = []
+        for propName, propValue of defaults
+            attributeFilter.push(propName)
+
         propWatcher.observe(@, { 
             attributes: true
             attributeOldValue: true
+            attributeFilter: attributeFilter
         })
 
         tagg.log "tag-attached", @tagName, "#{@tagName.toLowerCase()} was attached to the DOM"

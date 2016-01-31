@@ -1,5 +1,5 @@
 tagg.trail_index = 0
-tagg.logs = {
+tagg.debug = {
     _all: {}
     _verbose: {}
 }
@@ -23,7 +23,7 @@ tagg.wrapTest = (test, delay=10) ->
                 passed: []
                 failed: []
                 filename: filename
-                logs: tagg.logs
+                logs: tagg.debug
             }
 
             test(results)
@@ -100,11 +100,11 @@ tagg.testProp = (_tag, propName, testVal, delay=100) ->
 tagg.testObj = (testingObj={}, delay=1000) ->
     return tagg.wrapTest((results) =>
         for category, tagCrumbs of testingObj
-            if not tagg.logs[category]?
+            if not tagg.debug[category]?
                 results.failed.push("#{category} has had no events at all")
             else
                 for eventType, eventTest of tagCrumbs
-                    event = tagg.logs[category][eventType]
+                    event = tagg.debug[category][eventType]
                     if not event?
                         results.failed.push("#{category} has had no events of type #{eventType}")
                     else
@@ -155,22 +155,22 @@ tagg.log = (type, category, verbose, details={}) =>
     }
 
     ## track by tag
-    if not tagg.logs[category]?
-        tagg.logs[category] = {}
-        tagg.logs[category]["_all"] = {}
-        tagg.logs[category]["_verbose"] = {}
+    if not tagg.debug[category]?
+        tagg.debug[category] = {}
+        tagg.debug[category]["_all"] = {}
+        tagg.debug[category]["_verbose"] = {}
 
-    if not tagg.logs[category][type]?
-        tagg.logs[category][type] = {}
-        tagg.logs[category][type]['_length'] = 0
+    if not tagg.debug[category][type]?
+        tagg.debug[category][type] = {}
+        tagg.debug[category][type]['_length'] = 0
 
-    tagg.logs[category][type][key] = crumb
-    tagg.logs[category][type]['_length'] = Object.keys(tagg.logs[category][type]).length - 1 ## - 1 for _length property
-    tagg.logs[category]["_all"][key] = crumb
-    tagg.logs[category]["_verbose"][tagg.trail_index + " " + time] = verbose
+    tagg.debug[category][type][key] = crumb
+    tagg.debug[category][type]['_length'] = Object.keys(tagg.debug[category][type]).length - 1 ## - 1 for _length property
+    tagg.debug[category]["_all"][key] = crumb
+    tagg.debug[category]["_verbose"][tagg.trail_index + " " + time] = verbose
     
     ## track by time
-    tagg.logs["_all"][key] = crumb
-    tagg.logs["_verbose"][tagg.trail_index + " " + time] = verbose
+    tagg.debug["_all"][key] = crumb
+    tagg.debug["_verbose"][tagg.trail_index + " " + time] = verbose
     
     tagg.trail_index++
