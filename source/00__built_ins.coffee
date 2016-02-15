@@ -197,4 +197,7 @@ built_ins = {
 
     inDefinition: () ->
         return tagg.utils.inDefinition(@)
+
+    find: (query) ->
+        return @querySelector(query)
 }
