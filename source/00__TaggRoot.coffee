@@ -2,10 +2,9 @@ tagg = {}
 tagg.defaults = {}
 tagg.updates = []
 
-built_ins = {
+TaggRoot = {
 
     content: ""
-    istagg: true
     properties: {}
     links: {}
 

@@ -1,9 +1,0 @@
-this.define("plum-fruit", {
-    size: 10,
-    update: function (frame) {
-        if(frame % 60 == 0) {
-            this.style.top = Math.random() * 100 + "%";    
-            this.style.left = Math.random() * 100 + "%";
-        }
-    }
-});

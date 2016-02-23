@@ -22,10 +22,10 @@ basic_vocab.define('tagg-bank', {
 })
 
 
-basic_vocab.define("this-script", {
+# basic_vocab.define("this-script", {
 
 
-})
+# })
 
 
 basic_vocab.define("tagg-script", {

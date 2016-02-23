@@ -14,53 +14,34 @@ class tagg.FileBank extends tagg.Bank
             @hostname = window.location.hostname
 
         if not @protocol?
-            @protocol = window.location.protocol
-
-    define: (arg1, arg2) ->
-        if typeof arg1 is "string" and (typeof arg2 is "object" or not arg2?)
-            taggName = arg1
-        else if typeof arg1 is "object" and arg1 instanceof HTMLElement
-            taggName = arg1.tagName
-
-        return super(arg1, arg2)
-
-    loadFileAndDefine: (taggName) ->
-        return new Promise((taggFound, taggNotFound) =>
-            urls = @nameToUrls(taggName)
-            tagg.log "loading-possible-tag-files", taggName, "loading files for #{taggName} in bank #{@id}", urls
-            
-            tagg.utils.serialLoad(urls).then((request) =>
-                tagg.log "file-def-load-succeeded", taggName, "file-definition for #{taggName} was found in bank #{@id} at #{request.responseURL}"
-                
-                importer = document.createElement("pre")
-                importer.innerHTML = request.response
-
-                childDefs = []
-                for child in importer.children
-                    childDefs.push(@defineFromHTML(child))
-
-                Promise.all(childDefs).then((def) =>
-                    tagg.log "def-accepted-html", taggName, "html def for #{taggName} was successfully defined"
-                    taggFound(def)
-                , (defNotSuccessful) =>
-                    tagg.log "def-html-not-successful", taggName, "html def for #{taggName} was not successfully defined"
-                    taggNotFound()
-                )
-
-            , (loadRejected) =>
-                tagg.log "file-def-load-failed", taggName, "file definition for #{taggName} couldn't be found for bank #{@id}", urls
-                taggNotFound()
-            )
-        )
+            @protocol = window.location.protocol    
 
     lookUp: (taggName) ->
         if not @definitions[taggName]?
             @definitions[taggName] = new Promise((taggFound, taggNotFound) =>
-                @loadFileAndDefine(taggName).then((definition) =>
-                    tagg.log("tagg-found", taggName, "tagg definition found");
-                    taggFound(definition);
-                , () =>
-                    tagg.log("tagg-not-found", taggName, "tagg definition not found")
+                urls = @nameToUrls(taggName)
+                tagg.log "loading-possible-tag-files", taggName, "loading files for #{taggName} in bank #{@id}", urls
+                
+                tagg.utils.serialLoad(urls).then((request) =>
+                    tagg.log "file-def-load-succeeded", taggName, "file-definition for #{taggName} was found in bank #{@id} at #{request.responseURL}"
+                    
+                    importer = document.createElement("pre")
+                    importer.innerHTML = request.response
+
+                    childDefs = []
+                    for child in importer.children
+                        childDefs.push(@defineFromHTML(child))
+
+                    Promise.all(childDefs).then((def) =>
+                        tagg.log "def-accepted-html", taggName, "html def for #{taggName} was successfully defined"
+                        taggFound(def)
+                    , (defNotSuccessful) =>
+                        tagg.log "def-html-not-successful", taggName, "html def for #{taggName} was not successfully defined"
+                        taggNotFound()
+                    )
+
+                , (loadRejected) =>
+                    tagg.log "file-def-load-failed", taggName, "file definition for #{taggName} couldn't be found for bank #{@id}", urls
                     taggNotFound()
                 )
             )

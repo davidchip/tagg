@@ -7,6 +7,18 @@
 <body>
 
     <script>
+        tagg.loaded.then(function(){
+            tagg.define("plum-fruit", {
+                size: 10,
+                update: function (frame) {
+                    if(frame % 60 == 0) {
+                        this.style.top = Math.random() * 100 + "%";    
+                        this.style.left = Math.random() * 100 + "%";
+                    }
+                }
+            });    
+        });
+
         tagg.testEvents([
             ["plum-tree", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 10],
@@ -15,6 +27,8 @@
             ["tagg-bank", "def-accepted", 1],
             ["tagbank", "pushed-bank", 2]
         ], 3000).then(function() {
+
+
             tree = t.id("tree");
             tree.fruits = 5;
 

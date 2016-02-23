@@ -3,9 +3,9 @@ class tagg.Bank
     """
     taggRoot: () ->
         proto = Object.create(HTMLElement.prototype)
-        _built_ins = Object.create(built_ins)
+        _TaggRoot = Object.create(TaggRoot)
 
-        for key, value of _built_ins
+        for key, value of _TaggRoot
             proto[key] = value
 
         return proto
@@ -108,19 +108,24 @@ class tagg.Bank
             getParentPrototype = new Promise((classFound, classNotFound) =>
                 getParentName.then((_parentName) =>
                     parentName = _parentName
-                    tagg.log "parent-name-exists", taggName, "#{taggName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
-                    @lookUp(parentName).then((_class) =>
-                        tagg.log "parent-def-exists", taggName, "located #{taggName}'s parent definition, #{parentName}, extending from that"
-                        if Array.isArray(_class) is true
-                            proto = _class[0].prototype
-                        else
-                            proto = _class.prototype
-
-                        classFound({parentPrototype:proto, parentName:parentName})
-                    , (classNotFound) =>
-                        tagg.log "parent-def-dne", taggName, "could not find #{taggName}'s parent, #{parentName}, extending from tagg-root"
+                    
+                    if parentName == "tagg-root"
+                        tagg.log "extending-tagg-root", taggName, "#{taggName}'s parentName is #{parentName}, extended from that", {parentName: parentName}
                         classFound({parentPrototype:@taggRoot(), parentName:parentName})
-                    )
+                    else
+                        tagg.log "parent-name-exists", taggName, "#{taggName}'s parentName is #{parentName}, looking up its definition", {parentName: parentName}
+                        @lookUp(parentName).then((_class) =>
+                            tagg.log "parent-def-exists", taggName, "located #{taggName}'s parent definition, #{parentName}, extending from that"
+                            if Array.isArray(_class) is true
+                                proto = _class[0].prototype
+                            else
+                                proto = _class.prototype
+
+                            classFound({parentPrototype:proto, parentName:parentName})
+                        , (classNotFound) =>
+                            tagg.log "parent-def-dne", taggName, "could not find #{taggName}'s parent, #{parentName}, extending from tagg-root"
+                            classFound({parentPrototype:@taggRoot(), parentName:parentName})
+                        )
                 , (noParentName) =>
                     tagg.log "parent-name-dne", taggName, "could not find #{taggName}'s parentName, extending from tagg-root"
                     classFound({parentPrototype:@taggRoot()})
@@ -229,7 +234,6 @@ class tagg.Bank
                 document.head.appendChild(element)
 
                 @defineFromJS(element.tagName, def).then((_def) =>
-                    console.log(_def);
                     defAccepted(_def);
                 ).catch(() =>
                     defNotAccepted();
