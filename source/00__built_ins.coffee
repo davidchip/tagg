@@ -6,7 +6,6 @@ built_ins = {
 
     content: ""
     istagg: true
-    libs: []
     properties: {}
     links: {}
 
@@ -168,7 +167,6 @@ built_ins = {
                     )
 
                     if oldVal isnt newVal
-                        # console.log newVal
                         @["__" + key] = newVal
                         @changed(key, oldVal, newVal)
                         if @['changed_' + key]?
