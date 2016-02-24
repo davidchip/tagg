@@ -9,7 +9,7 @@ module.exports = ->
     taggJS: {
       files: [{
         src: 'dist/tagg.js'
-        dest: 'dist/tagg.min.js',
+        dest: 'dist/tagg.js',
       }]
     }
 
