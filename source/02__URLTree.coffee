@@ -1,6 +1,5 @@
-class tagg.FileBank extends tagg.Bank
-    """A bank that looks for definitions located in a
-       a directory structure. 
+class tagg.URLTree extends tagg.Tree
+    """A tree that looks up definitions by URL.
     """
     constructor: (options) ->
         super options

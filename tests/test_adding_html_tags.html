@@ -22,12 +22,16 @@
         <plum-fruit size="10" definition>
             <div></div>
             <div>
-                <this-script>
+                <tagg-script>
+                    this.defined = function () {
+                        tagg.log("defined-called", "tagg-script", "defined was called on this definition")
+                    }
+
                     this.setup = function () {
                         this.style.height = this.size + "px";
                         this.style.width = this.size + "px";
                     }
-                </this-script>
+                </tagg-script>
             </div>
         </plum-fruit>
     </div>
@@ -41,6 +45,7 @@
         tagg.testEvent("plum-fruit", "tag-attached", 2);
         tagg.testAttr(t.id("first"), "size", "20", 500);
         tagg.testAttr(t.id("second"), "size", "80", 500);
+        tagg.testEvent("tagg-script", "defined-called", 1);
     </script>
 </body>
 </html>

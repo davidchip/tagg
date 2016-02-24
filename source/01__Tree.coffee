@@ -1,5 +1,5 @@
-class tagg.Bank
-    """A bank stores the definitions of tags.
+class tagg.Tree
+    """A tree stores the definitions of tags.
     """
     taggRoot: () ->
         proto = Object.create(HTMLElement.prototype)
@@ -184,7 +184,7 @@ class tagg.Bank
 
                 acceptDef(Tagg)
 
-                prototype.defined()
+                prototype.defined(taggName, prototype)
 
                 tagg.log "def-accepted", taggName, "pushed #{taggName} definition to bank (id: #{@id})"
             )

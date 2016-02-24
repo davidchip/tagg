@@ -1,5 +1,5 @@
-basic_vocab = new tagg.Bank()
-basic_vocab.define('tagg-bank', {
+basic_vocab = new tagg.Tree()
+basic_vocab.define('tagg-tree', {
     protocol: undefined
     hostname: undefined
     port: undefined
@@ -14,18 +14,9 @@ basic_vocab.define('tagg-bank', {
             if @[key] isnt ""
                 options[key] = @[key]
 
-        if @type is "family"
-            tagg.addBank(new tagg.FamilyBank(options))
-        else if @type is "file"
-            tagg.addBank(new tagg.FileBank(options))
+        tagg.addBank(new tagg.URLTree(options))
 
 })
-
-
-# basic_vocab.define("this-script", {
-
-
-# })
 
 
 basic_vocab.define("tagg-script", {
@@ -76,11 +67,11 @@ auto_load = document.querySelectorAll('[data-auto="false"]')
 if auto_load.length is 0
     load_local = document.querySelectorAll('[data-local="false"]')
     if load_local.length is 0
-        tagg.addBank(new tagg.FileBank({type:"file"}))  ## local
+        tagg.addBank(new tagg.URLTree({type:"file"}))  ## local
 
     load_remote = document.querySelectorAll('[data-remote="false"]')
     if load_remote.length is 0
-        tagg.addBank(new tagg.FileBank({                ## remote
+        tagg.addBank(new tagg.URLTree({                ## remote
             protocol: "https",
             hostname: "api.tagg.to",
             path: "/file/"

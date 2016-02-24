@@ -21,14 +21,11 @@
 
         tagg.testEvents([
             ["plum-tree", "def-accepted", 1],
+            ["plum-fruit", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 10],
             ["plum-tree", "file-def-load-succeeded", 1],
-            ["plum-fruit", "file-def-load-succeeded", 1],
-            ["tagg-bank", "def-accepted", 1],
             ["tagbank", "pushed-bank", 2]
         ], 3000).then(function() {
-
-
             tree = t.id("tree");
             tree.fruits = 5;
 
@@ -39,7 +36,7 @@
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tagg.testEqual(tagg.updates.length, 104, "proper number of tags to update")
+                    tagg.testEqual(tagg.updates.length, 103, "proper number of tags to update")
                 }, 3000)
                 
             });
