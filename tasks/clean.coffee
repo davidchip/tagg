@@ -8,4 +8,13 @@ module.exports = ->
 
     everything: ["./dist"],
 
+    ## PRODUCTION TASK
+
+    weblib: {
+      src: ["../web/lib/"]
+      options: {
+        force: true
+      }
+    }
+
   }

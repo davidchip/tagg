@@ -68,7 +68,8 @@ if auto_load.length is 0
     load_local = document.querySelectorAll('[data-local="false"]')
     if load_local.length is 0
         tagg.addBank(new tagg.FileTree({               ## local tree
-            path: "/taggs/"
+            path: "/taggs/",
+            type: "file"
         }))
 
     load_remote = document.querySelectorAll('[data-remote="false"]')
