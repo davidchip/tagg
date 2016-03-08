@@ -1,24 +1,14 @@
 <html>
 
 <head>
-    <script src="../../dist/tagg.js" data-remote="false"></script>
+    <script src="../../dist/tagg.js" data-auto="false"></script>
 </head>
 
 <body>
+    <tagg-tree path="."></tagg-tree>        <!-- mix and match trees -->
+    <tagg-tree path="./taggs/"></tagg-tree> <!-- mixed trailing slash paths -->
 
     <script>
-        tagg.loaded.then(function(){
-            tagg.define("plum-fruit", {
-                size: 10,
-                update: function (frame) {
-                    if(frame % 60 == 0) {
-                        this.style.top = Math.random() * 100 + "%";    
-                        this.style.left = Math.random() * 100 + "%";
-                    }
-                }
-            });    
-        });
-
         tagg.testEvents([
             ["plum-tree", "def-accepted", 1],
             ["plum-fruit", "def-accepted", 1],
@@ -36,7 +26,8 @@
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tagg.testEqual(tagg.updates.length, 103, "proper number of tags to update")
+                    tagg.testEqual(tagg.updates.length, 104, "proper number of tags to update")
+                    // tagg-tree + fps-meter + plum-tree (+ tagg-script) + 100 fruits
                 }, 3000)
                 
             });
@@ -45,8 +36,8 @@
 
     <fps-meter></fps-meter>
 
-    <plum-tree fruits="10" id="tree">
-        <plum-fruit size="15"></plum-fruit>
+    <plum-tree fruits="10" id="tree">       <!-- html definition -->
+        <plum-fruit size="15"></plum-fruit> <!-- <script> definition -->
         <div></div>
         <h1></h1>
     </plum-tree>

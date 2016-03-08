@@ -1,5 +1,5 @@
-class tagg.URLTree extends tagg.Tree
-    """A tree that looks up definitions by URL.
+class tagg.FileTree extends tagg.Tree
+    """A tree that looks up definitions based on a path to a file..
     """
     constructor: (options) ->
         super options
@@ -29,7 +29,19 @@ class tagg.URLTree extends tagg.Tree
 
                     childDefs = []
                     for child in importer.children
-                        childDefs.push(@defineFromHTML(child))
+                        if child.tagName is "SCRIPT"
+                            childDefs.push(new Promise((js_def_appended) =>
+                                s = document.createElement("script");
+                                s.type = "text/javascript";
+                                s.innerHTML = child.innerHTML;
+                                document.head.appendChild(s)
+                                tagg.log "def-from-script", taggName, "def of #{taggName} was defined in a <script> tag"
+                                setTimeout(() =>
+                                    js_def_appended()
+                                , 50)
+                            ))
+                        else
+                            childDefs.push(@defineFromHTML(child))
 
                     Promise.all(childDefs).then((def) =>
                         tagg.log "def-accepted-html", taggName, "html def for #{taggName} was successfully defined"
@@ -50,6 +62,11 @@ class tagg.URLTree extends tagg.Tree
     nameToUrls: (taggName) ->
         """Map a tagg name to an array of the potential locations.
         """
+        if @path.length > 0
+            last_char = @path[@path.length - 1]
+            if last_char != "/"  ## auto add trailing slash to path
+                @path = @path + "/"
+
         parser = document.createElement("a")
 
         if @type is 'file'

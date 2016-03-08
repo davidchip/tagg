@@ -5,16 +5,16 @@ basic_vocab.define('tagg-tree', {
     port: undefined
     path: undefined
     extensions: undefined
-
-    type: "family"
+    type: 'file'
 
     setup: () ->
         options = {}
-        for key in ['protocol', 'hostname', 'port', 'path', 'extensions']
+
+        for key in ['protocol', 'hostname', 'port', 'path', 'extensions', 'type']
             if @[key] isnt ""
                 options[key] = @[key]
 
-        tagg.addBank(new tagg.URLTree(options))
+        tagg.addBank(new tagg.FileTree(options))
 
 })
 
@@ -67,11 +67,13 @@ auto_load = document.querySelectorAll('[data-auto="false"]')
 if auto_load.length is 0
     load_local = document.querySelectorAll('[data-local="false"]')
     if load_local.length is 0
-        tagg.addBank(new tagg.URLTree({type:"file"}))  ## local
+        tagg.addBank(new tagg.FileTree({               ## local tree
+            path: "/taggs/"
+        }))
 
     load_remote = document.querySelectorAll('[data-remote="false"]')
     if load_remote.length is 0
-        tagg.addBank(new tagg.URLTree({                ## remote
+        tagg.addBank(new tagg.FileTree({                ## remote tree
             protocol: "https",
             hostname: "api.tagg.to",
             path: "/file/"
