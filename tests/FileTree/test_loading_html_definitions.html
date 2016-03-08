@@ -5,8 +5,8 @@
 </head>
 
 <body>
-    <tagg-tree path="."></tagg-tree>        <!-- mix and match trees -->
-    <tagg-tree path="./taggs/"></tagg-tree> <!-- mixed trailing slash paths -->
+    <tagg-tree path="."></tagg-tree>        <!-- trailing slash should be autocorrected -->
+    <tagg-tree path="./taggs/"></tagg-tree> <!-- multiple trees -->
 
     <script>
         tagg.testEvents([
@@ -14,7 +14,7 @@
             ["plum-fruit", "def-accepted", 1],
             ["plum-fruit", "tag-attached", 10],
             ["plum-tree", "file-def-load-succeeded", 1],
-            ["tagbank", "pushed-bank", 2]
+            ["tagg-tree", "tag-attached", 2]
         ], 3000).then(function() {
             tree = t.id("tree");
             tree.fruits = 5;
@@ -26,8 +26,8 @@
                 tree.fruits = 100;
 
                 setTimeout(function(){
-                    tagg.testEqual(tagg.updates.length, 104, "proper number of tags to update")
-                    // tagg-tree + fps-meter + plum-tree (+ tagg-script) + 100 fruits
+                    tagg.testEqual(tagg.updates.length, 105, "proper number of tags to update")
+                    // 2x tagg-tree + fps-meter + plum-tree (+ tagg-script) + 100 fruits
                 }, 3000)
                 
             });
