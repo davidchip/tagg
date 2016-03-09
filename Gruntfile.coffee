@@ -5,30 +5,30 @@ module.exports = ->
     @loadTasks("tasks")
 
     @registerTask("compile", [
-        "coffee:compileSource"
-        "concat:libsAndSource"
-        "folder_list:testsJSON"
+        "coffee:compileSource",
+        "concat:libsAndSource",
+        "folder_list:testsJSON",
+        "inject"
     ])
 
     @registerTask("release", [
-        "clean:everything"
-        "compile"
-        "copy:debug"
-        "uglify:taggJS"
+        "clean:everything",
+        "compile",
+        "copy:debug",
+        "uglify:taggJS",
         "uglify:sourceJS"
     ])
 
     @registerTask("listen", [
-        "clean:everything"
-        "compile"
+        "clean:everything",
+        "compile",
         "watch"
     ])
 
     ## PRODUCTION TASKS
 
     @registerTask("inject", [
-        "release",
-        "clean:weblib"
+        "clean:weblib",
         "copy:dist",
         "copy:tests"
     ])

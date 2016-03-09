@@ -1,5 +1,5 @@
 tagg.utils = {}
-tagg.utils.singleLoad = (url) ->
+tagg.utils.ajax = (url, method='GET') ->
     """Load a single file from a single precise URL
 
        url:     "http://www.path.to/tag/file.html"
@@ -7,13 +7,11 @@ tagg.utils.singleLoad = (url) ->
     """
     return new Promise((resolve, reject) ->
         xhr = new XMLHttpRequest()
-        if 'withCredentials' of xhr
-            ## Chrome/Firefox/Opera/Safari.
-            xhr.open('GET', url, true)
-        else if typeof XDomainRequest != 'undefined' 
-            # IE. God damn IE.
+        if 'withCredentials' of xhr                  ## chrome
+            xhr.open(method, url, true) 
+        else if typeof XDomainRequest != 'undefined' ## ie
             xhr = new XDomainRequest()
-            xhr.open('GET', url)
+            xhr.open(method, url)
         else
             reject()
 
@@ -45,7 +43,7 @@ tagg.utils.serialLoad = (urls) =>
     return new Promise((resolve, reject) =>
         _loadURL = (i=0) =>
             if i < urls.length
-                tagg.utils.singleLoad(urls[i]).then((link) =>
+                tagg.utils.ajax(urls[i]).then((link) =>
                     resolve(link)
                 , (error) =>
                     _loadURL(i+1)
