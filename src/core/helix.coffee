@@ -240,14 +240,15 @@ setTimeout (() =>
         helix.loadBase(el))
 
     helix.start()
+), 1000
 
-    $.when(helix.loaded).then(() =>
-        setTimeout (() =>
-            $("#loading").addClass('loaded')
-        ), 1000
 
-        setTimeout (() =>
-            $("#loading").remove()
-        ), 4000
-    )
-), 100
+setTimeout (() =>
+    $("#loading").addClass('loaded')
+), 2000
+
+
+setTimeout (() =>
+    $("#loading").remove()
+), 3000
+

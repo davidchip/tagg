@@ -3,7 +3,7 @@
 
 helix.defineBase("helix-base", {
 
-    libs: ['http://www.helix.to/bower_components/webcomponentsjs/webcomponents-lite.min.js']
+    libs: ['/bower_components/webcomponentsjs/webcomponents-lite.min.js']
     properties: {}
     template: ''
 

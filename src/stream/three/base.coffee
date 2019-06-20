@@ -1,6 +1,6 @@
 helix.defineBase("three-base", {
 
-    libs: ["http://www.helix.to/bower_components/three.js/three.min.js"]
+    libs: ["/bower_components/three.js/three.min.js"]
 
     properties: {
         x: 0

@@ -1,7 +1,7 @@
 module.exports = ->
 
 
-  @loadNpmTasks "grunt-contrib-uglify"
+  @loadNpmTasks "grunt-contrib-uglify-es"
 
 
   @config "uglify", {

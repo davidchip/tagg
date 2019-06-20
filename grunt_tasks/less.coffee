@@ -16,7 +16,8 @@ module.exports = ->
         extDot: 'first'
       }]
       options: {
-        compress: true
+        compress: true,
+        javascriptEnabled: true
       }
     }
 
